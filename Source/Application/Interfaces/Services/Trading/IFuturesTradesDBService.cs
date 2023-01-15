@@ -1,6 +1,4 @@
-﻿using Application.Data.Entities;
-
-using Binance.Net.Objects.Models.Futures;
+﻿using Binance.Net.Objects.Models.Futures;
 
 using Domain.Models;
 
