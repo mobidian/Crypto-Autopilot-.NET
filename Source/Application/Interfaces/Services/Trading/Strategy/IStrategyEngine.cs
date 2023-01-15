@@ -7,7 +7,7 @@ namespace Application.Interfaces.Services.Trading.Strategy;
 
 public interface IStrategyEngine<T> : IDisposable where T : IQuote
 {
-    public ICfdTradingApiService ContractTrader { get; }
+    public ICfdTradingService ContractTrader { get; }
 
     /// <summary>
     /// // Reads and stores a given <see cref="T"/> array
