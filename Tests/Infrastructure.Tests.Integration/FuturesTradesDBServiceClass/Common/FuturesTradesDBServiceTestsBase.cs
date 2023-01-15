@@ -32,8 +32,8 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleFor(c => c.Low, (f, c) => f.Random.Decimal(c.Open - 100, c.Open))
         .RuleFor(c => c.Close, (f, c) => f.Random.Decimal(1000, 1500))
         .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
-    
-    private readonly Faker<BinanceFuturesOrder> FuturesOrderGenerator = new Faker<BinanceFuturesOrder>()
+
+    protected readonly Faker<BinanceFuturesOrder> FuturesOrderGenerator = new Faker<BinanceFuturesOrder>()
         .RuleFor(o => o.Id, f => f.Random.Long())
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())

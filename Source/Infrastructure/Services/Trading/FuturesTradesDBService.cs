@@ -16,48 +16,31 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public FuturesTradesDBService(FuturesTradingDbContext dbContext) => this.DbContext = dbContext;
 
 
-    public async Task<bool> AddCandlestickAsync(Candlestick Candlestick)
+    public async Task AddCandlestickAsync(Candlestick Candlestick)
     {
         _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
 
         
         var CandlestickEntity = Candlestick.ToDbEntity();
 
-        try
-        {
-            using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-            await this.AddCandlestickToDbAsync(CandlestickEntity);
-            await transaction.CommitAsync();
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
+        await this.AddCandlestickToDbAsync(CandlestickEntity);
+        await transaction.CommitAsync();
     }
-    public async Task<bool> AddFuturesOrderAsync(BinanceFuturesOrder FuturesOrder, Candlestick Candlestick)
+    public async Task AddFuturesOrderAsync(BinanceFuturesOrder FuturesOrder, Candlestick Candlestick)
     {
         _ = FuturesOrder ?? throw new ArgumentNullException(nameof(FuturesOrder));
         _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
 
 
-        var CandlestickEntity = Candlestick.ToDbEntity();
-        var FuturesOrderEntity = this.DbContext.FuturesOrders.SingleOrDefault(entity => entity.BinanceID == FuturesOrder.Id) ?? FuturesOrder.ToDbEntity();
+        var CandlestickEntity = this.DbContext.Candlesticks.SingleOrDefault(c => c.CurrencyPair == Candlestick.CurrencyPair && c.DateTime == Candlestick.Date) ?? Candlestick.ToDbEntity();
+        var FuturesOrderEntity = FuturesOrder.ToDbEntity();
+        FuturesOrderEntity.CandlestickId = CandlestickEntity.Id;
 
-        try
-        {
-            using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-            await this.AddCandlestickToDbAsync(CandlestickEntity);
-            await this.AddFuturesOrderToDbAsync(FuturesOrderEntity);
-            await transaction.CommitAsync();
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
+        await this.AddCandlestickToDbAsync(CandlestickEntity);
+        await this.AddFuturesOrderToDbAsync(FuturesOrderEntity);
+        await transaction.CommitAsync();
     }
 
     private async Task AddCandlestickToDbAsync(CandlestickDbEntity candlestickDbEntity)
