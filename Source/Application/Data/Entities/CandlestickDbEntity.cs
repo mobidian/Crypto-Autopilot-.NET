@@ -10,6 +10,7 @@ public class CandlestickDbEntity : BaseEntity
     public required decimal High { get; set; }
     public required decimal Low { get; set; }
     public required decimal Close { get; set; }
+    public required decimal Volume { get; set; }
 
     public IEnumerable<FuturesOrderDbEntity> FuturesOrders { get; set; } = default!;
 }

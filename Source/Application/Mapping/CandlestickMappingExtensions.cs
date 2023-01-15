@@ -14,5 +14,6 @@ public static class CandlestickMappingExtensions
         High = candlestick.High,
         Low = candlestick.Low,
         Close = candlestick.Close,
+        Volume = candlestick.Volume,
     };
 }

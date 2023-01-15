@@ -18,6 +18,7 @@ public class CandlestickDbEntityConfiguration : IEntityTypeConfiguration<Candles
         builder.Property(x => x.High).HasPrecision(18, 4);
         builder.Property(x => x.Low).HasPrecision(18, 4);
         builder.Property(x => x.Close).HasPrecision(18, 4);
+        builder.Property(x => x.Volume).HasPrecision(18, 4);
 
         builder.HasIndex(x => x.CurrencyPair);
         builder.HasIndex(x => new { x.CurrencyPair, x.DateTime }).IsUnique();
