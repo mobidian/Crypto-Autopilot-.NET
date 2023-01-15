@@ -17,7 +17,7 @@ using NSubstitute;
 
 using Respawn;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceClass.Common;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {

@@ -2,12 +2,12 @@
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceClass.Common;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceClass;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
 public class FuturesTradesDBServiceAddCandlestickTests : FuturesTradesDBServiceTestsBase
 {
