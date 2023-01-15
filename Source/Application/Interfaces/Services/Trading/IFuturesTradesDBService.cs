@@ -1,12 +1,10 @@
-﻿using Binance.Net.Objects.Models.Futures;
-
-using Skender.Stock.Indicators;
+﻿using Application.Data.Entities;
 
 namespace Application.Interfaces.Services.Trading;
 
-public interface IFuturesTradesDBService<T> where T : IQuote
+public interface IFuturesTradesDBService
 {
-    public Task<bool> AddCandlestickAsync(T Candlestick);
+    public Task<bool> AddCandlestickAsync(CandlestickDbEntity Candlestick);
 
-    public Task<bool> AddFuturesOrderAsync(BinanceFuturesOrder FuturesOrder, T Candlestick);
+    public Task<bool> AddFuturesOrderAsync(FuturesOrderDbEntity FuturesOrder, CandlestickDbEntity Candlestick);
 }
