@@ -6,7 +6,7 @@ namespace Infrastructure.Database.Entities;
 
 internal class FuturesOrderDbEntity : BaseEntity
 {
-    public int LeagueId { get; set; }
+    public int CandlestickDbEntityId { get; set; }
     public virtual CandlestickDbEntity CandlestickDbEntity { get; set; } = default!;
 
     public long BinanceID { get; set; }
