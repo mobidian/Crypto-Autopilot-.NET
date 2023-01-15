@@ -15,10 +15,10 @@ public static class FuturesOrderMappingExtensions
         Price = futuresOrder.Price,
         Quantity = futuresOrder.Quantity,
     };
-    
+
     public static BinanceFuturesOrder ToDomainObject(this FuturesOrderDbEntity entity) => new BinanceFuturesOrder
     {
-        Id= entity.BinanceID,
+        Id = entity.BinanceID,
         CreateTime = entity.CreateTime,
         Side = entity.OrderSide,
         Type = entity.OrderType,
