@@ -8,7 +8,8 @@ public static class CandlestickMappingExtensions
 {
     public static CandlestickDbEntity ToDbEntity(this Candlestick candlestick) => new CandlestickDbEntity
     {
-        CurrencyPair = candlestick.CurrencyPair.Name,
+        BaseCurrency = candlestick.CurrencyPair.Base,
+        QuoteCurrency = candlestick.CurrencyPair.Quote,
         DateTime = candlestick.Date,
         Open = candlestick.Open,
         High = candlestick.High,
@@ -19,7 +20,7 @@ public static class CandlestickMappingExtensions
     
     public static Candlestick ToDomainObject(this CandlestickDbEntity entity) => new Candlestick
     {
-        CurrencyPair = new CurrencyPair(entity.CurrencyPair[..3], entity.CurrencyPair[3..]),
+        CurrencyPair = new CurrencyPair(entity.BaseCurrency, entity.QuoteCurrency),
         Date = entity.DateTime,
         Open = entity.Open,
         High = entity.High,

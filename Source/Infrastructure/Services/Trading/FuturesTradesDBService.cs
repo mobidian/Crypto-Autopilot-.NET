@@ -47,8 +47,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     
     private CandlestickDbEntity? GetCandlestickEntityFromDb(Candlestick Candlestick)
     {
-        var uniqueIndex = (Candlestick.CurrencyPair, Candlestick.Date);
-        return this.DbContext.Candlesticks.SingleOrDefault(x => x.CurrencyPair == uniqueIndex.CurrencyPair.Name && x.DateTime == uniqueIndex.Date);
+        var uniqueIndex = (Candlestick.CurrencyPair.Base, Candlestick.CurrencyPair.Quote, Candlestick.Date);
+        return this.DbContext.Candlesticks.SingleOrDefault(x => x.BaseCurrency == uniqueIndex.Base && x.QuoteCurrency == uniqueIndex.Quote && x.DateTime == uniqueIndex.Date);
     }
 
     private async Task<TransactionalOperation> BeginTransactionAsync() => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
