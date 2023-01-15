@@ -29,5 +29,5 @@ public interface ICfdTradingService : IDisposable
     public Task<BinanceFuturesPlacedOrder> PlaceStopLossAsync(decimal price);
 
 
-    public bool IsInPosition() => this.Position is not null;
+    public bool IsInPosition();
 }
