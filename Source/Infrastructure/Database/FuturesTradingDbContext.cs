@@ -1,6 +1,6 @@
-﻿using Application.Interfaces.Services.General;
+﻿using Application.Data.Entities;
+using Application.Interfaces.Services.General;
 
-using Infrastructure.Database.Entities;
 using Infrastructure.Services.General;
 
 using Microsoft.EntityFrameworkCore;
