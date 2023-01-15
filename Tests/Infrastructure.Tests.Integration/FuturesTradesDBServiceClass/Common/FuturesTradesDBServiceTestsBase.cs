@@ -61,6 +61,7 @@ public abstract class FuturesTradesDBServiceTestsBase
         this.SUT = new FuturesTradesDBService(this.dbContext);
 
         this.DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
+        await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
     }
     private void ConfigureIDateTiemProviderMock()
     {
