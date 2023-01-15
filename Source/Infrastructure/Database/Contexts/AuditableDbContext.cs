@@ -10,29 +10,21 @@ public abstract class AuditableDbContext : DbContext
     private readonly IDateTimeProvider DateTimeProvider;
     public AuditableDbContext(IDateTimeProvider dateTimeProvider) => DateTimeProvider = dateTimeProvider;
 
-
-    public override int SaveChanges()
-    {
-        this.OnBeforeSavedChanges();
-        return base.SaveChanges();
-    }
+    
+    // base.SaveChanges() => base.SaveChanges(acceptAllChangesOnSuccess: true);
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         this.OnBeforeSavedChanges();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        this.OnBeforeSavedChanges();
-        return base.SaveChangesAsync(cancellationToken);
-    }
+    // base.SaveChangesAsync(cancellationToken) => base.SaveChangesAsync(acceptAllChangesOnSuccess: true, cancellationToken); 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
         this.OnBeforeSavedChanges();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-
+    
     private void OnBeforeSavedChanges()
     {
         var entries = this.ChangeTracker.Entries()
