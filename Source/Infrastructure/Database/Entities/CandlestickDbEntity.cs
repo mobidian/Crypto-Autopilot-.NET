@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Database.Entities;
 
-internal class CandlestickDbEntity : BaseEntity
+public class CandlestickDbEntity : BaseEntity
 {
     public required string CurrencyPair { get; set; }
     public required DateTime DateTime { get; set; }

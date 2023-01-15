@@ -4,7 +4,7 @@ using Infrastructure.Database.Entities.Common;
 
 namespace Infrastructure.Database.Entities;
 
-internal class FuturesOrderDbEntity : BaseEntity
+public class FuturesOrderDbEntity : BaseEntity
 {
     public int CandlestickDbEntityId { get; set; }
     public virtual CandlestickDbEntity CandlestickDbEntity { get; set; } = default!;

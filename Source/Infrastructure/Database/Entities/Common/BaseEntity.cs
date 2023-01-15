@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Database.Entities.Common;
 
-internal abstract class BaseEntity
+public abstract class BaseEntity
 {
     public int Id { get; set; }
 

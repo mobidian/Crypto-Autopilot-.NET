@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database;
 
-internal class FuturesTradingDbContext : DbContext
+public class FuturesTradingDbContext : DbContext
 {
     private readonly string ConnectionString;
     private readonly IDateTimeProvider DateTimeProvider;
@@ -20,7 +20,13 @@ internal class FuturesTradingDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(this.ConnectionString);
+        // optionsBuilder.UseSqlServer(this.ConnectionString);
+        optionsBuilder.UseSqlServer("""Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=CryptoPilotTrades""");
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(FuturesTradingDbContext).Assembly, type => !type.IsInterface && !type.IsAbstract);
     }
 
 

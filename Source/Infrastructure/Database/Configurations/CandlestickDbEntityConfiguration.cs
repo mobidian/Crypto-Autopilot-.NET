@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Database.Configurations;
 
-internal class CandlestickDbEntityConfiguration : IEntityTypeConfiguration<CandlestickDbEntity>
+public class CandlestickDbEntityConfiguration : IEntityTypeConfiguration<CandlestickDbEntity>
 {
     public void Configure(EntityTypeBuilder<CandlestickDbEntity> builder)
     {
@@ -24,18 +24,5 @@ internal class CandlestickDbEntityConfiguration : IEntityTypeConfiguration<Candl
         builder.HasIndex(x => x.CurrencyPair);
 
         builder.HasIndex(x => new { x.CurrencyPair, x.DateTime }).IsUnique();
-    }
-}
-
-internal class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<FuturesOrderDbEntity>
-{
-    public void Configure(EntityTypeBuilder<FuturesOrderDbEntity> builder)
-    {
-        builder.Property(x => x.OrderSide).HasMaxLength(8);
-        builder.Property(x => x.OrderType).HasMaxLength(32);
-        builder.Property(x => x.Price).HasPrecision(18, 4);
-        builder.Property(x => x.Quantity).HasPrecision(18, 4);
-
-        builder.HasIndex(x => x.BinanceID).IsUnique();
     }
 }
