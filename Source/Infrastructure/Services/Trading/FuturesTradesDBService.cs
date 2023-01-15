@@ -10,7 +10,7 @@ using Infrastructure.Database.Contexts;
 
 namespace Infrastructure.Services.Trading;
 
-internal class FuturesTradesDBService : IFuturesTradesDBService
+public class FuturesTradesDBService : IFuturesTradesDBService
 {
     private readonly FuturesTradingDbContext DbContext;
     public FuturesTradesDBService(FuturesTradingDbContext dbContext) => this.DbContext = dbContext;
@@ -18,6 +18,9 @@ internal class FuturesTradesDBService : IFuturesTradesDBService
 
     public async Task<bool> AddCandlestickAsync(Candlestick Candlestick)
     {
+        _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
+
+        
         var CandlestickEntity = Candlestick.ToDbEntity();
 
         try
@@ -35,6 +38,10 @@ internal class FuturesTradesDBService : IFuturesTradesDBService
     }
     public async Task<bool> AddFuturesOrderAsync(BinanceFuturesOrder FuturesOrder, Candlestick Candlestick)
     {
+        _ = FuturesOrder ?? throw new ArgumentNullException(nameof(FuturesOrder));
+        _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
+
+
         var CandlestickEntity = Candlestick.ToDbEntity();
         var FuturesOrderEntity = this.DbContext.FuturesOrders.SingleOrDefault(entity => entity.BinanceID == FuturesOrder.Id) ?? FuturesOrder.ToDbEntity();
 
