@@ -26,4 +26,8 @@
 		<InternalsVisibleTo Include="$(MSBuildProjectName).Tests.Integration" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Database\Configurations\" />
+	</ItemGroup>
+
 </Project>
