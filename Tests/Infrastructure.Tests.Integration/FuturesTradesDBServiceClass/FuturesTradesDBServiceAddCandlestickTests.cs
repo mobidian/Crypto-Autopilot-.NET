@@ -7,8 +7,6 @@ using Infrastructure.Tests.Integration.FuturesTradesDBServiceClass.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-using NSubstitute;
-
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceClass;
 
 public class FuturesTradesDBServiceAddCandlestickTests : FuturesTradesDBServiceTestsBase
@@ -26,9 +24,11 @@ public class FuturesTradesDBServiceAddCandlestickTests : FuturesTradesDBServiceT
         
         // Act
         await this.SUT.AddCandlestickAsync(candlestick);
-        
+
         // Assert
-        this.dbContext.Candlesticks.Single().ToDomainObject().Should().BeEquivalentTo(candlestick);
+        var addedEntity = this.dbContext.Candlesticks.Single();
+        base.AssertAgainstAddedEntityAuditRecords(addedEntity);
+        addedEntity.ToDomainObject().Should().BeEquivalentTo(candlestick);
     }
 
     [Test, Order(2)]

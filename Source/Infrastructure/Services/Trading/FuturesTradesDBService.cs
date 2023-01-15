@@ -8,6 +8,8 @@ using Domain.Models;
 
 using Infrastructure.Database.Contexts;
 
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace Infrastructure.Services.Trading;
 
 public class FuturesTradesDBService : IFuturesTradesDBService
@@ -23,9 +25,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         
         var CandlestickEntity = Candlestick.ToDbEntity();
 
-        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
+        using var transaction = await this.BeginTransactionAsync();
         await this.AddCandlestickToDbAsync(CandlestickEntity);
-        await transaction.CommitAsync();
     }
     public async Task AddFuturesOrderAsync(BinanceFuturesOrder FuturesOrder, Candlestick Candlestick)
     {
@@ -33,15 +34,36 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
 
 
-        var CandlestickEntity = this.DbContext.Candlesticks.SingleOrDefault(c => c.CurrencyPair == Candlestick.CurrencyPair && c.DateTime == Candlestick.Date) ?? Candlestick.ToDbEntity();
+        using var transaction = await this.BeginTransactionAsync();
+
+        var CandlestickEntity = this.GetCandlestickEntityFromDb(Candlestick) ?? Candlestick.ToDbEntity();
+        if (CandlestickEntity.Id == 0)
+            await this.AddCandlestickToDbAsync(CandlestickEntity);
+        
         var FuturesOrderEntity = FuturesOrder.ToDbEntity();
         FuturesOrderEntity.CandlestickId = CandlestickEntity.Id;
-
-        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-        await this.AddCandlestickToDbAsync(CandlestickEntity);
         await this.AddFuturesOrderToDbAsync(FuturesOrderEntity);
-        await transaction.CommitAsync();
     }
+    
+    private CandlestickDbEntity? GetCandlestickEntityFromDb(Candlestick Candlestick)
+    {
+        var uniqueIndex = (Candlestick.CurrencyPair, Candlestick.Date);
+        return this.DbContext.Candlesticks.SingleOrDefault(x => x.CurrencyPair == uniqueIndex.CurrencyPair.Name && x.DateTime == uniqueIndex.Date);
+    }
+
+    private async Task<TransactionalOperation> BeginTransactionAsync() => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
+    internal class TransactionalOperation : IDisposable
+    {
+        private readonly IDbContextTransaction Transaction;
+        public TransactionalOperation(IDbContextTransaction transaction) => this.Transaction = transaction;
+
+        public void Dispose()
+        {
+            this.Transaction.Commit();
+            this.Transaction.Dispose();
+        }
+    }
+
 
     private async Task AddCandlestickToDbAsync(CandlestickDbEntity candlestickDbEntity)
     {

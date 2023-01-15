@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Services.General;
+﻿using Application.Data.Entities.Common;
+using Application.Interfaces.Services.General;
 
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
@@ -6,6 +7,8 @@ using Binance.Net.Objects.Models.Futures;
 using Bogus;
 
 using Domain.Models;
+
+using FluentAssertions;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Services.Trading;
@@ -50,17 +53,31 @@ public abstract class FuturesTradesDBServiceTestsBase
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
+        this.ConfigureIDateTiemProviderMock();
+
         this.dbContext = new FuturesTradingDbContext(ConnectionString, this.DateTimeProvider);
         await this.dbContext.Database.EnsureCreatedAsync();
-        
+
         this.SUT = new FuturesTradesDBService(this.dbContext);
 
         this.DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
     }
-    
+    private void ConfigureIDateTiemProviderMock()
+    {
+        this.DateTimeProvider.Now.Returns(new DateTime(2023, 01, 01, 04, 20, 0));
+        this.DateTimeProvider.UtcNow.Returns(new DateTime(2023, 01, 01, 02, 20, 0));
+    }
+
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
         await this.dbContext.Database.EnsureDeletedAsync();
+    }
+
+
+    protected void AssertAgainstAddedEntityAuditRecords(BaseEntity addedEntity)
+    {
+        addedEntity.RecordCreatedDate.Should().Be(this.DateTimeProvider.Now);
+        addedEntity.RecordModifiedDate.Should().Be(DateTime.MinValue);
     }
 }
