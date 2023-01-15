@@ -6,9 +6,9 @@ namespace Infrastructure.Database.Entities;
 
 public class FuturesOrderDbEntity : BaseEntity
 {
-    public int CandlestickDbEntityId { get; set; }
-    public virtual CandlestickDbEntity CandlestickDbEntity { get; set; } = default!;
-
+    public int CandlestickId { get; set; }
+    public virtual CandlestickDbEntity Candlestick { get; set; } = default!;
+    
     public long BinanceID { get; set; }
     public DateTime CreateTime { get; set; }
     public OrderSide OrderSide { get; set; }
