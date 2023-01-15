@@ -16,4 +16,15 @@ public static class CandlestickMappingExtensions
         Close = candlestick.Close,
         Volume = candlestick.Volume,
     };
+    
+    public static Candlestick ToDomainObject(this CandlestickDbEntity entity) => new Candlestick
+    {
+        CurrencyPair = new CurrencyPair(entity.CurrencyPair[..3], entity.CurrencyPair[3..]),
+        Date = entity.DateTime,
+        Open = entity.Open,
+        High = entity.High,
+        Low = entity.Low,
+        Close = entity.Close,
+        Volume = entity.Volume,
+    };
 }
