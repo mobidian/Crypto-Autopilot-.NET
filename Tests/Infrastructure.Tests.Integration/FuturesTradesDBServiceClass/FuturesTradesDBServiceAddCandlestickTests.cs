@@ -1,11 +1,7 @@
 ﻿using Application.Mapping;
 
-using Domain.Models;
-
 using FluentAssertions;
 
-using Infrastructure.Database.Contexts;
-using Infrastructure.Services.Trading;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceClass.Common;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceClass;
