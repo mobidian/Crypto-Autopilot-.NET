@@ -21,9 +21,9 @@ public interface IChartDataService<T> : IDisposable where T : IQuote
     /// <returns></returns>
     public Task<T> WaitForNextCandleAsync();
 
-    public Task<decimal> GetUnfinishedCandlestickAsync();
-
-    public Task<decimal> GetLastFinishedCandlestickAsync();
+    public Task<T> GetUnfinishedCandlestickAsync();
+    
+    public Task<T> GetLastFinishedCandlestickAsync();
 
     public Task RegisterAllCandlesticksAsync();
 }
