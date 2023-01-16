@@ -75,13 +75,16 @@ public class FuturesPosition
             throw new ArgumentException($"The {paramName} property was given a market order", nameof(value));
     }
 
-
-    public IEnumerable<long> GetOrdersIDs()
+    /// <summary>
+    /// Returns the binance IDs of the open orders
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<long> GetOpenOrdersIDs()
     {
-        foreach (BinanceFuturesOrder item in this.OrdersBatch)
+        foreach (BinanceFuturesOrder item in this.OrdersBatch.Where(x => x is not null))
             yield return item.Id;
     }
-
+    
     #region Position prices of interest getters
     public decimal EntryPrice => this.EntryOrder.AvgPrice;
     public decimal? StopLossPrice => this.StopLossOrder?.StopPrice;
