@@ -4,6 +4,10 @@ using Skender.Stock.Indicators;
 
 namespace Application.Interfaces.Services.Trading;
 
+/// <summary>
+/// A service that provides market data and maps the candlesticks as a specified generic type
+/// </summary>
+/// <typeparam name="T">The type that the candlesticks will be mapped as</typeparam>
 public interface IChartDataService<T> : IDisposable where T : IQuote
 {
     /// <summary>
@@ -22,6 +26,4 @@ public interface IChartDataService<T> : IDisposable where T : IQuote
     public Task<decimal> GetLastFinishedCandlestickAsync();
 
     public Task RegisterAllCandlesticksAsync();
-
-    public void Quit();
 }
