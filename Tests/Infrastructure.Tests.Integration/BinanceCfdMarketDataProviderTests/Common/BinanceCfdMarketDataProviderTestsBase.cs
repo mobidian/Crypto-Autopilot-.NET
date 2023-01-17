@@ -1,7 +1,5 @@
 ﻿using Binance.Net.Enums;
 
-using Bogus;
-
 using Domain.Models;
 
 using Infrastructure.Services.Trading;

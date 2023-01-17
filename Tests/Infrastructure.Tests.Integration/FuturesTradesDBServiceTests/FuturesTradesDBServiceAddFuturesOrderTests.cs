@@ -1,7 +1,5 @@
 ﻿using Application.Mapping;
 
-using FluentAssertions;
-
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 
 using Microsoft.Data.SqlClient;

@@ -4,16 +4,11 @@ using Application.Interfaces.Services.General;
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
 
-using Bogus;
-
 using Domain.Models;
-
-using FluentAssertions;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Services.Trading;
-
-using NSubstitute;
+using Infrastructure.Tests.Integration.Common;
 
 using Respawn;
 
@@ -21,7 +16,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
-    protected const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=CryptoPilotTradesTestDatabase""";
+    protected const string ConnectionString = Credentials.TestDbConnectionString;
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext dbContext;

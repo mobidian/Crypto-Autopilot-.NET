@@ -2,10 +2,6 @@
 
 using Binance.Net.Enums;
 
-using CryptoExchange.Net.Objects;
-
-using FluentAssertions;
-
 using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Common;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests;

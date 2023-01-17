@@ -1,9 +1,6 @@
 ﻿using Application.Exceptions;
 
 using Binance.Net.Enums;
-using Binance.Net.Objects.Models.Futures;
-
-using FluentAssertions;
 
 using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Common;
 

@@ -1,7 +1,5 @@
 ﻿using Binance.Net.Enums;
 
-using FluentAssertions;
-
 using Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests.Common;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests;
