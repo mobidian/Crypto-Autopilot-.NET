@@ -2,7 +2,7 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Common;
+using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests;
 

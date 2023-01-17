@@ -1,6 +1,6 @@
 ﻿using Application.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

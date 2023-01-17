@@ -5,14 +5,14 @@ using Domain.Models;
 using Infrastructure.Services.Trading;
 using Infrastructure.Tests.Integration.Common;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests.Common;
+namespace Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests.Base;
 
 public abstract class BinanceCfdMarketDataProviderTestsBase
 {
     protected readonly BinanceCfdMarketDataProvider SUT = new(new("BTC", "BUSD"), Credentials.BinanceIntegrationTestingAPICredentials);
     protected readonly Faker Faker = new Faker();
 
-    
+
     protected static IEnumerable<KlineInterval> GetValidKlineIntervals()
     {
         return Enum.GetValues<KlineInterval>().Except(new[] {

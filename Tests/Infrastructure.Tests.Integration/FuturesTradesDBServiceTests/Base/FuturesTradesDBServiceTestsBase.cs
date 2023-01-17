@@ -12,7 +12,7 @@ using Infrastructure.Tests.Integration.Common;
 
 using Respawn;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
@@ -21,7 +21,7 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext dbContext;
     protected IDateTimeProvider DateTimeProvider = Substitute.For<IDateTimeProvider>();
-    
+
     protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
         .RuleFor(x => x.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
         .RuleFor(c => c.Date, f => f.Date.Recent(365))
