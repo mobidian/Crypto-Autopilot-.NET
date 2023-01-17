@@ -3,6 +3,7 @@
 using Domain.Models;
 
 using Infrastructure.Services.Trading;
+using Infrastructure.Tests.Integration.Common;
 
 using NUnit.Framework.Interfaces;
 
@@ -16,7 +17,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     protected BinanceCfdTradingService SUT = default!;
     protected decimal testMargin = 5;
 
-
+    
 
     [OneTimeSetUp]
     public virtual void OneTimeSetUp() => this.SUT = new BinanceCfdTradingService(this.CurrencyPair, this.BinanceApiCredentials);
