@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
-public class FuturesTradesDBServiceGetAllCandlesticksTests : FuturesTradesDBServiceTestsBase
+public class GetAllCandlesticksTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
     public async Task GetAllCandlesticks_ShouldReturnAllCandlesticks()

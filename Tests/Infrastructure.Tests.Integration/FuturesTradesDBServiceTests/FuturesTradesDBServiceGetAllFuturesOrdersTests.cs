@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
-public class FuturesTradesDBServiceGetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
+public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders()

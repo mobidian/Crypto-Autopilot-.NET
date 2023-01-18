@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
-public class FuturesTradesDBServiceAddFuturesOrderTests : FuturesTradesDBServiceTestsBase
+public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 {
     [Test, Order(1)]
     public async Task AddFuturesOrderAsync_ShouldAddFuturesOrder_WhenFuturesOrderIsValidAndCandlestickDoesNotExist()
