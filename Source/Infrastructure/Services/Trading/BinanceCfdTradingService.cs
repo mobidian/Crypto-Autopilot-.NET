@@ -4,10 +4,12 @@ using Application.Exceptions;
 using Application.Interfaces.Services.Trading;
 
 using Binance.Net.Clients;
+using Binance.Net.Clients.UsdFuturesApi;
 using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 using Binance.Net.Objects.Models.Futures;
+using Binance.Net.Objects.Models.Futures.AlgoOrders;
 
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
@@ -16,8 +18,6 @@ using Domain.Extensions;
 using Domain.Models;
 
 using Infrastructure.Common;
-
-using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services.Trading;
 
@@ -171,6 +171,11 @@ public class BinanceCfdTradingService : ICfdTradingService
         var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToList();
         Parallel.For(0, PlacedOrders.Count, i => FuturesOrders[i] = this.GetOrderAsync(PlacedOrders[i].Id).GetAwaiter().GetResult() ?? new BinanceFuturesOrder()); // Parallel.For isn't async await friendly
 
+        // RARE EXCEPTION: ArgumentException : The EntryOrder property was given a StopMarket order instead of a market order (Parameter 'value')
+        // TODO retry policy //
+        // Error happened due to binance exception
+        // Discovered in the 12th run of a "run ultil failure integration testing
+
         return new FuturesPosition
         {
             CurrencyPair = this.CurrencyPair,
@@ -256,9 +261,13 @@ public class BinanceCfdTradingService : ICfdTradingService
             throw new InvalidOperationException("No position is open thus a stop loss can't be placed");
         }
 
-
+        
         var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals));
-        SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed"); 
+        SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed");
+        // // RARE EXCEPTION: InternalTradingServiceException : The stop loss could not be placed | Error: -1001: Internal error; unable to process your request. Please try again.
+        // TODO retry policy //
+        // Error happened due to binance exception
+        // Discovered in the 12th run of a "run ultil failure integration testing
 
         var GetSLOrderTask = this.GetOrderAsync(SLPlacingCallResult.Data.Id);
         if (this.Position.StopLossOrder is not null)
