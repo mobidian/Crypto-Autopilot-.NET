@@ -169,16 +169,18 @@ public class BinanceCfdTradingService : ICfdTradingService
     {
         var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToList();
         var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToList();
-        Parallel.For(0, PlacedOrders.Count, i => FuturesOrders[i] = this.GetOrderAsync(PlacedOrders[i].Id).GetAwaiter().GetResult()); // Parallel.For isn't async await friendly
-        
-        return new FuturesPosition(this.CurrencyPair)
+        Parallel.For(0, PlacedOrders.Count, i => FuturesOrders[i] = this.GetOrderAsync(PlacedOrders[i].Id).GetAwaiter().GetResult() ?? new BinanceFuturesOrder()); // Parallel.For isn't async await friendly
+
+        return new FuturesPosition
         {
+            CurrencyPair = this.CurrencyPair,
+
             Leverage = this.Leverage,
             Margin = MarginBUSD,
 
-            EntryOrder = FuturesOrders[0], // // TODO a better implementation // //
-            StopLossOrder = FuturesOrders[1].Symbol != String.Empty ? FuturesOrders[1] : null,
-            TakeProfitOrder = FuturesOrders[2].Symbol != String.Empty ? FuturesOrders[2] : null
+            EntryOrder = FuturesOrders[0],
+            StopLossOrder = FuturesOrders[1].Id != 0 ? FuturesOrders[1] : null,
+            TakeProfitOrder = FuturesOrders[2].Id != 0 ? FuturesOrders[2] : null
         };
     }
     /// <summary>
