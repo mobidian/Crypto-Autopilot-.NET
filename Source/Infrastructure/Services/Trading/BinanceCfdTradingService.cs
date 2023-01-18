@@ -15,6 +15,8 @@ using CryptoExchange.Net.Objects;
 using Domain.Extensions;
 using Domain.Models;
 
+using Infrastructure.Common;
+
 using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services.Trading;
@@ -51,7 +53,7 @@ public class BinanceCfdTradingService : ICfdTradingService
     public async Task<BinanceFuturesOrder> GetOrderAsync(long orderID)
     {
         var callResult = await this.TradingClient.GetOrderAsync(symbol: this.CurrencyPair.Name, orderId: orderID);
-        ValidateCallResult(callResult);
+        callResult.ThrowIfHasError();
 
         return callResult.Data;
     }
@@ -61,14 +63,14 @@ public class BinanceCfdTradingService : ICfdTradingService
     public async Task<decimal> GetCurrentPriceAsync()
     {
         var callResult = await this.ExchangeData.GetPriceAsync(this.CurrencyPair.Name);
-        ValidateCallResult(callResult);
+        callResult.ThrowIfHasError();
 
         return callResult.Data.Price;
     }
     public async Task<decimal> GetEquityAsync()
     {
         var callResult = await this.FuturesClient.Account.GetAccountInfoAsync();
-        ValidateCallResult(callResult, "Could not get the account information");
+        callResult.ThrowIfHasError("Could not get the account information");
 
         var asset = callResult.Data.Assets.Where(binanceAsset => this.CurrencyPair.Name.EndsWith(binanceAsset.Asset)).Single();
         return asset.AvailableBalance;
@@ -203,8 +205,9 @@ public class BinanceCfdTradingService : ICfdTradingService
 
         var BatchOrders = this.CreateBinanceBatchOrders(OrderSide, StopLoss_price, TakeProfit_price, BaseQuantity);
         var PlaceOrdersCallResult = await this.TradingClient.PlaceMultipleOrdersAsync(orders: BatchOrders.ToArray());
-        ValidateCallResult(PlaceOrdersCallResult);
-        
+        PlaceOrdersCallResult.ThrowIfHasError();
+
+
         this.Position = this.CreateFuturesPosition(PlaceOrdersCallResult, MarginBUSD);
         
         return PlaceOrdersCallResult.Data.Select(callRes => callRes.Data);
@@ -225,13 +228,13 @@ public class BinanceCfdTradingService : ICfdTradingService
 
 
         var ClosingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.Market, quantity: this.Position.EntryOrder.Quantity);
-        ValidateCallResult(ClosingCallResult, "The current position could not be closed");
+        ClosingCallResult.ThrowIfHasError("The current position could not be closed");
 
         var GetFuturesClosingOrderTask = this.GetOrderAsync(ClosingCallResult.Data.Id);
         
         // some orders may still be open so they must be closed
         var CancellingCallResult = await this.TradingClient.CancelMultipleOrdersAsync(symbol: this.CurrencyPair.Name, this.Position.GetOpenOrdersIDs().ToList());
-        ValidateCallResult(CancellingCallResult, "The remaining orders could not be closed");
+        CancellingCallResult.ThrowIfHasError("The remaining orders could not be closed");
 
         this.Position = null;
         return await GetFuturesClosingOrderTask;
@@ -253,7 +256,7 @@ public class BinanceCfdTradingService : ICfdTradingService
 
 
         var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals));
-        ValidateCallResult(SLPlacingCallResult, "The stop loss could not be placed");
+        SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed"); 
 
         var GetSLOrderTask = this.GetOrderAsync(SLPlacingCallResult.Data.Id);
         if (this.Position.StopLossOrder is not null)
@@ -267,17 +270,6 @@ public class BinanceCfdTradingService : ICfdTradingService
     }
 
     public bool IsInPosition() => this.Position is not null;
-
-
-    private static void ValidateCallResult(CallResult callResult, string? additionalMessage = null)
-    {
-        if (callResult.Success)
-            return;
-        
-        var errorMessage = callResult.Error!.ToString().Trim();
-        var message = additionalMessage.IsNullOrEmpty() ? errorMessage : $"{additionalMessage!.Trim()} | Error: {errorMessage}";
-        throw new InternalTradingServiceException(message);
-    }
 
 
     //// //// ////

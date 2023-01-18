@@ -13,6 +13,8 @@ using CryptoExchange.Net.Objects;
 
 using Domain.Models;
 
+using Infrastructure.Common;
+
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.IdentityModel.Tokens;
 
@@ -85,14 +87,14 @@ public class BinanceCfdMarketDataProvider : ICfdMarketDataProvider
     }
     private static void AnalyzeCallResult1(WebCallResult<IEnumerable<BinanceMarkIndexKline>> marketPriceKlinesCallResult, out List<BinanceMarkIndexKline> klines, out DateTime opentime1, out int count1)
     {
-        ValidateCallResult(marketPriceKlinesCallResult);
+        marketPriceKlinesCallResult.ThrowIfHasError();
         klines = marketPriceKlinesCallResult.Data.ToList();
         opentime1 = klines.First().OpenTime;
         count1 = klines.Count;
     }
     private static void AnalyzeCallResult2(WebCallResult<IEnumerable<IBinanceKline>> volumesCallResult, out List<decimal> volumes, out DateTime opentime2, out int count2)
     {
-        ValidateCallResult(volumesCallResult);
+        volumesCallResult.ThrowIfHasError();
         volumes = volumesCallResult.Data.Select(x => x.Volume).ToList();
         opentime2 = volumesCallResult.Data.First().OpenTime;
         count2 = volumes.Count;
@@ -102,17 +104,6 @@ public class BinanceCfdMarketDataProvider : ICfdMarketDataProvider
     {
         var allCandlesticks = await this.GetAllCandlesticksAsync(timeframe);
         return allCandlesticks.SkipLast(1);
-    }
-
-
-    private static void ValidateCallResult(CallResult callResult, string? additionalMessage = null)
-    {
-        if (callResult.Success)
-            return;
-
-        var errorMessage = callResult.Error!.ToString().Trim();
-        var message = additionalMessage.IsNullOrEmpty() ? errorMessage : $"{additionalMessage!.Trim()} | Error: {errorMessage}";
-        throw new InternalTradingServiceException(message);
     }
 
     //// ////
