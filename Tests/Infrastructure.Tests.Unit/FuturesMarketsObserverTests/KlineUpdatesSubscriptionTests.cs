@@ -34,7 +34,7 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
     {
         // Act
         await this.SUT.SubscribeToKlineUpdatesAsync();
-        Task<IBinanceStreamKlineData> task = this.SUT.WaitForNewCandlestickAsync();
+        Task<IBinanceStreamKlineData> task = this.SUT.WaitForNextCandlestickAsync();
 
         // Act
         Enumerable.Range(0, 20).Select(_ => CreateDataEvent(DateTime.MinValue)).ToList().ForEach(this.SUT.HandleKlineUpdate);
@@ -63,7 +63,7 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
     public async Task WaitForNewCandlestick_ShouldThrow_WhenNotSubscribed()
     {
         // Act
-        var func = this.SUT.WaitForNewCandlestickAsync;
+        var func = this.SUT.WaitForNextCandlestickAsync;
         
         // Assert
         await func.Should().ThrowExactlyAsync<Exception>().WithMessage("Not subscribed to kline updates");
@@ -80,7 +80,7 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
         // Act
         await this.SUT.UnsubscribeFromKlineUpdatesAsync();
         bool subscribedAfterUnsubscribe = this.SUT.SubscribedToKlineUpdates;
-        var func = this.SUT.WaitForNewCandlestickAsync;
+        var func = this.SUT.WaitForNextCandlestickAsync;
 
         // Assert
         subscribedAfterSubscribe.Should().BeFalse();
