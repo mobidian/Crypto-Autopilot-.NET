@@ -8,6 +8,7 @@ using Domain.Models;
 
 using Infrastructure.Database.Contexts;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Services.Trading;
@@ -25,7 +26,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         
         var CandlestickEntity = Candlestick.ToDbEntity();
 
-        using var transaction = await this.BeginTransactionAsync();
+        using var transaction = this.BeginTransaction();
         await this.AddCandlestickToDbAsync(CandlestickEntity);
     }
     public async Task AddFuturesOrderAsync(BinanceFuturesOrder FuturesOrder, Candlestick Candlestick)
@@ -34,7 +35,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
 
 
-        using var transaction = await this.BeginTransactionAsync();
+        using var transaction = this.BeginTransaction();
 
         var CandlestickEntity = this.GetCandlestickEntityFromDb(Candlestick) ?? Candlestick.ToDbEntity();
         if (CandlestickEntity.Id == 0)
@@ -51,7 +52,30 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         return this.DbContext.Candlesticks.SingleOrDefault(x => x.BaseCurrency == uniqueIndex.Base && x.QuoteCurrency == uniqueIndex.Quote && x.DateTime == uniqueIndex.Date);
     }
 
-    private async Task<TransactionalOperation> BeginTransactionAsync() => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
+    private async Task AddCandlestickToDbAsync(CandlestickDbEntity candlestickDbEntity)
+    {
+        await this.DbContext.Candlesticks.AddAsync(candlestickDbEntity);
+        await this.DbContext.SaveChangesAsync();
+    }
+    private async Task AddFuturesOrderToDbAsync(FuturesOrderDbEntity futuresOrderDbEntity)
+    {
+        await this.DbContext.FuturesOrders.AddAsync(futuresOrderDbEntity);
+        await this.DbContext.SaveChangesAsync();
+    }
+
+
+    public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync()
+    {
+        return await this.DbContext.Candlesticks.Select(x => x.ToDomainObject()).ToListAsync();
+    }
+    public async Task<IEnumerable<BinanceFuturesOrder>> GetAllFuturesOrdersAsync()
+    {
+        return await this.DbContext.FuturesOrders.Select(x => x.ToDomainObject()).ToListAsync();
+    }
+
+    
+    
+    private TransactionalOperation BeginTransaction() => new TransactionalOperation(this.DbContext.Database.BeginTransaction());
     internal class TransactionalOperation : IDisposable
     {
         private readonly IDbContextTransaction Transaction;
@@ -62,17 +86,5 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             this.Transaction.Commit();
             this.Transaction.Dispose();
         }
-    }
-
-
-    private async Task AddCandlestickToDbAsync(CandlestickDbEntity candlestickDbEntity)
-    {
-        await this.DbContext.Candlesticks.AddAsync(candlestickDbEntity);
-        await this.DbContext.SaveChangesAsync();
-    }
-    private async Task AddFuturesOrderToDbAsync(FuturesOrderDbEntity futuresOrderDbEntity)
-    {
-        await this.DbContext.FuturesOrders.AddAsync(futuresOrderDbEntity);
-        await this.DbContext.SaveChangesAsync();
     }
 }
