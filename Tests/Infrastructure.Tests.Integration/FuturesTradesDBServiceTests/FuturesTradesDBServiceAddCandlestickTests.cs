@@ -23,7 +23,7 @@ public class AddCandlestickTests : FuturesTradesDBServiceTestsBase
         base.AssertAgainstAddedEntityAuditRecords(addedEntity);
         addedEntity.ToDomainObject().Should().BeEquivalentTo(candlestick);
     }
-
+    
     [Test, Order(2)]
     public async Task AddCandlestickAsync_ShouldThrow_WhenCandlestickAlreadyExists()
     {
@@ -42,7 +42,7 @@ public class AddCandlestickTests : FuturesTradesDBServiceTestsBase
         (await func.Should().ThrowExactlyAsync<DbUpdateException>())
             .WithMessage("An error occurred while saving the entity changes. See the inner exception for details.")
             .WithInnerExceptionExactly<SqlException>()
-            .WithMessage($"Cannot insert duplicate key row in object 'dbo.Candlesticks' with unique index 'IX_Candlesticks_Base Currency_Quote Currency_DateTime'. The duplicate key value is ({candlestick.CurrencyPair.Base}, {candlestick.CurrencyPair.Quote}, {candlestick.Date:yyyy-MM-dd HH:mm:ss.fffffff}).");
+            .WithMessage($"Cannot insert duplicate key row in object 'dbo.Candlesticks' with unique index 'IX_Candlesticks_Currency Pair_DateTime'. The duplicate key value is ({candlestick.CurrencyPair}, {candlestick.Date:yyyy-MM-dd HH:mm:ss.fffffff}).");
     }
 
     [Test, Order(3)]

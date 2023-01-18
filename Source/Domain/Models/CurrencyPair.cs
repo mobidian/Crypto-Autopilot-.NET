@@ -7,17 +7,18 @@ namespace Domain.Models;
 [DebuggerDisplay("{Base, nq}{\"/\", nq}{Quote, nq}")]
 public class CurrencyPair : ICloneable
 {
-    public string Base { get; }
-    public string Quote { get; }
+    public string Name { get; }
 
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
-    public string Name => $"{this.Base}{this.Quote}";
-
+    public CurrencyPair(string Name)
+    {
+        this.Name = Name ?? throw new ArgumentNullException(nameof(Name));
+    }
     public CurrencyPair(string Base, string Quote)
     {
-        this.Base = Base ?? throw new ArgumentNullException(nameof(Base));
-        this.Quote = Quote ?? throw new ArgumentNullException(nameof(Quote));
+        _ = Base ?? throw new ArgumentNullException(nameof(Base));
+        _ = Quote ?? throw new ArgumentNullException(nameof(Quote));
+        
+        this.Name = Base + Quote;
     }
 
     ////
@@ -26,14 +27,15 @@ public class CurrencyPair : ICloneable
 
     #region overrides
     public override string ToString() => this.Name;
-
     public override bool Equals(object? obj) => obj is CurrencyPair pair && this.Name == pair.Name;
-    public override int GetHashCode() => HashCode.Combine(this.Base, this.Quote);
+    public override int GetHashCode() => this.Name.GetHashCode();
     #endregion
 
     #region operator overloading
-    public static bool operator ==(CurrencyPair pair1, CurrencyPair pair2) => pair1.Base == pair2.Base && pair1.Quote == pair2.Quote;
-    public static bool operator !=(CurrencyPair pair1, CurrencyPair pair2) => pair1.Base != pair2.Base || pair1.Quote != pair2.Quote;
+    public static implicit operator CurrencyPair(string Name) => new CurrencyPair(Name);
+
+    public static bool operator ==(CurrencyPair pair1, CurrencyPair pair2) => pair1.Name == pair2.Name;
+    public static bool operator !=(CurrencyPair pair1, CurrencyPair pair2) => pair1.Name != pair2.Name;
 
     public static bool operator ==(CurrencyPair pair, Symbol symbol) => pair.Name == symbol.Name;
     public static bool operator !=(CurrencyPair pair, Symbol symbol) => pair.Name != symbol.Name;

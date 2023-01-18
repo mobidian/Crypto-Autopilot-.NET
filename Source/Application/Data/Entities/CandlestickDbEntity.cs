@@ -4,8 +4,7 @@ namespace Application.Data.Entities;
 
 public class CandlestickDbEntity : BaseEntity
 {
-    public required string BaseCurrency { get; set; }
-    public required string QuoteCurrency { get; set; }
+    public required string CurrencyPair { get; set; }
     public required DateTime DateTime { get; set; }
     public required decimal Open { get; set; }
     public required decimal High { get; set; }
