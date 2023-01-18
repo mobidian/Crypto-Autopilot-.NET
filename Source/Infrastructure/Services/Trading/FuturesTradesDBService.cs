@@ -7,9 +7,9 @@ using Binance.Net.Objects.Models.Futures;
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
+using Infrastructure.Database.Internal;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Services.Trading;
 
@@ -73,18 +73,10 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         return await this.DbContext.FuturesOrders.Select(x => x.ToDomainObject()).ToListAsync();
     }
 
-    
-    
-    private TransactionalOperation BeginTransaction() => new TransactionalOperation(this.DbContext.Database.BeginTransaction());
-    internal class TransactionalOperation : IDisposable
-    {
-        private readonly IDbContextTransaction Transaction;
-        public TransactionalOperation(IDbContextTransaction transaction) => this.Transaction = transaction;
 
-        public void Dispose()
-        {
-            this.Transaction.Commit();
-            this.Transaction.Dispose();
-        }
-    }
+    /// <summary>
+    /// Begins a new transaction and returns a <see cref="TransactionalOperation"/> object which wraps the transaction
+    /// </summary>
+    /// <returns></returns>
+    private TransactionalOperation BeginTransaction() => new TransactionalOperation(this.DbContext.Database.BeginTransaction());
 }
