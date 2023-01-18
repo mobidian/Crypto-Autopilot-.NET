@@ -5,17 +5,17 @@ namespace Domain.Models;
 
 public class FuturesPosition
 {
-    public CurrencyPair CurrencyPair { get; } = default!;
+    public required CurrencyPair CurrencyPair { get; init; } = default!;
 
     public DateTime CreateTime => this.EntryOrder.CreateTime;
 
     public PositionSide Side => this.EntryOrder.Side == OrderSide.Buy ? PositionSide.Long : PositionSide.Short;
 
-    public decimal Leverage { get; init; }
-    public decimal Margin { get; init; }
+    public required decimal Leverage { get; init; }
+    public required decimal Margin { get; init; }
 
     protected BinanceFuturesOrder[] OrdersBatch = new BinanceFuturesOrder[3] { null!, null!, null! };
-    public BinanceFuturesOrder EntryOrder
+    public required BinanceFuturesOrder EntryOrder
     {
         get => this.OrdersBatch[0];
         init
@@ -89,9 +89,5 @@ public class FuturesPosition
     public decimal EntryPrice => this.EntryOrder.AvgPrice;
     public decimal? StopLossPrice => this.StopLossOrder?.StopPrice;
     public decimal? TakeProfitPrice => this.TakeProfitOrder?.StopPrice;
-    #endregion
-
-    #region Constructors
-    public FuturesPosition(CurrencyPair CurrencyPair) => this.CurrencyPair = CurrencyPair;
     #endregion
 }
