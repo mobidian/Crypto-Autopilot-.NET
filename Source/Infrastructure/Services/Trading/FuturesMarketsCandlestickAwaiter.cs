@@ -10,23 +10,22 @@ using Infrastructure.Common;
 
 namespace Infrastructure.Services.Trading;
 
-public class FuturesMarketsObserver
+public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaiter
 {
     public CurrencyPair CurrencyPair { get; }
     public KlineInterval Timeframe { get; }
 
     private readonly IBinanceSocketClientUsdFuturesStreams FuturesStreams;
 
-    public FuturesMarketsObserver(CurrencyPair currencyPair, KlineInterval timeframe, IBinanceSocketClientUsdFuturesStreams futuresStreams)
+    public FuturesMarketsCandlestickAwaiter(CurrencyPair currencyPair, KlineInterval timeframe, IBinanceSocketClientUsdFuturesStreams futuresStreams)
     {
         this.CurrencyPair = currencyPair;
         this.Timeframe = timeframe;
         this.FuturesStreams = futuresStreams;
     }
 
-    
     //// //// ////
-    
+
     private UpdateSubscription KlineUpdatesSubscription = default!;
     private DateTime? OpenTime = null;
     private IBinanceStreamKlineData StreamKlineData = default!;
@@ -46,7 +45,7 @@ public class FuturesMarketsObserver
         var latestOpenTime = dataEvent.Data.Data.OpenTime;
 
         this.OpenTime ??= latestOpenTime;
-        
+
         UpdateStreamKlineDataIfNewCandlestick(dataEvent, latestOpenTime);
     }
     private void UpdateStreamKlineDataIfNewCandlestick(DataEvent<IBinanceStreamKlineData> dataEvent, DateTime latestOpenTime)
@@ -63,15 +62,13 @@ public class FuturesMarketsObserver
         this.SubscribedToKlineUpdates = false;
     }
 
-    public async Task<IBinanceStreamKlineData> WaitForNewCandlestickAsync()
+    public async Task<IBinanceStreamKlineData> WaitForNextCandlestickAsync()
     {
         if (!this.SubscribedToKlineUpdates)
             throw new Exception("Not subscribed to kline updates");
-        
 
 
         var initialOpenTime = this.OpenTime;
-
         while (this.OpenTime == initialOpenTime)
         {
             await Task.Delay(10);
