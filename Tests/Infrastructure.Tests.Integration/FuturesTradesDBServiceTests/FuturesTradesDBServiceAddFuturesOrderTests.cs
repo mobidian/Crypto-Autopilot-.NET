@@ -9,10 +9,6 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
 public class FuturesTradesDBServiceAddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 {
-    [TearDown]
-    public async Task TearDown() => await this.ClearDatabaseAsync();
-
-
     [Test, Order(1)]
     public async Task AddFuturesOrderAsync_ShouldAddFuturesOrder_WhenFuturesOrderIsValidAndCandlestickDoesNotExist()
     {

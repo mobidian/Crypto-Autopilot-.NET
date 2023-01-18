@@ -6,9 +6,6 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
 public class FuturesTradesDBServiceGetAllCandlesticksTests : FuturesTradesDBServiceTestsBase
 {
-    [TearDown]
-    public async Task TearDown() => await this.ClearDatabaseAsync();
-
     [Test]
     public async Task GetAllCandlesticks_ShouldReturnAllCandlesticks()
     {

@@ -6,9 +6,6 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
 public class FuturesTradesDBServiceGetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 {
-    [TearDown]
-    public async Task TearDown() => await this.ClearDatabaseAsync();
-    
     [Test]
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders()
     {

@@ -71,6 +71,10 @@ public abstract class FuturesTradesDBServiceTestsBase
     }
 
 
+    [TearDown]
+    public async Task TearDown() => await this.ClearDatabaseAsync();
+
+
     protected void AssertAgainstAddedEntityAuditRecords(BaseEntity addedEntity)
     {
         addedEntity.RecordCreatedDate.Should().Be(this.DateTimeProvider.Now);
