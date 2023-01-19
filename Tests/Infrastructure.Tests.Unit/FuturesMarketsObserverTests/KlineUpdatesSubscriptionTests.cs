@@ -1,64 +1,83 @@
-﻿using Binance.Net.Enums;
-using Binance.Net.Interfaces;
-using Binance.Net.Objects.Models.Spot.Socket;
+﻿using Binance.Net.Interfaces;
 
-using Bogus;
-
-using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 
 using FluentAssertions;
 
 using Infrastructure.Tests.Unit.FuturesMarketsObserverTests.Base;
 
-using NSubstitute;
-
 namespace Infrastructure.Tests.Unit.FuturesMarketsObserverTests;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
 {
-    [OneTimeSetUp]
-    public void OneTimeSetUp()
-    {
-        this.FuturesStreams
-            .SubscribeToKlineUpdatesAsync(
-                Arg.Any<string>(),
-                Arg.Any<KlineInterval>(),
-                Arg.Any<Action<DataEvent<IBinanceStreamKlineData>>>())
-            .Returns(Task.FromResult(new CallResult<UpdateSubscription>(new UpdateSubscription(null!, null!))));
-    }
-    
-    
     [Test]
     public async Task WaitForNewCandlestick_ShouldWaitAndReturnCandlestick_WhenSubscribed()
     {
-        // Act
-        await this.SUT.SubscribeToKlineUpdatesAsync();
-        Task<IBinanceStreamKlineData> task = this.SUT.WaitForNextCandlestickAsync();
+        // Arrange
+        DateTime dateTime = DateTime.Now;
+        var newCandlestickDataEvent = CreateDataEvent(dateTime.AddHours(1));
+        var dataEvents = Enumerable.Range(0, 100).Select(_ => CreateDataEvent(dateTime)).ToList();
+
+        await this.SUT_SubscribeToKlineUpdatesAsync(dataEvents.First());
+        await Task.Delay(this.RNG.Next(50, 100));
+        
 
         // Act
-        Enumerable.Range(0, 20).Select(_ => CreateDataEvent(DateTime.MinValue)).ToList().ForEach(this.SUT.HandleKlineUpdate);
-        bool completedBeforeNewCandle = task.IsCompleted;
+        var task = this.SUT.WaitForNextCandlestickAsync();
+        await Task.Delay(this.RNG.Next(50, 100));
+        bool completedBeforeReceivingDataEvents = task.IsCompleted;
         
-        var kline = new BinanceStreamKline();
-        this.SUT.HandleKlineUpdate(CreateDataEvent(DateTime.MaxValue, kline));
-        await Task.Delay(50);
-        bool completedAfterNewCandle = task.IsCompleted;
+        dataEvents.ForEach(dataEvent =>
+        {
+            this.SUT.HandleKlineUpdate(dataEvent);
+            Thread.Sleep(this.RNG.Next(50, 100));
+        });
+        bool completedBeforeReceivingNewCandlestick = task.IsCompleted;
+        completedBeforeReceivingNewCandlestick.Should().BeFalse();
+
+        this.SUT.HandleKlineUpdate(newCandlestickDataEvent);
+        await Task.Delay(this.RNG.Next(50, 100));
+        bool completedAfterReceivingNewCandlestick = task.IsCompleted;
+
         
         // Assert
-        completedBeforeNewCandle.Should().BeFalse();
-        completedAfterNewCandle.Should().BeTrue();
-        task.IsFaulted.Should().BeFalse();
-        task.Result.Data.Should().Be(kline);
-    } 
-    private static DataEvent<IBinanceStreamKlineData> CreateDataEvent(DateTime KlineOpenTime, BinanceStreamKline kline = default!)
-    {
-        var dataEvent = new DataEvent<IBinanceStreamKlineData>(new BinanceStreamKlineData(), DateTime.MinValue);
-        dataEvent.Data.Data = kline ?? new BinanceStreamKline();
-        dataEvent.Data.Data.OpenTime = KlineOpenTime;
-        return dataEvent;
+        completedBeforeReceivingDataEvents.Should().BeFalse();
+        completedBeforeReceivingNewCandlestick.Should().BeFalse();
+        completedAfterReceivingNewCandlestick.Should().BeTrue();
+        task.Result.Should().Be(newCandlestickDataEvent.Data);
     }
     
+    [Test]
+    public async Task WaitForNewCandlestick_ShouldWaitAndReturnCandlestickForMultipleSequentialCandlesticksAtEverInvoke()
+    {
+        // Arrange
+        var listOfDataEventLists = new List<List<DataEvent<IBinanceStreamKlineData>>>();
+        var ascendingDatetimes = Enumerable.Range(0, 5).Select(i => DateTime.Now.AddHours(i)).ToList();
+        for (int i = 0; i < ascendingDatetimes.Count - 1; i++)
+            listOfDataEventLists.Add(Enumerable.Range(0, 5).Select(_ => CreateDataEvent(ascendingDatetimes[i])).Append(CreateDataEvent(ascendingDatetimes[i + 1])).ToList());
+
+        // Act
+        await this.SUT_SubscribeToKlineUpdatesAsync(listOfDataEventLists.First().First());
+        foreach (var dataEventList in listOfDataEventLists)
+        {
+            // Act
+            var task = this.SUT.WaitForNextCandlestickAsync();
+            
+            dataEventList.ForEach(dataEvent =>
+            {
+                this.SUT.HandleKlineUpdate(dataEvent);
+                Thread.Sleep(this.RNG.Next(50, 100));
+            });
+            Thread.Sleep(1000);
+            // Assert
+            task.IsCompleted.Should().BeTrue();
+            task.Result.Should().Be(dataEventList.Last().Data);
+        }
+    }
+
+    
+
     [Test]
     public async Task WaitForNewCandlestick_ShouldThrow_WhenNotSubscribed()
     {
@@ -68,7 +87,9 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
         // Assert
         await func.Should().ThrowExactlyAsync<Exception>().WithMessage("Not subscribed to kline updates");
     }
-    
+
+
+
     [Test]
     [Ignore("At the moment the SUT depends on an UpdateSubscription object, not an interface so the UnsubscribeFromKlineUpdatesAsync method is untestable")]
     public async Task UnsubscribeFromKlineUpdatesAsync_ShouldUnsubscribe_WhenSubscribed()
