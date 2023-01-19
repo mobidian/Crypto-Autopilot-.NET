@@ -42,27 +42,38 @@ public static class Extensions
         services.AddTransient<CurrencyPair>(_ => new CurrencyPair("ETH", "BUSD"));
         services.AddTransient<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
         services.AddSingleton(typeof(KlineInterval), KlineInterval.OneMinute);
+        services.AddSingleton(typeof(decimal), 10m);
+        
+        AddServicesDerivedFromBinanceClients(services);
 
+        services.AddSingleton<ICfdMarketDataProvider, BinanceCfdMarketDataProvider>();
+        services.AddSingleton<ICfdTradingService, BinanceCfdTradingService>();
+
+        services.AddSingleton<IFuturesMarketsCandlestickAwaiter, FuturesMarketsCandlestickAwaiter>();
+    }
+    private static void AddServicesDerivedFromBinanceClients(IServiceCollection services)
+    {
+        // binance client
         services.AddTransient<IBinanceClient, BinanceClient>(services =>
         {
             var client = new BinanceClient();
             client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return client;
         });
+        services.AddSingleton<IBinanceClientUsdFuturesApi>(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
+        services.AddSingleton<IBinanceClientUsdFuturesApiTrading>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
+        services.AddSingleton<IBinanceClientUsdFuturesApiExchangeData>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
+        
+        // binance socket client
         services.AddTransient<IBinanceSocketClient, BinanceSocketClient>(services =>
         {
             var socketClient = new BinanceSocketClient();
             socketClient.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return socketClient;
         });
-
-        services.AddSingleton<ICfdMarketDataProvider, BinanceCfdMarketDataProvider>();
-        services.AddSingleton<ICfdTradingService, BinanceCfdTradingService>();
-        
         services.AddSingleton<IBinanceSocketClientUsdFuturesStreams>(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
-        services.AddSingleton<IFuturesMarketsCandlestickAwaiter, FuturesMarketsCandlestickAwaiter>();
     }
-    
+
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/candlesticks", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(await DBService.GetAllCandlesticksAsync()));

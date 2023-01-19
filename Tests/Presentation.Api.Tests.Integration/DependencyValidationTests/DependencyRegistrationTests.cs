@@ -35,20 +35,30 @@ public class DependencyRegistrationTests
         (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Singleton),
         (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Singleton),
 
-
-        (typeof(CurrencyPair), typeof(CurrencyPair), ServiceLifetime.Transient),
+        #region Binance
+		(typeof(CurrencyPair), typeof(CurrencyPair), ServiceLifetime.Transient),
         (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Transient),
         (typeof(KlineInterval), typeof(KlineInterval), ServiceLifetime.Singleton),
+        (typeof(decimal), typeof(decimal), ServiceLifetime.Singleton),
 
-        (typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
+
+        #region From binance clients
+		(typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
+        (typeof(IBinanceClientUsdFuturesApi), typeof(BinanceClientUsdFuturesApi), ServiceLifetime.Singleton),
+        (typeof(IBinanceClientUsdFuturesApiTrading), typeof(BinanceClientUsdFuturesApiTrading), ServiceLifetime.Singleton),
+        (typeof(IBinanceClientUsdFuturesApiExchangeData), typeof(BinanceClientUsdFuturesApiExchangeData), ServiceLifetime.Singleton),
+
         (typeof(IBinanceSocketClient), typeof(BinanceSocketClient), ServiceLifetime.Transient),
+        (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Singleton), 
+	    #endregion
+
 
         (typeof(ICfdMarketDataProvider), typeof(BinanceCfdMarketDataProvider), ServiceLifetime.Singleton),
         (typeof(ICfdTradingService), typeof(BinanceCfdTradingService), ServiceLifetime.Singleton),
-        
-        (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Singleton),
+
         (typeof(IFuturesMarketsCandlestickAwaiter), typeof(FuturesMarketsCandlestickAwaiter), ServiceLifetime.Singleton),
 
+	    #endregion
 
         (typeof(SimpleStrategyEngine), typeof(SimpleStrategyEngine), ServiceLifetime.Singleton),
     };
