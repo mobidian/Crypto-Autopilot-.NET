@@ -1,4 +1,6 @@
-﻿using CryptoExchange.Net.Authentication;
+﻿using Binance.Net.Clients;
+
+using CryptoExchange.Net.Authentication;
 
 using Domain.Models;
 
@@ -11,7 +13,6 @@ namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 public abstract class BinanceCfdTradingServiceTestsBase
 {
-    protected readonly ApiCredentials BinanceApiCredentials = Credentials.BinanceIntegrationTestingAPICredentials;
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
 
     protected BinanceCfdTradingService SUT = default!;
@@ -19,8 +20,13 @@ public abstract class BinanceCfdTradingServiceTestsBase
 
 
 
-    [OneTimeSetUp]
-    public virtual void OneTimeSetUp() => this.SUT = new BinanceCfdTradingService(this.CurrencyPair, this.BinanceApiCredentials);
+    public BinanceCfdTradingServiceTestsBase()
+    {
+        var binanceClient = new BinanceClient();
+        binanceClient.SetApiCredentials(Credentials.BinanceIntegrationTestingAPICredentials);
+
+        this.SUT = new BinanceCfdTradingService(CurrencyPair, 10, binanceClient, binanceClient.UsdFuturesApi, binanceClient.UsdFuturesApi.Trading, binanceClient.UsdFuturesApi.ExchangeData);
+    }
 
 
 

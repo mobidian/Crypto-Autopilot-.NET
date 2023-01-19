@@ -35,17 +35,14 @@ public class BinanceCfdTradingService : ICfdTradingService
 
     private readonly int NrDecimals = 2;
 
-    public BinanceCfdTradingService(CurrencyPair CurrencyPair, ApiCredentials ApiCredentials, decimal Leverage = 10)
+    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceClientUsdFuturesApiExchangeData exchangeData)
     {
-        this.CurrencyPair = CurrencyPair ?? throw new ArgumentNullException(nameof(CurrencyPair));
-
-        this.BinanceClient = new BinanceClient();
-        this.BinanceClient.SetApiCredentials(ApiCredentials ?? throw new ArgumentNullException(nameof(ApiCredentials)));
-        this.FuturesClient = this.BinanceClient.UsdFuturesApi;
-        this.TradingClient = this.BinanceClient.UsdFuturesApi.Trading;
-        this.ExchangeData = this.FuturesClient.ExchangeData;
-        
-        this.Leverage = Leverage;
+        this.CurrencyPair = currencyPair;
+        this.Leverage = leverage;
+        this.BinanceClient = binanceClient;
+        this.FuturesClient = futuresClient;
+        this.TradingClient = tradingClient;
+        this.ExchangeData = exchangeData;
     }
 
     //// //// ////

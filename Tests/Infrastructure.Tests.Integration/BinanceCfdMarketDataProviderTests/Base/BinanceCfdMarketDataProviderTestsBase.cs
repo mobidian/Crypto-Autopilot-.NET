@@ -1,4 +1,5 @@
-﻿using Binance.Net.Enums;
+﻿using Binance.Net.Clients;
+using Binance.Net.Enums;
 
 using Domain.Models;
 
@@ -9,8 +10,16 @@ namespace Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests.Bas
 
 public abstract class BinanceCfdMarketDataProviderTestsBase
 {
-    protected readonly BinanceCfdMarketDataProvider SUT = new(new("BTC", "BUSD"), Credentials.BinanceIntegrationTestingAPICredentials);
+    protected readonly BinanceCfdMarketDataProvider SUT;
     protected readonly Faker Faker = new Faker();
+
+    public BinanceCfdMarketDataProviderTestsBase()
+    {
+        var binanceClient = new BinanceClient();
+        binanceClient.SetApiCredentials(Credentials.BinanceIntegrationTestingAPICredentials);
+
+        this.SUT = new BinanceCfdMarketDataProvider(new CurrencyPair("BTC", "BUSD"), binanceClient, binanceClient.UsdFuturesApi);
+    }
 
 
     protected static IEnumerable<KlineInterval> GetValidKlineIntervals()
