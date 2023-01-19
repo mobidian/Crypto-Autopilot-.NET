@@ -11,7 +11,6 @@ public class FuturesTradingDbContext : AuditableDbContext
 {
     private readonly string ConnectionString;
 
-    public FuturesTradingDbContext() : this("""Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=CryptoPilotTrades""", new DateTimeProvider()) { }
     public FuturesTradingDbContext(string connectionString, IDateTimeProvider dateTimeProvider) : base(dateTimeProvider)
     {
         this.ConnectionString = connectionString;
