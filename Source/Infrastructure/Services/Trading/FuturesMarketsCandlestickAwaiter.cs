@@ -1,4 +1,6 @@
-﻿using Binance.Net.Enums;
+﻿using Application.Interfaces.Logging;
+
+using Binance.Net.Enums;
 using Binance.Net.Interfaces;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
@@ -16,12 +18,14 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
     public KlineInterval Timeframe { get; }
 
     private readonly IBinanceSocketClientUsdFuturesStreams FuturesStreams;
+    private readonly ILoggerAdapter<FuturesMarketsCandlestickAwaiter> Logger;
 
-    public FuturesMarketsCandlestickAwaiter(CurrencyPair currencyPair, KlineInterval timeframe, IBinanceSocketClientUsdFuturesStreams futuresStreams)
+    public FuturesMarketsCandlestickAwaiter(CurrencyPair currencyPair, KlineInterval timeframe, IBinanceSocketClientUsdFuturesStreams futuresStreams, ILoggerAdapter<FuturesMarketsCandlestickAwaiter> logger)
     {
         this.CurrencyPair = currencyPair;
         this.Timeframe = timeframe;
         this.FuturesStreams = futuresStreams;
+        this.Logger = logger;
     }
 
     //// //// ////
@@ -39,8 +43,13 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
         this.WaitForFirstKlineUpdate();
         
         this.KlineUpdatesSubscription = callResult.Data;
-        this.KlineUpdatesSubscription.ConnectionLost += () => throw new Exception();
+        this.KlineUpdatesSubscription.ConnectionLost += this.HandleKlineUpdatesSubscriptionConnectionLostAsync;
         this.SubscribedToKlineUpdates = true;
+    }
+    private async void HandleKlineUpdatesSubscriptionConnectionLostAsync()
+    {
+        this.Logger.LogInformation("Connection to {0} has been lost, attempting to reconnect", nameof(this.KlineUpdatesSubscription));
+        await this.KlineUpdatesSubscription.ReconnectAsync();
     }
     private void WaitForFirstKlineUpdate()
     {
