@@ -32,7 +32,7 @@ public static class Extensions
         
         services.AddMediatR(typeof(IInfrastructureMarker).Assembly);
 
-        services.AddSingleton<FuturesTradingDbContext>();
+        services.AddSingleton<FuturesTradingDbContext>(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
         services.AddSingleton<IFuturesTradesDBService, FuturesTradesDBService>();
 
         AddBinanceRelatedServices(services, configuration);
