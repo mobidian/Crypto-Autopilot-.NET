@@ -19,17 +19,35 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
         builder.Property(x => x.BinanceID).HasColumnName("Binance ID");
 
         builder.Property(x => x.OrderSide)
-               .HasConversion(@enum => @enum.ToString(), @string => (OrderSide)Enum.Parse(typeof(OrderSide), @string))
+               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<OrderSide>(@string))
                .HasMaxLength(8)
                .HasColumnName("Order Side");
 
         builder.Property(x => x.OrderType)
-               .HasConversion(@enum => @enum.ToString(), @string => (FuturesOrderType)Enum.Parse(typeof(FuturesOrderType), @string))
+               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<FuturesOrderType>(@string))
                .HasMaxLength(32)
                .HasColumnName("Order Type");
 
+        builder.Property(x => x.OrderWorkingType)
+               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<WorkingType>(@string))
+               .HasMaxLength(16)
+               .HasColumnName("Order Working Type");
+        
         builder.Property(x => x.Price).HasPrecision(18, 4);
+        builder.Property(x => x.AvgPrice).HasPrecision(18, 4);
+        builder.Property(x => x.StopPrice).HasPrecision(18, 4);
         builder.Property(x => x.Quantity).HasPrecision(18, 4);
+        
+        builder.Property(x => x.TimeInForce)
+               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<TimeInForce>(@string))
+               .HasMaxLength(32)
+               .HasColumnName("Time in force");
+
+        builder.Property(x => x.OrderStatus)
+               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<OrderStatus>(@string))
+               .HasMaxLength(16)
+               .HasColumnName("Order Status");
+
 
         builder.HasIndex(x => x.BinanceID).IsUnique();
     }
