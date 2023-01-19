@@ -4,6 +4,7 @@ using Infrastructure.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(FuturesTradingDbContext))]
-    partial class FuturesTradingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230119224258_AddAndConfigureMorePropertiesForFuturesOrderDbEntityMigration")]
+    partial class AddAndConfigureMorePropertiesForFuturesOrderDbEntityMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,7 +178,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Application.Data.Entities.CandlestickDbEntity", "Candlestick")
                         .WithMany("FuturesOrders")
                         .HasForeignKey("CandlestickId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Candlestick");
