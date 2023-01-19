@@ -1,5 +1,7 @@
 ﻿using Application.Data.Entities;
 
+using Binance.Net.Enums;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,9 +17,17 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
 
         builder.Property(x => x.CandlestickId).HasColumnName("Candlestick Id");
         builder.Property(x => x.BinanceID).HasColumnName("Binance ID");
-        builder.Property(x => x.OrderSide).HasMaxLength(8).HasColumnName("Order Side");
-        builder.Property(x => x.OrderType).HasMaxLength(32).HasColumnName("Order Type");
-        
+
+        builder.Property(x => x.OrderSide)
+               .HasConversion(@enum => @enum.ToString(), @string => (OrderSide)Enum.Parse(typeof(OrderSide), @string))
+               .HasMaxLength(8)
+               .HasColumnName("Order Side");
+
+        builder.Property(x => x.OrderType)
+               .HasConversion(@enum => @enum.ToString(), @string => (FuturesOrderType)Enum.Parse(typeof(FuturesOrderType), @string))
+               .HasMaxLength(32)
+               .HasColumnName("Order Type");
+
         builder.Property(x => x.Price).HasPrecision(18, 4);
         builder.Property(x => x.Quantity).HasPrecision(18, 4);
 
