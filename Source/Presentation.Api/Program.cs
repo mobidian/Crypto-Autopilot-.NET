@@ -1,3 +1,6 @@
+using Infrastructure.Strategies.SimpleStrategy;
+
+using Presentation.Api.Endpoints;
 using Presentation.Api.Endpoints.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Configuration.AddJsonFile("appsettings.Credentials.json", false, true);
 
+builder.Services.AddServices(builder.Configuration);
 builder.Services.AddServices<Program>(builder.Configuration);
 
 
@@ -23,7 +28,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.UseEndpoints<Program>();
+app.MapEndpoints();
+app.MapEndpoints<Program>();
+
+_ = app.Services.GetRequiredService<SimpleStrategyEngine>().StartTradingAsync();
 
 
 app.Run();

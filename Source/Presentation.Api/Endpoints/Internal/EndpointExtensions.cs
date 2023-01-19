@@ -17,7 +17,7 @@ internal static class EndpointExtensions
     /// <summary>
     /// Scans everything in the given assembly and finds every class that implements the <see cref="IEndpoints"/> interface and dynamically calls <see cref="IEndpoints.MapEndpoints"/>
     /// </summary>
-    internal static void UseEndpoints<TMarker>(this IApplicationBuilder app)
+    internal static void MapEndpoints<TMarker>(this IApplicationBuilder app)
     {
         var endpointTypes = GetEndpointTypesFromAssemblyContaining(typeof(TMarker));
         foreach (Type endpointType in endpointTypes)
