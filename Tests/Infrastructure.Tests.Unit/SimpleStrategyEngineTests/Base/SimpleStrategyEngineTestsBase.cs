@@ -2,16 +2,12 @@
 
 using Binance.Net.Enums;
 
-using Bogus;
-
 using Domain.Models;
 
 using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.SimpleStrategy;
 
 using MediatR;
-
-using NSubstitute;
 
 namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
 

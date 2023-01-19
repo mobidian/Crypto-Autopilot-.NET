@@ -11,8 +11,6 @@ using Domain.Models;
 
 using Infrastructure.Services.Trading;
 
-using NSubstitute;
-
 namespace Infrastructure.Tests.Unit.FuturesMarketsObserverTests.Base;
 
 public abstract class FuturesMarketsObserverTestsBase

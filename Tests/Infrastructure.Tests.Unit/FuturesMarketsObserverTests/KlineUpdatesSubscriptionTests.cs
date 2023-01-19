@@ -2,8 +2,6 @@
 
 using CryptoExchange.Net.Sockets;
 
-using FluentAssertions;
-
 using Infrastructure.Tests.Unit.FuturesMarketsObserverTests.Base;
 
 namespace Infrastructure.Tests.Unit.FuturesMarketsObserverTests;

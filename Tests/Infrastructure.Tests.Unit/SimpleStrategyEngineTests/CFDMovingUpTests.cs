@@ -3,8 +3,6 @@
 using Infrastructure.Strategies.SimpleStrategy.Notifications;
 using Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
 
-using NSubstitute;
-
 namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests;
 
 public class CFDMovingUpTests : SimpleStrategyEngineTestsBase
