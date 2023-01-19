@@ -1,4 +1,6 @@
-﻿using Skender.Stock.Indicators;
+﻿using System.Text.Json.Serialization;
+
+using Skender.Stock.Indicators;
 
 namespace Domain.Models;
 
@@ -13,10 +15,14 @@ public class Candlestick : IQuote, ICloneable
     public required decimal Close { get; init; }
     public required decimal Volume { get; init; }
 
-
-    // Directional information
+    
+    [JsonIgnore]
     public bool IsBullish => this.Close > this.Open;
+
+    [JsonIgnore]
     public bool IsBearish => this.Close < this.Open;
+
+    [JsonIgnore]
     public bool IsDoji => this.Close == this.Open;
 
 
