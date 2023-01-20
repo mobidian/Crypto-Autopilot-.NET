@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
 using Application.Interfaces.Logging;
+using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading;
 
@@ -17,6 +18,7 @@ using Domain.Models;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
 using Infrastructure.Services.General;
+using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.SimpleStrategy;
 
@@ -55,7 +57,8 @@ public class DependencyRegistrationTests
 
         (typeof(ICfdMarketDataProvider), typeof(BinanceCfdMarketDataProvider), ServiceLifetime.Singleton),
         (typeof(ICfdTradingService), typeof(BinanceCfdTradingService), ServiceLifetime.Singleton),
-
+        
+        (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
         (typeof(IFuturesMarketsCandlestickAwaiter), typeof(FuturesMarketsCandlestickAwaiter), ServiceLifetime.Singleton),
 
 	    #endregion

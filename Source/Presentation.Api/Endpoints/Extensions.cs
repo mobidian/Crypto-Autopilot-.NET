@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Logging;
+using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading;
 
@@ -15,6 +16,7 @@ using Infrastructure;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
 using Infrastructure.Services.General;
+using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
 
 using MediatR;
@@ -48,7 +50,8 @@ public static class Extensions
 
         services.AddSingleton<ICfdMarketDataProvider, BinanceCfdMarketDataProvider>();
         services.AddSingleton<ICfdTradingService, BinanceCfdTradingService>();
-
+        
+        services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
         services.AddSingleton<IFuturesMarketsCandlestickAwaiter, FuturesMarketsCandlestickAwaiter>();
     }
     private static void AddServicesDerivedFromBinanceClients(IServiceCollection services)

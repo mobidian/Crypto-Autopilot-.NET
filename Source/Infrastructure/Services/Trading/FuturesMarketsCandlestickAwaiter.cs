@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Logging;
+using Application.Interfaces.Proxies;
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
@@ -18,19 +19,20 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
     public KlineInterval Timeframe { get; }
 
     private readonly IBinanceSocketClientUsdFuturesStreams FuturesStreams;
+    private IUpdateSubscriptionProxy KlineUpdatesSubscription;
     private readonly ILoggerAdapter<FuturesMarketsCandlestickAwaiter> Logger;
 
-    public FuturesMarketsCandlestickAwaiter(CurrencyPair currencyPair, KlineInterval timeframe, IBinanceSocketClientUsdFuturesStreams futuresStreams, ILoggerAdapter<FuturesMarketsCandlestickAwaiter> logger)
+    public FuturesMarketsCandlestickAwaiter(CurrencyPair currencyPair, KlineInterval timeframe, IBinanceSocketClientUsdFuturesStreams futuresStreams, IUpdateSubscriptionProxy klineUpdatesSubscription, ILoggerAdapter<FuturesMarketsCandlestickAwaiter> logger)
     {
         this.CurrencyPair = currencyPair;
         this.Timeframe = timeframe;
         this.FuturesStreams = futuresStreams;
+        this.KlineUpdatesSubscription = klineUpdatesSubscription;
         this.Logger = logger;
     }
 
     //// //// ////
 
-    private UpdateSubscription KlineUpdatesSubscription = default!;
     private DateTime CurrentOpenTime = DateTime.MinValue;
     private IBinanceStreamKlineData StreamKlineData = default!;
     public bool SubscribedToKlineUpdates { get; private set; } = false;
@@ -41,8 +43,8 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
         callResult.ThrowIfHasError("Could not subscribe to kline updates");
         
         this.WaitForFirstKlineUpdate();
-        
-        this.KlineUpdatesSubscription = callResult.Data;
+
+        this.KlineUpdatesSubscription.SetSubscription(callResult.Data);
         this.KlineUpdatesSubscription.ConnectionLost += this.HandleKlineUpdatesSubscriptionConnectionLostAsync;
         this.SubscribedToKlineUpdates = true;
     }
