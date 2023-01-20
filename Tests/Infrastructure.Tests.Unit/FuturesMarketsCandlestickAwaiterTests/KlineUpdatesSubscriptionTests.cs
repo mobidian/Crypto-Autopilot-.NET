@@ -7,7 +7,7 @@ using Infrastructure.Tests.Unit.FuturesMarketsObserverTests.Base;
 namespace Infrastructure.Tests.Unit.FuturesMarketsObserverTests;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
+public class KlineUpdatesSubscriptionTests : FuturesMarketsCandlestickAwaiterTestsBase
 {
     [Test]
     public async Task WaitForNewCandlestick_ShouldWaitAndReturnCandlestick_WhenSubscribed()

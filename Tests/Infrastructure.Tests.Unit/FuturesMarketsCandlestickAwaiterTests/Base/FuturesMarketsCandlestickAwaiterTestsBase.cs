@@ -17,7 +17,7 @@ using Infrastructure.Services.Trading;
 
 namespace Infrastructure.Tests.Unit.FuturesMarketsObserverTests.Base;
 
-public abstract class FuturesMarketsObserverTestsBase
+public abstract class FuturesMarketsCandlestickAwaiterTestsBase
 {
     protected readonly Random RNG = new Random();
 
@@ -27,7 +27,7 @@ public abstract class FuturesMarketsObserverTestsBase
     protected IUpdateSubscriptionProxy KlineUpdatesSubscription = Substitute.For<IUpdateSubscriptionProxy>();
     protected readonly ILoggerAdapter<FuturesMarketsCandlestickAwaiter> Logger = Substitute.For<ILoggerAdapter<FuturesMarketsCandlestickAwaiter>>();
 
-    public FuturesMarketsObserverTestsBase()
+    public FuturesMarketsCandlestickAwaiterTestsBase()
     {
         this.FuturesStreams
             .SubscribeToKlineUpdatesAsync(
