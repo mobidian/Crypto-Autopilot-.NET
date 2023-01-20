@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Logging;
+using Application.Interfaces.Proxies;
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
@@ -23,6 +24,7 @@ public abstract class FuturesMarketsObserverTestsBase
     protected FuturesMarketsCandlestickAwaiter SUT;
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly IBinanceSocketClientUsdFuturesStreams FuturesStreams = Substitute.For<IBinanceSocketClientUsdFuturesStreams>();
+    protected IUpdateSubscriptionProxy KlineUpdatesSubscription = Substitute.For<IUpdateSubscriptionProxy>();
     protected readonly ILoggerAdapter<FuturesMarketsCandlestickAwaiter> Logger = Substitute.For<ILoggerAdapter<FuturesMarketsCandlestickAwaiter>>();
 
     public FuturesMarketsObserverTestsBase()
@@ -34,7 +36,7 @@ public abstract class FuturesMarketsObserverTestsBase
                 Arg.Any<Action<DataEvent<IBinanceStreamKlineData>>>())
             .Returns(Task.FromResult(new CallResult<UpdateSubscription>(new UpdateSubscription(null!, null!))));
 
-        this.SUT = new FuturesMarketsCandlestickAwaiter(this.CurrencyPair, KlineInterval.OneHour, this.FuturesStreams, this.Logger);
+        this.SUT = new FuturesMarketsCandlestickAwaiter(this.CurrencyPair, KlineInterval.OneHour, this.FuturesStreams, this.KlineUpdatesSubscription, this.Logger);
     }
 
     protected async Task SUT_SubscribeToKlineUpdatesAsync(DateTime KlineOpenTime, BinanceStreamKline streamKline = default!)

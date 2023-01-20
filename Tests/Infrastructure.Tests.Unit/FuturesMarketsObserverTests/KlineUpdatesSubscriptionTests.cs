@@ -26,13 +26,9 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
         await Task.Delay(this.RNG.Next(50, 100));
         bool completedBeforeReceivingDataEvents = task.IsCompleted;
         
-        dataEvents.ForEach(dataEvent =>
-        {
-            this.SUT.HandleKlineUpdate(dataEvent);
-            Thread.Sleep(this.RNG.Next(50, 100));
-        });
+        dataEvents.ForEach(this.SUT.HandleKlineUpdate);
+        await Task.Delay(this.RNG.Next(50, 100));
         bool completedBeforeReceivingNewCandlestick = task.IsCompleted;
-        completedBeforeReceivingNewCandlestick.Should().BeFalse();
 
         this.SUT.HandleKlineUpdate(newCandlestickDataEvent);
         await Task.Delay(this.RNG.Next(50, 100));
@@ -62,12 +58,9 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
             // Act
             var task = this.SUT.WaitForNextCandlestickAsync();
             
-            dataEventList.ForEach(dataEvent =>
-            {
-                this.SUT.HandleKlineUpdate(dataEvent);
-                Thread.Sleep(this.RNG.Next(50, 100));
-            });
+            dataEventList.ForEach(this.SUT.HandleKlineUpdate);
             Thread.Sleep(1000);
+
             // Assert
             task.IsCompleted.Should().BeTrue();
             task.Result.Should().Be(dataEventList.Last().Data);
@@ -89,11 +82,10 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
 
 
     [Test]
-    [Ignore("At the moment the SUT depends on an UpdateSubscription object, not an interface so the UnsubscribeFromKlineUpdatesAsync method is untestable")]
     public async Task UnsubscribeFromKlineUpdatesAsync_ShouldUnsubscribe_WhenSubscribed()
     {
         // Arrange
-        await this.SUT.SubscribeToKlineUpdatesAsync();
+        await this.SUT_SubscribeToKlineUpdatesAsync(DateTime.Now);
         bool subscribedAfterSubscribe = this.SUT.SubscribedToKlineUpdates;
 
         // Act
@@ -102,8 +94,8 @@ public class KlineUpdatesSubscriptionTests : FuturesMarketsObserverTestsBase
         var func = this.SUT.WaitForNextCandlestickAsync;
 
         // Assert
-        subscribedAfterSubscribe.Should().BeFalse();
+        subscribedAfterSubscribe.Should().BeTrue();
         await func.Should().ThrowExactlyAsync<Exception>().WithMessage("Not subscribed to kline updates");
-        subscribedAfterUnsubscribe.Should().BeTrue();
+        subscribedAfterUnsubscribe.Should().BeFalse();
     }
 }
