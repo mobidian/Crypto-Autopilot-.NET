@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /Tests/Infrastructure.Tests.Integration/BinanceCfdTradingServiceTests/Common/Credentials.cs
 /Tests/Infrastructure.Tests.Integration/Common/Credentials.cs
 /Source/Presentation.Api/appsettings.Credentials.json
+/Tests/Presentation.Api.Tests.Integration/Common/Credentials.cs

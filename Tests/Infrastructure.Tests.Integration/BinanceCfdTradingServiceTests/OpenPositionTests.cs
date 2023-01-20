@@ -18,10 +18,11 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
 
         // Act
-        var CallResult = await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
+        this.SUT.Position!.Side.Should().Be(PositionSide.Long);
         this.SUT.Position!.Margin.Should().Be(this.testMargin);
         this.SUT.Position!.StopLossOrder.Should().NotBeNull();
         this.SUT.Position!.TakeProfitOrder.Should().NotBeNull();
@@ -51,10 +52,11 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
 
         // Act
-        var CallResult = await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price);
+        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price);
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
+        this.SUT.Position!.Side.Should().Be(PositionSide.Short);
         this.SUT.Position!.Margin.Should().Be(this.testMargin);
         this.SUT.Position!.StopLossOrder.Should().NotBeNull();
         this.SUT.Position!.TakeProfitOrder.Should().NotBeNull();
