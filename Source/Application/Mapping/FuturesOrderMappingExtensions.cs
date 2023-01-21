@@ -25,6 +25,7 @@ public static class FuturesOrderMappingExtensions
 
     public static BinanceFuturesOrder ToDomainObject(this FuturesOrderDbEntity entity) => new BinanceFuturesOrder
     {
+        Symbol = entity.Candlestick.CurrencyPair,
         Id = entity.BinanceID,
         CreateTime = entity.CreateTime,
         UpdateTime = entity.UpdateTime,

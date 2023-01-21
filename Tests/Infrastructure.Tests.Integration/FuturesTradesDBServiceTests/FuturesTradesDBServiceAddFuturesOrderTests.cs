@@ -15,6 +15,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
         var futuresorder = this.FuturesOrderGenerator.Generate();
+        futuresorder.Symbol = candlestick.CurrencyPair.Name;
         
         // Act
         await this.SUT.AddFuturesOrderAsync(futuresorder, candlestick);
@@ -31,6 +32,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
         var futuresorder = this.FuturesOrderGenerator.Generate();
+        futuresorder.Symbol = candlestick.CurrencyPair.Name;
 
         await this.SUT.AddCandlestickAsync(candlestick);
 
