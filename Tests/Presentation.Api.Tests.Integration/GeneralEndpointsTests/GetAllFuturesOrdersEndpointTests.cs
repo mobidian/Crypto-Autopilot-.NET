@@ -2,8 +2,6 @@
 
 using Binance.Net.Objects.Models.Futures;
 
-using Domain.Models;
-
 using Presentation.Api.Contracts.Responses;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 

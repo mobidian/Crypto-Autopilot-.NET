@@ -1,7 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Text.Json;
-
-using Binance.Net.Objects.Models.Futures;
 
 using Domain.Models;
 
@@ -17,6 +14,7 @@ public class GetAllCandlesticksEndpointTests : GeneralEndpointsTestsBase
     {
         // Arrange
         var candlesticks = this.CandlestickGenerator.GenerateBetween(10, 20);
+
         foreach (var candlestick in candlesticks)
             await this.FuturesTradesDBService.AddCandlestickAsync(candlestick);
 
