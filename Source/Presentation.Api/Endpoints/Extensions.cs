@@ -23,6 +23,8 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
+using Presentation.Api.Contracts.Responses;
+
 namespace Presentation.Api.Endpoints;
 
 public static class Extensions
@@ -79,8 +81,8 @@ public static class Extensions
 
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/candlesticks", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(await DBService.GetAllCandlesticksAsync()));
-
-        app.MapGet("/futuresorders", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(await DBService.GetAllFuturesOrdersAsync()));
+        app.MapGet("/candlesticks", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllCandlesticksResponse { Candlesticks = await DBService.GetAllCandlesticksAsync() }));
+        
+        app.MapGet("/futuresorders", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllFuturesOrdersResponse { FuturesOrders = await DBService.GetAllFuturesOrdersAsync() }));
     }
 }
