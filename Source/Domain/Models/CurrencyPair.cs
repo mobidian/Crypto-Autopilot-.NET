@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 using CryptoExchange.Net.CommonObjects;
 
@@ -9,6 +10,7 @@ public class CurrencyPair : ICloneable
 {
     public string Name { get; }
 
+    [JsonConstructor]
     public CurrencyPair(string Name)
     {
         this.Name = Name ?? throw new ArgumentNullException(nameof(Name));
