@@ -129,5 +129,6 @@ public abstract class StrategyEngine : IStrategyEngine
     {
         this.FuturesTrader.Dispose();
         this.FuturesDataProvider.Dispose();
+        this.FuturesDataProvider.Dispose();
     }
 }

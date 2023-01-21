@@ -5,7 +5,7 @@ using Domain.Models;
 
 namespace Infrastructure.Services.Trading;
 
-public interface IFuturesMarketsCandlestickAwaiter
+public interface IFuturesMarketsCandlestickAwaiter : IDisposable
 {
     public CurrencyPair CurrencyPair { get; }
     public KlineInterval Timeframe { get; }

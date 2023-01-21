@@ -41,7 +41,7 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
     {
         var callResult = await this.FuturesStreams.SubscribeToKlineUpdatesAsync(this.CurrencyPair.Name, this.Timeframe, HandleKlineUpdate);
         callResult.ThrowIfHasError("Could not subscribe to kline updates");
-        
+
         this.WaitForFirstKlineUpdate();
 
         this.KlineUpdatesSubscription.SetSubscription(callResult.Data);
@@ -71,7 +71,7 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
     {
         if (this.CurrentOpenTime == latestOpenTime)
             return;
-        
+
         this.CurrentOpenTime = latestOpenTime;
         this.StreamKlineData = dataEvent.Data;
     }
@@ -86,7 +86,7 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
     {
         if (!this.SubscribedToKlineUpdates)
             throw new Exception("Not subscribed to kline updates");
-        
+
         var initialLatestOpenTime = this.CurrentOpenTime;
         while (this.CurrentOpenTime == initialLatestOpenTime)
         {
@@ -94,5 +94,30 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
         }
 
         return this.StreamKlineData;
+    }
+
+    //// //// ////
+
+    private bool Disposed;
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.Disposed)
+            return;
+
+
+        if (disposing)
+            this.FuturesStreams.Dispose();
+
+        this.KlineUpdatesSubscription = null!;
+        this.StreamKlineData = null!;
+        
+        this.Disposed = true;
     }
 }
