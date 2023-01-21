@@ -1,5 +1,3 @@
-using Infrastructure.Strategies.SimpleStrategy;
-
 using Presentation.Api.Endpoints;
 using Presentation.Api.Endpoints.Internal;
 
@@ -15,7 +13,6 @@ builder.Configuration.AddJsonFile("appsettings.Credentials.json", false, true);
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddServices<Program>(builder.Configuration);
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,11 +24,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.MapEndpoints();
 app.MapEndpoints<Program>();
-
-_ = app.Services.GetRequiredService<SimpleStrategyEngine>().StartTradingAsync();
-
 
 app.Run();
