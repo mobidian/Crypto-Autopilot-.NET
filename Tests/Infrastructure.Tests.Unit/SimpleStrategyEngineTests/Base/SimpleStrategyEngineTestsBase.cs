@@ -13,6 +13,8 @@ namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
 
 public abstract class SimpleStrategyEngineTestsBase
 {
+    protected readonly Random Random = new Random();
+
     protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
         .RuleFor(x => x.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
         .RuleFor(c => c.Date, f => f.Date.Recent(365))
@@ -22,11 +24,9 @@ public abstract class SimpleStrategyEngineTestsBase
         .RuleFor(c => c.Close, (f, c) => f.Random.Decimal(1000, 1500))
         .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
 
-    protected readonly IReadOnlyList<Candlestick> Candlesticks;
+    protected IReadOnlyList<Candlestick> Candlesticks = default!;
 
-
-
-    protected readonly SimpleLongStrategyEngine SUT;
+    protected SimpleStrategyEngine SUT = default!;
 
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly KlineInterval KlineInterval = KlineInterval.FifteenMinutes;
@@ -35,10 +35,4 @@ public abstract class SimpleStrategyEngineTestsBase
     protected readonly ICfdMarketDataProvider FuturesDataProvider = Substitute.For<ICfdMarketDataProvider>();
     protected readonly IFuturesMarketsCandlestickAwaiter CandlestickAwaiter = Substitute.For<IFuturesMarketsCandlestickAwaiter>();
     protected readonly IMediator Mediator = Substitute.For<IMediator>();
-    
-    public SimpleStrategyEngineTestsBase()
-    {
-        this.SUT = new SimpleLongStrategyEngine(this.CurrencyPair, this.KlineInterval, this.FuturesTrader, this.FuturesDataProvider, this.CandlestickAwaiter, this.Mediator);
-        this.Candlesticks = this.CandlestickGenerator.Generate(100);
-    } 
 }
