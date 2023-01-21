@@ -1,13 +1,7 @@
-﻿using System.Diagnostics;
-
-using Application.Interfaces.Services.General;
-using Application.Interfaces.Services.Trading.Strategy;
-
-using Infrastructure.Strategies.SimpleStrategy;
+﻿using Infrastructure.Strategies.SimpleStrategy;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Presentation.Api.Contracts.Responses;
 using Presentation.Api.Endpoints.Internal;
 
 namespace Presentation.Api.Endpoints;
@@ -18,26 +12,20 @@ public class SimpleStrategyEndpoints : IEndpoints
     {
         services.AddSingleton<SimpleLongStrategyEngine>();
     }
-    
+
     public static void MapEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("StartSimpleStrategy", ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) =>
-        {
-            Task.Run(engine.StartTradingAsync);
-            
-            if (!WaitForStrategyToStartRunning(engine))
-                return Results.Problem(detail: "The operation of starting the trading strategy engine has timed out after 10 seconds", type: "TimeoutException");
-            
-            return Results.Ok(new StrategyStartedResponse
-            {
-                Guid = engine.Guid,
-                StrategyTypeName = engine.GetType().Name,
-                Timestamp = services.GetRequiredService<IDateTimeProvider>().Now
-            });
-        });
-        
-        // // TODO app.MapPost("StopSimpleStrategy, () => { ... }");
+        MapStartStopEndpoints(app);
+        MapStrategySignalsEndpoints(app);
+    }
+    private static void MapStartStopEndpoints(IEndpointRouteBuilder app)
+    {
+        app.MapGet("StartSimpleStrategy", async ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) => await engine.LOL(services, TimeSpan.FromSeconds(15)));
 
+        // // TODO app.MapPost("StopSimpleStrategy", () => { ... });
+    }
+    private static void MapStrategySignalsEndpoints(IEndpointRouteBuilder app)
+    {
         app.MapPost("CfdUp", ([FromServices] SimpleLongStrategyEngine engine) =>
         {
             engine.CFDMovingUp();
@@ -49,16 +37,5 @@ public class SimpleStrategyEndpoints : IEndpoints
             engine.CFDMovingDown();
             return Results.Ok();
         });
-    }
-    private static bool WaitForStrategyToStartRunning(IStrategyEngine engine)
-    {
-        var stopwatch = Stopwatch.StartNew();
-        
-        while (!engine.IsRunning() && stopwatch.Elapsed.TotalSeconds < 10)
-        {
-            Thread.Sleep(50);
-        }
-
-        return engine.IsRunning();
     }
 }
