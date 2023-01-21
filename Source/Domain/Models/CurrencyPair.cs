@@ -4,7 +4,7 @@ using CryptoExchange.Net.CommonObjects;
 
 namespace Domain.Models;
 
-[DebuggerDisplay("{Base, nq}{\"/\", nq}{Quote, nq}")]
+[DebuggerDisplay("{Name}")]
 public class CurrencyPair : ICloneable
 {
     public string Name { get; }
