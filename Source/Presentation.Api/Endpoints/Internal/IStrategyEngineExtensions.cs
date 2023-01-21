@@ -30,6 +30,6 @@ internal static class IStrategyEngineExtensions
         while (!engine.IsRunning() && stopwatch.Elapsed < timeout)
             await Task.Delay(50);
         
-        return !engine.IsRunning();
+        return engine.IsRunning();
     }
 }
