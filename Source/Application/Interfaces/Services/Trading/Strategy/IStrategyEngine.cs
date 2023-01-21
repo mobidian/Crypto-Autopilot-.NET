@@ -7,6 +7,10 @@ namespace Application.Interfaces.Services.Trading.Strategy;
 
 public interface IStrategyEngine : IDisposable, IAsyncDisposable
 {
+    public Guid Guid { get; }
+
+    public bool IsRunning();
+
     public Task StartTradingAsync();
     
     public Task StopTradingAsync();

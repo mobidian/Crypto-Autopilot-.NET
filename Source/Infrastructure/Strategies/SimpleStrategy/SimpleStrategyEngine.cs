@@ -4,6 +4,7 @@ using Application.Interfaces.Services.Trading.Strategy;
 using Binance.Net.Enums;
 
 using Domain.Models;
+
 using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.SimpleStrategy.Notifications;
 
@@ -16,6 +17,8 @@ namespace Infrastructure.Strategies.SimpleStrategy;
 /// </summary>
 public sealed class SimpleStrategyEngine : IStrategyEngine
 {
+    public Guid Guid { get; } = Guid.NewGuid();
+    
     public CurrencyPair CurrencyPair { get; }
     public KlineInterval KlineInterval { get; }
     
@@ -33,15 +36,21 @@ public sealed class SimpleStrategyEngine : IStrategyEngine
         this.CandlestickAwaiter = candlestickAwaiter;
         this.Mediator = mediator;
     }
-
+    
     //// //// ////
-
+    
     private volatile bool ShouldContinue = true;
-    private volatile bool Stopped = false;
+    private volatile bool Running = false;
+    public bool IsRunning() => this.Running;
     
     public async Task StartTradingAsync()
     {
+        if (this.Running)
+            return;
+
+
         await this.CandlestickAwaiter.SubscribeToKlineUpdatesAsync();
+        this.Running = true;
 
         while (this.ShouldContinue)
         {
@@ -49,7 +58,7 @@ public sealed class SimpleStrategyEngine : IStrategyEngine
             await this.MakeMoveAsync();
         }
 
-        this.Stopped = true;
+        this.Running = false;
     }
     internal async Task MakeMoveAsync()
     {
@@ -93,7 +102,7 @@ public sealed class SimpleStrategyEngine : IStrategyEngine
     {
         this.ShouldContinue = false;
 
-        while (!this.Stopped)
+        while (this.Running)
         {
             await Task.Delay(20);
         }
