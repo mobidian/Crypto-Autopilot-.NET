@@ -6,14 +6,14 @@ using Domain.Models;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.SimpleStrategy.Notifications;
+namespace Infrastructure.Notifications;
 
 public record PositionClosedNotification : INotification
 {
     public Guid Guid { get; } = Guid.NewGuid();
     public Candlestick Candlestick { get; }
     public BinanceFuturesOrder ClosingOrder { get; }
-    
+
     public PositionClosedNotification(Candlestick candlestick, BinanceFuturesOrder closingOrder)
     {
         this.Candlestick = candlestick;
@@ -28,7 +28,7 @@ public class PositionClosedNotificationHandler : INotificationHandler<PositionCl
     {
         this.FuturesTradesDBService = futuresTradesDBService;
     }
-    
+
     public async Task Handle(PositionClosedNotification notification, CancellationToken cancellationToken)
     {
         await this.FuturesTradesDBService.AddFuturesOrderAsync(notification.ClosingOrder, notification.Candlestick);

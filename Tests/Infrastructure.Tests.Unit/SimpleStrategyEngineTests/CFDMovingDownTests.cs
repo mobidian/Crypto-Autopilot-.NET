@@ -1,6 +1,5 @@
 ﻿using Binance.Net.Enums;
-
-using Infrastructure.Strategies.SimpleStrategy.Notifications;
+using Infrastructure.Notifications;
 using Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
 
 namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests;

@@ -1,20 +1,19 @@
 ﻿using Application.Interfaces.Services.Trading;
 
-using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
 
 using Domain.Models;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.SimpleStrategy.Notifications;
+namespace Infrastructure.Notifications;
 
 public record PositionOpenedNotification : INotification
 {
     public Guid Guid { get; } = Guid.NewGuid();
     public Candlestick Candlestick { get; }
     public FuturesPosition FuturesPosition { get; }
-    
+
     public PositionOpenedNotification(Candlestick candlestick, FuturesPosition futuresPosition)
     {
         this.Candlestick = candlestick;
@@ -29,10 +28,10 @@ public class PositionOpenedNotificationHandler : INotificationHandler<PositionOp
     {
         this.FuturesTradesDBService = futuresTradesDBService;
     }
-    
+
     public async Task Handle(PositionOpenedNotification notification, CancellationToken cancellationToken)
     {
-        IEnumerable<BinanceFuturesOrder> futuresOrders = new[]
+        var futuresOrders = new[]
         {
             notification.FuturesPosition.EntryOrder!,
             notification.FuturesPosition.StopLossOrder!,
@@ -40,8 +39,8 @@ public class PositionOpenedNotificationHandler : INotificationHandler<PositionOp
         }
         .Where(x => x is not null)
         .Where(x => x.Id != 0);
-        
-        foreach(var futuresOrder in futuresOrders)
+
+        foreach (var futuresOrder in futuresOrders)
         {
             await this.FuturesTradesDBService.AddFuturesOrderAsync(futuresOrder, notification.Candlestick);
         }
