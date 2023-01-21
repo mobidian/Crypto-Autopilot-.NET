@@ -26,7 +26,7 @@ public abstract class SimpleStrategyEngineTestsBase
 
 
 
-    protected readonly SimpleStrategyEngine SUT;
+    protected readonly SimpleLongStrategyEngine SUT;
 
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly KlineInterval KlineInterval = KlineInterval.FifteenMinutes;
@@ -38,7 +38,7 @@ public abstract class SimpleStrategyEngineTestsBase
     
     public SimpleStrategyEngineTestsBase()
     {
-        this.SUT = new SimpleStrategyEngine(this.CurrencyPair, this.KlineInterval, this.FuturesTrader, this.FuturesDataProvider, this.CandlestickAwaiter, this.Mediator);
+        this.SUT = new SimpleLongStrategyEngine(this.CurrencyPair, this.KlineInterval, this.FuturesTrader, this.FuturesDataProvider, this.CandlestickAwaiter, this.Mediator);
         this.Candlesticks = this.CandlestickGenerator.Generate(100);
     } 
 }

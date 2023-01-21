@@ -63,7 +63,7 @@ public class DependencyRegistrationTests
 
 	    #endregion
 
-        (typeof(SimpleStrategyEngine), typeof(SimpleStrategyEngine), ServiceLifetime.Singleton),
+        (typeof(SimpleLongStrategyEngine), typeof(SimpleLongStrategyEngine), ServiceLifetime.Singleton),
     };
 
 

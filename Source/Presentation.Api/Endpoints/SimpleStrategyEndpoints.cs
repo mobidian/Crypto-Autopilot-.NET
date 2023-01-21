@@ -16,12 +16,12 @@ public class SimpleStrategyEndpoints : IEndpoints
 {
     public static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<SimpleStrategyEngine>();
+        services.AddSingleton<SimpleLongStrategyEngine>();
     }
     
     public static void MapEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("StartSimpleStrategy", ([FromServices] SimpleStrategyEngine engine, IServiceProvider services) =>
+        app.MapGet("StartSimpleStrategy", ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) =>
         {
             Task.Run(engine.StartTradingAsync);
             
@@ -38,13 +38,13 @@ public class SimpleStrategyEndpoints : IEndpoints
         
         // // TODO app.MapPost("StopSimpleStrategy, () => { ... }");
 
-        app.MapPost("CfdUp", ([FromServices] SimpleStrategyEngine engine) =>
+        app.MapPost("CfdUp", ([FromServices] SimpleLongStrategyEngine engine) =>
         {
             engine.CFDMovingUp();
             return Results.Ok();
         });
 
-        app.MapPost("CfdDown", ([FromServices] SimpleStrategyEngine engine) =>
+        app.MapPost("CfdDown", ([FromServices] SimpleLongStrategyEngine engine) =>
         {
             engine.CFDMovingDown();
             return Results.Ok();
