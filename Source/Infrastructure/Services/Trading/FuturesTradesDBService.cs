@@ -66,11 +66,19 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
     public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync()
     {
-        return await this.DbContext.Candlesticks.Select(x => x.ToDomainObject()).ToListAsync();
+        return await this.DbContext.Candlesticks
+            .OrderBy(x => x.CurrencyPair)
+            .ThenByDescending(x => x.DateTime)
+            .Select(x => x.ToDomainObject())
+            .ToListAsync();
     }
     public async Task<IEnumerable<BinanceFuturesOrder>> GetAllFuturesOrdersAsync()
     {
-        return await this.DbContext.FuturesOrders.Select(x => x.ToDomainObject()).ToListAsync();
+        return await this.DbContext.FuturesOrders
+            .OrderBy(x => x.Candlestick.CurrencyPair)
+            .OrderByDescending(x => x.CreateTime)
+            .Select(x => x.ToDomainObject())
+            .ToListAsync();
     }
 
 
