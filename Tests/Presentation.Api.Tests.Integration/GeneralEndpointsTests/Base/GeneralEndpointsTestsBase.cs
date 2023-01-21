@@ -2,10 +2,12 @@
 
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
+
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using Presentation.Api.Tests.Integration.Common;
@@ -42,7 +44,6 @@ public abstract class GeneralEndpointsTestsBase
 
 
 
-    protected readonly string ConnectionString = Credentials.TestDbConnectionString;
     protected readonly ApiFactory ApiFactory;
     protected readonly HttpClient HttpClient;
 
@@ -51,7 +52,7 @@ public abstract class GeneralEndpointsTestsBase
 
     public GeneralEndpointsTestsBase()
     {
-        this.ApiFactory = new ApiFactory(this.ConnectionString);
+        this.ApiFactory = new ApiFactory();
         this.HttpClient = this.ApiFactory.CreateClient();
 
         this.FuturesTradesDBService = this.ApiFactory.Services.GetRequiredService<IFuturesTradesDBService>();
@@ -59,9 +60,9 @@ public abstract class GeneralEndpointsTestsBase
     }
 
 
-
+    
     private Respawner DbRespawner;
-    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(ConnectionString);
+    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.DbContext.Database.GetConnectionString()!);
 
 
     [OneTimeSetUp]
@@ -69,7 +70,7 @@ public abstract class GeneralEndpointsTestsBase
     {
         await this.DbContext.Database.EnsureCreatedAsync();
 
-        this.DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
+        this.DbRespawner = await Respawner.CreateAsync(this.DbContext.Database.GetConnectionString()!, new RespawnerOptions { CheckTemporalTables = true });
         await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
     }
 

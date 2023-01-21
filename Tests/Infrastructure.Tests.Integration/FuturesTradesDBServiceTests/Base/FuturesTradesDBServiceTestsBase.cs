@@ -16,7 +16,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
-    protected const string ConnectionString = Credentials.TestDbConnectionString;
+    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("CryptoPilotTrades");
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext dbContext;
@@ -48,7 +48,7 @@ public abstract class FuturesTradesDBServiceTestsBase
 
 
     private Respawner DbRespawner;
-    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(ConnectionString);
+    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
 
 
 
@@ -57,12 +57,12 @@ public abstract class FuturesTradesDBServiceTestsBase
     {
         this.MockIDateTimeProvider();
 
-        this.dbContext = new FuturesTradingDbContext(ConnectionString, this.DateTimeProvider);
+        this.dbContext = new FuturesTradingDbContext(this.ConnectionString, this.DateTimeProvider);
         await this.dbContext.Database.EnsureCreatedAsync();
 
         this.SUT = new FuturesTradesDBService(this.dbContext);
 
-        this.DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
+        this.DbRespawner = await Respawner.CreateAsync(this.ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
         await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
     }
     private void MockIDateTimeProvider()

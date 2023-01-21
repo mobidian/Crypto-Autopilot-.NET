@@ -13,6 +13,8 @@ namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 public abstract class BinanceCfdTradingServiceTestsBase
 {
+    private readonly SecretsManager SecretsManager = new SecretsManager();
+
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
 
     protected BinanceCfdTradingService SUT = default!;
@@ -23,9 +25,9 @@ public abstract class BinanceCfdTradingServiceTestsBase
     public BinanceCfdTradingServiceTestsBase()
     {
         var binanceClient = new BinanceClient();
-        binanceClient.SetApiCredentials(Credentials.BinanceIntegrationTestingAPICredentials);
+        binanceClient.SetApiCredentials(new ApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
 
-        this.SUT = new BinanceCfdTradingService(CurrencyPair, 10, binanceClient, binanceClient.UsdFuturesApi, binanceClient.UsdFuturesApi.Trading, binanceClient.UsdFuturesApi.ExchangeData);
+        this.SUT = new BinanceCfdTradingService(this.CurrencyPair, 10, binanceClient, binanceClient.UsdFuturesApi, binanceClient.UsdFuturesApi.Trading, binanceClient.UsdFuturesApi.ExchangeData);
     }
 
 
