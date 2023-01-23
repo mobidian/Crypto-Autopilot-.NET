@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Configuration.AddUserSecrets<Program>(optional: false, reloadOnChange: true);
+builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddServices<Program>(builder.Configuration);
