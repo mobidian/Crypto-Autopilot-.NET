@@ -41,14 +41,14 @@ public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
         var price = await this.FuturesTrader.GetCurrentPriceAsync();
         await this.FuturesTrader.OpenPositionAtMarketPriceAsync(OrderSide.Sell, 20, 1.01m * price, 0.99m * price);
 
-        var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.KlineInterval);
+        var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval);
         await this.Mediator.Publish(new PositionOpenedNotification(candlesticks.Last(), this.FuturesTrader.Position!));
     }
     private async Task ClosePositionAsync()
     {
         var closingOrder = await this.FuturesTrader.ClosePositionAsync();
 
-        var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.KlineInterval);
+        var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval);
         await this.Mediator.Publish(new PositionClosedNotification(candlesticks.Last(), closingOrder));
     }
 }

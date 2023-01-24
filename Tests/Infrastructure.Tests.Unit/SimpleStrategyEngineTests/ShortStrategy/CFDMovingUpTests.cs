@@ -14,7 +14,7 @@ public class CFDMovingUpTests : ShortStrategyEngineTestsBase
         decimal currentPrice = this.Random.Next(1000, 3000);
         this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(true);
-        this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
+        this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
         
         // Act
         this.SUT.CFDMovingUp();

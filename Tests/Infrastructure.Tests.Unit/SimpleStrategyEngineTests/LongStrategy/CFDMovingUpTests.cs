@@ -14,7 +14,7 @@ public class CFDMovingUpTests : LongStrategyEngineTestsBase
         decimal currentPrice = this.Random.Next(1000, 3000);
         this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(false, true);
-        this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
+        this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
 
         // Act
         this.SUT.CFDMovingUp();
@@ -34,7 +34,7 @@ public class CFDMovingUpTests : LongStrategyEngineTestsBase
 
         // assume one more candlestick was created
         var candlestick = this.CandlestickGenerator.Generate();
-        this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<KlineInterval>()).Returns(this.Candlesticks.Append(candlestick));
+        this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.Candlesticks.Append(candlestick));
 
         this.FuturesTrader.ClearReceivedCalls();
         this.Mediator.ClearReceivedCalls();
