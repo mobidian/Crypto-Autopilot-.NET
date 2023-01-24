@@ -75,6 +75,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task<IEnumerable<BinanceFuturesOrder>> GetAllFuturesOrdersAsync()
     {
         return await this.DbContext.FuturesOrders
+            .Include(x => x.Candlestick)
             .OrderBy(x => x.Candlestick.CurrencyPair)
             .OrderByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
