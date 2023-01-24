@@ -20,7 +20,7 @@ public class SimpleLongStrategyEndpoints : IEndpoints
     }
     private static void MapStartStopEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("StartSimpleLongStrategy", async ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitStartupAsync(services, TimeSpan.FromSeconds(15)));
+        app.MapPost("StartSimpleLongStrategy", async ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitStartupAsync(services, TimeSpan.FromSeconds(15)));
 
         app.MapPost("StopSimpleLongStrategy", async ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15)));
     }
