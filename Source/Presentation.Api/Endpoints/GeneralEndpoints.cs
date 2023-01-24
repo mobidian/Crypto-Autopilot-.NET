@@ -27,7 +27,7 @@ using Presentation.Api.Contracts.Responses;
 
 namespace Presentation.Api.Endpoints;
 
-public static class Extensions
+public static class GeneralEndpoints
 {
     public static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
@@ -81,8 +81,8 @@ public static class Extensions
 
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/candlesticks", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllCandlesticksResponse { Candlesticks = await DBService.GetAllCandlesticksAsync() }));
+        app.MapGet("candlesticks", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllCandlesticksResponse { Candlesticks = await DBService.GetAllCandlesticksAsync() }));
         
-        app.MapGet("/futuresorders", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllFuturesOrdersResponse { FuturesOrders = await DBService.GetAllFuturesOrdersAsync() }));
+        app.MapGet("futuresorders", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllFuturesOrdersResponse { FuturesOrders = await DBService.GetAllFuturesOrdersAsync() }));
     }
 }
