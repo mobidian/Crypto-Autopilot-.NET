@@ -34,8 +34,8 @@ public class DependencyRegistrationTests
         (typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>), ServiceLifetime.Singleton),
         (typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton),
 
-        (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Singleton),
-        (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Singleton),
+        (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Transient),
+        (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Transient),
 
         #region Binance
 		(typeof(CurrencyPair), typeof(CurrencyPair), ServiceLifetime.Transient),

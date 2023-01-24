@@ -18,14 +18,16 @@ namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
 public abstract class GeneralEndpointsTestsBase
 {
+    private const int precision = 4;
+
     protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
         .RuleFor(c => c.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
         .RuleFor(c => c.Date, f => f.Date.Recent(365))
-        .RuleFor(c => c.Open, f => f.Random.Decimal(1000, 1500))
-        .RuleFor(c => c.High, (f, c) => f.Random.Decimal(c.Open, c.Open + 100))
-        .RuleFor(c => c.Low, (f, c) => f.Random.Decimal(c.Open - 100, c.Open))
-        .RuleFor(c => c.Close, (f, c) => f.Random.Decimal(1000, 1500))
-        .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
+        .RuleFor(c => c.Open, f => Math.Round(f.Random.Decimal(1000, 1500), precision))
+        .RuleFor(c => c.High, (f, c) => Math.Round(f.Random.Decimal(c.Open, c.Open + 100), precision))
+        .RuleFor(c => c.Low, (f, c) => Math.Round(f.Random.Decimal(c.Open - 100, c.Open), precision))
+        .RuleFor(c => c.Close, (f, c) => Math.Round(f.Random.Decimal(1000, 1500), precision))
+        .RuleFor(c => c.Volume, f => Math.Round(f.Random.Decimal(100000, 300000), precision));
     
     protected readonly Faker<BinanceFuturesOrder> FuturesOrderGenerator = new Faker<BinanceFuturesOrder>()
         .RuleFor(o => o.Id, f => f.Random.Long(1000000))
@@ -34,10 +36,10 @@ public abstract class GeneralEndpointsTestsBase
         .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())
         .RuleFor(o => o.Type, f => f.Random.Enum<FuturesOrderType>())
         .RuleFor(o => o.WorkingType, f => f.Random.Enum<WorkingType>())
-        .RuleFor(o => o.Price, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.AvgPrice, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.StopPrice, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.Quantity, f => f.Random.Decimal(0, 10))
+        .RuleFor(o => o.Price, f => Math.Round(f.Random.Decimal(0, 1000), precision))
+        .RuleFor(o => o.AvgPrice, f => Math.Round(f.Random.Decimal(0, 1000), precision))
+        .RuleFor(o => o.StopPrice, f => Math.Round(f.Random.Decimal(0, 1000), precision))
+        .RuleFor(o => o.Quantity, f => Math.Round(f.Random.Decimal(0, 10), precision))
         .RuleFor(o => o.PriceProtect, f => f.PickRandom(true, false))
         .RuleFor(o => o.TimeInForce, f => f.Random.Enum<TimeInForce>())
         .RuleFor(o => o.Status, f => f.Random.Enum<OrderStatus>());
