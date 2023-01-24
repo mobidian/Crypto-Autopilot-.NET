@@ -36,8 +36,8 @@ public static class GeneralEndpoints
         
         services.AddMediatR(typeof(IInfrastructureMarker).Assembly);
 
-        services.AddSingleton<FuturesTradingDbContext>(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
-        services.AddSingleton<IFuturesTradesDBService, FuturesTradesDBService>();
+        services.AddTransient<FuturesTradingDbContext>(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
+        services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
 
         AddBinanceRelatedServices(services, configuration);
     }
