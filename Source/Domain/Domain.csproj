@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="Binance.Net" Version="8.3.0" />
     <PackageReference Include="Skender.Stock.Indicators" Version="2.4.7" />
-    <PackageReference Include="ValueOf" Version="2.0.31" />
   </ItemGroup>
 
 </Project>
