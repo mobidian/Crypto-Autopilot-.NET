@@ -28,7 +28,7 @@ internal static class IStrategyEngineExtensions
     internal static async Task<bool> AwaitStartupAsync(this IStrategyEngine engine, TimeSpan timeout)
     {
         var stopwatch = Stopwatch.StartNew();
-
+        
         while (!engine.IsRunning() && stopwatch.Elapsed < timeout)
             await Task.Delay(50);
         
@@ -38,10 +38,10 @@ internal static class IStrategyEngineExtensions
     internal static async Task<IResult> TryAwaitShutdownAsync(this IStrategyEngine engine, IServiceProvider services, TimeSpan timeout)
     {
         _ = Task.Run(engine.StopTradingAsync);
-        
-        timeout += TimeSpan.FromSeconds((int)services.GetRequiredService<KlineInterval>());
+
+        timeout += TimeSpan.FromSeconds((int)engine.KlineInterval);
         if (await engine.AwaitShutdownAsync(timeout) == false)
-            return Results.Problem(detail: $"The operation of starting the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
+            return Results.Problem(detail: $"The operation of stopping the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
 
         return Results.Ok(new StrategyEngineStoppedResponse
         {
