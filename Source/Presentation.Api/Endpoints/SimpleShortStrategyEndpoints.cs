@@ -22,8 +22,8 @@ public class SimpleShortStrategyEndpoints : IEndpoints
         var currencyPair = new CurrencyPair("ETH", "USDT");
         var timeframe = KlineInterval.OneMinute;
         var margin = 20m;
-        var stopLossParameter = 0.99m;
-        var takeProfitParameter = 1.01m;
+        var stopLossParameter = 1.01m;
+        var takeProfitParameter = 0.99m;
         var leverage = 10;
         
         services.AddSingleton<SimpleShortStrategyEngine>(services =>
