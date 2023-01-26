@@ -20,6 +20,9 @@ public abstract class GeneralEndpointsTestsBase
 {
     private const int precision = 4;
 
+    protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
+        .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
+
     protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
         .RuleFor(c => c.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
         .RuleFor(c => c.Date, f => f.Date.Recent(365))
@@ -67,6 +70,7 @@ public abstract class GeneralEndpointsTestsBase
     protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.DbContext.Database.GetConnectionString()!);
 
 
+
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
@@ -85,4 +89,18 @@ public abstract class GeneralEndpointsTestsBase
 
     [TearDown]
     public async Task TearDown() => await this.ClearDatabaseAsync();
+
+
+
+    protected static CurrencyPair GetRandomCurrencyPairExcept(Faker f, CurrencyPair currencyPair)
+    {
+        CurrencyPair newCurrencyPair;
+        do
+        {
+            newCurrencyPair = new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code);
+        }
+        while (newCurrencyPair == currencyPair);
+
+        return newCurrencyPair;
+    }
 }

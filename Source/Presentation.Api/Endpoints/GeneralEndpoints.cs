@@ -4,13 +4,10 @@ using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading;
 
 using Binance.Net.Clients;
-using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
 using CryptoExchange.Net.Authentication;
-
-using Domain.Models;
 
 using Infrastructure;
 using Infrastructure.Database.Contexts;
@@ -22,7 +19,6 @@ using Infrastructure.Services.Trading;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 using Presentation.Api.Contracts.Responses;
 using Presentation.Api.Factories;
@@ -83,8 +79,44 @@ public static class GeneralEndpoints
 
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("candlesticks", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllCandlesticksResponse { Candlesticks = await DBService.GetAllCandlesticksAsync() }));
+        app.MapGet("candlesticks", async ([FromServices] IFuturesTradesDBService DBService, [FromQuery] string? currencyPair) =>
+        {
+            if (currencyPair is null)
+            {
+                var candlesticks = await DBService.GetAllCandlesticksAsync();
+                var response = new GetAllCandlesticksResponse { Candlesticks = candlesticks };
+                return Results.Ok(response);
+            }
+            else
+            {
+                var candlesticks = await DBService.GetCandlesticksByCurrencyPairAsync(currencyPair);
+                var response = new GetCandlesticksByCurrencyPairResponse
+                {
+                    CurrencyPair = currencyPair.ToUpper(),
+                    Candlesticks = candlesticks,
+                };
+                return Results.Ok(response);
+            }
+        });
         
-        app.MapGet("futuresorders", async ([FromServices] IFuturesTradesDBService DBService) => Results.Ok(new GetAllFuturesOrdersResponse { FuturesOrders = await DBService.GetAllFuturesOrdersAsync() }));
+        app.MapGet("futuresorders", async ([FromServices] IFuturesTradesDBService DBService, [FromQuery] string? currencyPair) =>
+        {
+            if (currencyPair is null)
+            {
+                var futuresOrders = await DBService.GetAllFuturesOrdersAsync();
+                var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrders };
+                return Results.Ok(response);
+            }
+            else
+            {
+                var futuresOrders = await DBService.GetFuturesOrdersByCurrencyPairAsync(currencyPair);
+                var response = new GetFuturesOrdersByCurrencyPairResponse
+                {
+                    CurrencyPair = currencyPair.ToUpper(),
+                    FuturesOrders = futuresOrders,
+                };
+                return Results.Ok(response);
+            }
+        });
     }
 }

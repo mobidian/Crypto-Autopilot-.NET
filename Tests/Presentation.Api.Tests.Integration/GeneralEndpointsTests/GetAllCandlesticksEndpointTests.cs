@@ -10,7 +10,7 @@ namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
 public class GetAllCandlesticksEndpointTests : GeneralEndpointsTestsBase
 {
     [Test]
-    public async Task CandlesticksEndpoint_ShouldReturnCandlesticks_WhenTheyAreInTheDatabase()
+    public async Task GetAllCandlesticksEndpoint_ShouldReturnAllCandlesticks_WhenCandlesticksAreInTheDatabase()
     {
         // Arrange
         var candlesticks = this.CandlestickGenerator.GenerateBetween(10, 20);
@@ -27,7 +27,7 @@ public class GetAllCandlesticksEndpointTests : GeneralEndpointsTestsBase
     }
     
     [Test]
-    public async Task CandlesticksEndpoint_ShouldReturnEmptyEnumerable_WhenNoCandlesticksAreInTheDatabase()
+    public async Task GetAllCandlesticksEndpoint_ShouldReturnEmptyEnumerable_WhenNoCandlesticksAreInTheDatabase()
     {
         // Act
         var candlesticksResponse = await this.HttpClient.GetAsync("candlesticks");

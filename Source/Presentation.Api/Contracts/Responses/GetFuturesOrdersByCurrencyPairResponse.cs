@@ -2,7 +2,8 @@
 
 namespace Presentation.Api.Contracts.Responses;
 
-public class GetAllFuturesOrdersResponse
+public class GetFuturesOrdersByCurrencyPairResponse
 {
+    public required string CurrencyPair { get; init; }
     public required IEnumerable<BinanceFuturesOrder> FuturesOrders { get; init; }
 }
