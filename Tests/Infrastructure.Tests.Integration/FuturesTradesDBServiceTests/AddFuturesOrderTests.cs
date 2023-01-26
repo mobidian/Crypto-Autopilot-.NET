@@ -18,7 +18,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         futuresorder.Symbol = candlestick.CurrencyPair.Name;
         
         // Act
-        await this.SUT.AddFuturesOrderAsync(futuresorder, candlestick);
+        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
 
         // Assert
         var addedEntity = this.dbContext.FuturesOrders.Single();
@@ -38,7 +38,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(futuresorder, candlestick);
+        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
 
         // Assert
         var addedEntity = this.dbContext.FuturesOrders.Single();
@@ -54,8 +54,8 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var futuresorder = this.FuturesOrderGenerator.Generate();
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(futuresorder, candlestick);
-        var func = async () => await this.SUT.AddFuturesOrderAsync(futuresorder, candlestick);
+        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
+        var func = async () => await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
         
         // Assert
         // Assert
@@ -72,7 +72,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var futuresorder = this.FuturesOrderGenerator.Generate();
 
         // Act
-        var func = async () => await this.SUT.AddFuturesOrderAsync(futuresorder, null!);
+        var func = async () => await this.SUT.AddFuturesOrderAsync(null!, futuresorder);
 
         // Assert
         (await func.Should().ThrowExactlyAsync<ArgumentNullException>()).WithMessage("Value cannot be null. (Parameter 'Candlestick')");
@@ -85,7 +85,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var candlestick = this.CandlestickGenerator.Generate();
         
         // Act
-        var func = async () => await this.SUT.AddFuturesOrderAsync(null!, candlestick);
+        var func = async () => await this.SUT.AddFuturesOrderAsync(candlestick, null!);
 
         // Assert
         (await func.Should().ThrowExactlyAsync<ArgumentNullException>()).WithMessage("Value cannot be null. (Parameter 'FuturesOrder')");

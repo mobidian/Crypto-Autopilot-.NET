@@ -31,6 +31,6 @@ public class PositionClosedNotificationHandler : INotificationHandler<PositionCl
 
     public async Task Handle(PositionClosedNotification notification, CancellationToken cancellationToken)
     {
-        await this.FuturesTradesDBService.AddFuturesOrderAsync(notification.ClosingOrder, notification.Candlestick);
+        await this.FuturesTradesDBService.AddFuturesOrderAsync(notification.Candlestick, notification.ClosingOrder);
     }
 }

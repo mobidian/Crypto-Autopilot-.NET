@@ -42,7 +42,7 @@ public class PositionOpenedNotificationHandler : INotificationHandler<PositionOp
 
         foreach (var futuresOrder in futuresOrders)
         {
-            await this.FuturesTradesDBService.AddFuturesOrderAsync(futuresOrder, notification.Candlestick);
+            await this.FuturesTradesDBService.AddFuturesOrderAsync(notification.Candlestick, futuresOrder);
         }
     }
 }
