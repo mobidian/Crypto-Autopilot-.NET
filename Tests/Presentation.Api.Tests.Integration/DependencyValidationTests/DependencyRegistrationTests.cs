@@ -7,13 +7,10 @@ using Application.Interfaces.Services.Trading;
 
 using Binance.Net.Clients;
 using Binance.Net.Clients.UsdFuturesApi;
-using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
 using CryptoExchange.Net.Authentication;
-
-using Domain.Models;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
@@ -25,45 +22,48 @@ using Infrastructure.Strategies.SimpleStrategy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
+using Presentation.Api.Factories;
+
 namespace Presentation.Api.Tests.Integration.DependencyValidationTests;
 
 public class DependencyRegistrationTests
 {
     private readonly List<(Type? serviceType, Type? implementationType, ServiceLifetime? lifetime)> RequiredDescriptors = new()
     {
+        #region AddServices
         (typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>), ServiceLifetime.Singleton),
         (typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton),
 
         (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Transient),
         (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Transient),
 
-        #region Binance
-		(typeof(CurrencyPair), typeof(CurrencyPair), ServiceLifetime.Transient),
-        (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Transient),
-        (typeof(KlineInterval), typeof(KlineInterval), ServiceLifetime.Singleton),
-        (typeof(decimal), typeof(decimal), ServiceLifetime.Singleton),
-
-
-        #region From binance clients
-		(typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
-        (typeof(IBinanceClientUsdFuturesApi), typeof(BinanceClientUsdFuturesApi), ServiceLifetime.Singleton),
-        (typeof(IBinanceClientUsdFuturesApiTrading), typeof(BinanceClientUsdFuturesApiTrading), ServiceLifetime.Singleton),
-        (typeof(IBinanceClientUsdFuturesApiExchangeData), typeof(BinanceClientUsdFuturesApiExchangeData), ServiceLifetime.Singleton),
-
-        (typeof(IBinanceSocketClient), typeof(BinanceSocketClient), ServiceLifetime.Transient),
-        (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Singleton), 
-	    #endregion
 
 
         (typeof(ICfdMarketDataProvider), typeof(BinanceCfdMarketDataProvider), ServiceLifetime.Singleton),
-        (typeof(ICfdTradingService), typeof(BinanceCfdTradingService), ServiceLifetime.Singleton),
-        
         (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
-        (typeof(IFuturesMarketsCandlestickAwaiter), typeof(FuturesMarketsCandlestickAwaiter), ServiceLifetime.Singleton),
 
+
+        #region AddBinanceClientsAndServicesDerivedFromThem
+        (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Transient),
+
+        (typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
+        (typeof(IBinanceClientUsdFuturesApi), typeof(BinanceClientUsdFuturesApi), ServiceLifetime.Transient),
+        (typeof(IBinanceClientUsdFuturesApiTrading), typeof(BinanceClientUsdFuturesApiTrading), ServiceLifetime.Transient),
+        (typeof(IBinanceClientUsdFuturesApiExchangeData), typeof(BinanceClientUsdFuturesApiExchangeData), ServiceLifetime.Transient),
+
+        (typeof(IBinanceSocketClient), typeof(BinanceSocketClient), ServiceLifetime.Transient),
+        (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Transient),
+        #endregion
+
+        #region AddServiceFactories
+        (typeof(ICfdTradingServiceFactory), typeof(ICfdTradingServiceFactory), ServiceLifetime.Singleton),
+        (typeof(IFuturesMarketsCandlestickAwaiterFactory), typeof(IFuturesMarketsCandlestickAwaiterFactory), ServiceLifetime.Singleton),
 	    #endregion
+        #endregion
+
 
         (typeof(SimpleLongStrategyEngine), typeof(SimpleLongStrategyEngine), ServiceLifetime.Singleton),
+        (typeof(SimpleShortStrategyEngine), typeof(SimpleShortStrategyEngine), ServiceLifetime.Singleton),
     };
 
 

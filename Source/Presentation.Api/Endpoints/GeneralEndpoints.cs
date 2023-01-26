@@ -22,8 +22,10 @@ using Infrastructure.Services.Trading;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 using Presentation.Api.Contracts.Responses;
+using Presentation.Api.Factories;
 
 namespace Presentation.Api.Endpoints;
 
@@ -39,25 +41,18 @@ public static class GeneralEndpoints
         services.AddTransient<FuturesTradingDbContext>(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
         services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
 
-        AddBinanceRelatedServices(services, configuration);
-    }
-    private static void AddBinanceRelatedServices(IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddTransient<CurrencyPair>(_ => new CurrencyPair("ETH", "BUSD"));
-        services.AddTransient<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
-        services.AddSingleton(typeof(KlineInterval), KlineInterval.OneMinute);
-        services.AddSingleton(typeof(decimal), 10m);
-        
-        AddServicesDerivedFromBinanceClients(services);
 
         services.AddSingleton<ICfdMarketDataProvider, BinanceCfdMarketDataProvider>();
-        services.AddSingleton<ICfdTradingService, BinanceCfdTradingService>();
-        
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
-        services.AddSingleton<IFuturesMarketsCandlestickAwaiter, FuturesMarketsCandlestickAwaiter>();
+        
+        AddBinanceClientsAndServicesDerivedFromThem(services, configuration);
+
+        AddServiceFactories(services);
     }
-    private static void AddServicesDerivedFromBinanceClients(IServiceCollection services)
+    private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
+        
         // binance client
         services.AddTransient<IBinanceClient, BinanceClient>(services =>
         {
@@ -65,10 +60,10 @@ public static class GeneralEndpoints
             client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return client;
         });
-        services.AddSingleton<IBinanceClientUsdFuturesApi>(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
-        services.AddSingleton<IBinanceClientUsdFuturesApiTrading>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
-        services.AddSingleton<IBinanceClientUsdFuturesApiExchangeData>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
-        
+        services.AddTransient<IBinanceClientUsdFuturesApi>(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
+        services.AddTransient<IBinanceClientUsdFuturesApiTrading>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
+        services.AddTransient<IBinanceClientUsdFuturesApiExchangeData>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
+
         // binance socket client
         services.AddTransient<IBinanceSocketClient, BinanceSocketClient>(services =>
         {
@@ -76,7 +71,14 @@ public static class GeneralEndpoints
             socketClient.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return socketClient;
         });
-        services.AddSingleton<IBinanceSocketClientUsdFuturesStreams>(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
+        services.AddTransient<IBinanceSocketClientUsdFuturesStreams>(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
+    }
+    private static void AddServiceFactories(IServiceCollection services)
+    {
+        // factories are used here because theese services need to be created
+        // with respect to parameters such as currencyPair, timeframe, leverage and so on
+        services.AddSingleton<ICfdTradingServiceFactory>();
+        services.AddSingleton<IFuturesMarketsCandlestickAwaiterFactory>();
     }
 
     public static void MapEndpoints(this IEndpointRouteBuilder app)

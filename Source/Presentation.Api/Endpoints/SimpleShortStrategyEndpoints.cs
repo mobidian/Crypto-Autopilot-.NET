@@ -1,8 +1,17 @@
-﻿using Infrastructure.Strategies.SimpleStrategy;
+﻿using Application.Interfaces.Services.Trading;
+
+using Binance.Net.Enums;
+
+using Domain.Models;
+
+using Infrastructure.Strategies.SimpleStrategy;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using Presentation.Api.Endpoints.Internal;
+using Presentation.Api.Factories;
 
 namespace Presentation.Api.Endpoints;
 
@@ -10,7 +19,18 @@ public class SimpleShortStrategyEndpoints : IEndpoints
 {
     public static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<SimpleShortStrategyEngine>();
+        var currencyPair = new CurrencyPair("ETH", "USDT");
+        var timeframe = KlineInterval.OneMinute;
+        var leverage = 10;
+
+        services.AddSingleton<SimpleShortStrategyEngine>(services =>
+            new SimpleShortStrategyEngine(
+               currencyPair,
+               timeframe,
+               services.GetRequiredService<ICfdTradingServiceFactory>().Create(currencyPair, leverage, services),
+               services.GetRequiredService<ICfdMarketDataProvider>(),
+               services.GetRequiredService<IFuturesMarketsCandlestickAwaiterFactory>().Create(currencyPair, timeframe, services),
+               services.GetRequiredService<IMediator>()));
     }
     
     public static void MapEndpoints(IEndpointRouteBuilder app)
