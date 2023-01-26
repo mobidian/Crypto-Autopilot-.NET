@@ -13,8 +13,9 @@ public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         var orders = new List<BinanceFuturesOrder>();
         for (int i = 0; i < 10; i++)
         {
-            var futuresOrders = this.FuturesOrderGenerator.GenerateBetween(1, 5);
-            await this.InsertOneCandlestickAndMultipleFuturesOrdersAsync(this.CandlestickGenerator.Generate(), futuresOrders);
+            var candlestick = this.CandlestickGenerator.Generate();
+            var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).GenerateBetween(1, 5);
+            await this.InsertOneCandlestickAndMultipleFuturesOrdersAsync(candlestick, futuresOrders);
 
             orders.AddRange(futuresOrders);
         }

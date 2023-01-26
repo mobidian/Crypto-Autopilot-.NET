@@ -100,23 +100,20 @@ public abstract class FuturesTradesDBServiceTestsBase
     }
     protected async Task InsertOneCandlestickAndMultipleFuturesOrdersAsync(Candlestick candlestick, List<BinanceFuturesOrder> futuresOrders)
     {
-        futuresOrders.ForEach(order => order.Symbol = candlestick.CurrencyPair.Name);
+        using var transaction = await this.dbContext.Database.BeginTransactionAsync();
+        
+        var candlesticksEntity = candlestick.ToDbEntity();
+        var futuresOrdersEntities = futuresOrders.Select(x => x.ToDbEntity()).ToList();
 
-        using (var transaction = await this.dbContext.Database.BeginTransactionAsync())
-        {
-            var candlesticksEntity = candlestick.ToDbEntity();
-            var futuresOrdersEntities = futuresOrders.Select(x => x.ToDbEntity()).ToList();
+        await this.dbContext.Candlesticks.AddAsync(candlesticksEntity);
+        await this.dbContext.SaveChangesAsync();
 
-            await this.dbContext.Candlesticks.AddAsync(candlesticksEntity);
-            await this.dbContext.SaveChangesAsync();
+        futuresOrdersEntities.ForEach(x => x.CandlestickId = candlesticksEntity.Id);
 
-            futuresOrdersEntities.ForEach(x => x.CandlestickId = candlesticksEntity.Id);
+        this.dbContext.FuturesOrders.AddRange(futuresOrdersEntities);
+        await this.dbContext.SaveChangesAsync();
 
-            this.dbContext.FuturesOrders.AddRange(futuresOrdersEntities);
-            await this.dbContext.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-        }
+        await transaction.CommitAsync();
     }
 
     protected void AssertAgainstAddedEntityAuditRecords(BaseEntity addedEntity)
