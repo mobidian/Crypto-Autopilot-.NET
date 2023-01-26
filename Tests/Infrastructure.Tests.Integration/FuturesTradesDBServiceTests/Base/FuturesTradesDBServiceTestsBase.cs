@@ -1,5 +1,6 @@
 ﻿using Application.Data.Entities.Common;
 using Application.Interfaces.Services.General;
+using Application.Mapping;
 
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
@@ -21,6 +22,9 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext dbContext;
     protected IDateTimeProvider DateTimeProvider = Substitute.For<IDateTimeProvider>();
+
+    protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
+        .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
 
     protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
         .RuleFor(c => c.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
@@ -81,6 +85,39 @@ public abstract class FuturesTradesDBServiceTestsBase
     [TearDown]
     public async Task TearDown() => await this.ClearDatabaseAsync();
 
+
+
+    protected static CurrencyPair GetRandomCurrencyPairExcept(Faker f, CurrencyPair currencyPair)
+    {
+        CurrencyPair newCurrencyPair;
+        do
+        {
+            newCurrencyPair = new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code);
+        }
+        while (newCurrencyPair == currencyPair);
+
+        return newCurrencyPair;
+    }
+    protected async Task InsertOneCandlestickAndMultipleFuturesOrdersAsync(Candlestick candlestick, List<BinanceFuturesOrder> futuresOrders)
+    {
+        futuresOrders.ForEach(order => order.Symbol = candlestick.CurrencyPair.Name);
+
+        using (var transaction = await this.dbContext.Database.BeginTransactionAsync())
+        {
+            var candlesticksEntity = candlestick.ToDbEntity();
+            var futuresOrdersEntities = futuresOrders.Select(x => x.ToDbEntity()).ToList();
+
+            await this.dbContext.Candlesticks.AddAsync(candlesticksEntity);
+            await this.dbContext.SaveChangesAsync();
+
+            futuresOrdersEntities.ForEach(x => x.CandlestickId = candlesticksEntity.Id);
+
+            this.dbContext.FuturesOrders.AddRange(futuresOrdersEntities);
+            await this.dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+        }
+    }
 
     protected void AssertAgainstAddedEntityAuditRecords(BaseEntity addedEntity)
     {

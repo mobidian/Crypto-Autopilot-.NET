@@ -7,7 +7,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 public class GetAllCandlesticksTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    public async Task GetAllCandlesticks_ShouldReturnAllCandlesticks()
+    public async Task GetAllCandlesticks_ShouldReturnAllCandlesticks_WhenCandlesticksExist()
     {
         // Arrange
         var candlesticks = this.CandlestickGenerator.GenerateBetween(100, 300);
@@ -26,5 +26,15 @@ public class GetAllCandlesticksTests : FuturesTradesDBServiceTestsBase
         
         // Assert
         retrievedCandlesticks.Should().BeEquivalentTo(candlesticks);
+    }
+
+    [Test]
+    public async Task GetAllCandlesticks_ShouldReturnEmptyEnumerable_WhenNoCandlesticksExist()
+    {
+        // Act
+        var retrievedCandlesticks = await this.SUT.GetAllCandlesticksAsync();
+
+        // Assert
+        retrievedCandlesticks.Should().BeEmpty();
     }
 }

@@ -45,13 +45,11 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         FuturesOrderEntity.CandlestickId = CandlestickEntity.Id;
         await this.AddFuturesOrderToDbAsync(FuturesOrderEntity);
     }
-    
     private CandlestickDbEntity? GetCandlestickEntityFromDb(Candlestick Candlestick)
     {
         var uniqueIndex = (Candlestick.CurrencyPair, Candlestick.Date);
         return this.DbContext.Candlesticks.SingleOrDefault(x => x.CurrencyPair == uniqueIndex.CurrencyPair.Name && x.DateTime == uniqueIndex.Date);
     }
-
     private async Task AddCandlestickToDbAsync(CandlestickDbEntity candlestickDbEntity)
     {
         await this.DbContext.Candlesticks.AddAsync(candlestickDbEntity);
@@ -72,10 +70,30 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .Select(x => x.ToDomainObject())
             .ToListAsync();
     }
+    public async Task<IEnumerable<Candlestick>> GetCandlesticksByCurrencyPairAsync(string currencyPair)
+    {
+        return await this.DbContext.Candlesticks
+            .Where(x => x.CurrencyPair == currencyPair)
+            .OrderBy(x => x.CurrencyPair)
+            .ThenByDescending(x => x.DateTime)
+            .Select(x => x.ToDomainObject())
+            .ToListAsync();
+    }
+    
     public async Task<IEnumerable<BinanceFuturesOrder>> GetAllFuturesOrdersAsync()
     {
         return await this.DbContext.FuturesOrders
             .Include(x => x.Candlestick)
+            .OrderBy(x => x.Candlestick.CurrencyPair)
+            .OrderByDescending(x => x.CreateTime)
+            .Select(x => x.ToDomainObject())
+            .ToListAsync();
+    }
+    public async Task<IEnumerable<BinanceFuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair)
+    {
+        return await this.DbContext.FuturesOrders
+            .Include(x => x.Candlestick)
+            .Where(x => x.Candlestick.CurrencyPair == currencyPair)
             .OrderBy(x => x.Candlestick.CurrencyPair)
             .OrderByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
