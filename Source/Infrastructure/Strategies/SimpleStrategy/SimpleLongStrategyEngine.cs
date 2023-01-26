@@ -18,10 +18,17 @@ namespace Infrastructure.Strategies.SimpleStrategy;
 /// </summary>
 public sealed class SimpleLongStrategyEngine : SimpleStrategyEngine
 {
-    public SimpleLongStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator) { }
+    public SimpleLongStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, decimal margin, decimal stopLossParameter, decimal takeProfitParameter, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, margin, stopLossParameter, takeProfitParameter, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator)
+    {
+        if (this.StopLossParameter is >= 1 or <= 0)
+            throw new ArgumentException($"When trading longs the {nameof(this.StopLossParameter)} must be between 0 and 1", nameof(this.StopLossParameter));
+
+        if (this.TakeProfitParameter <= 1)
+            throw new ArgumentException($"When trading longs the {nameof(this.TakeProfitParameter)} must be greater than 1", nameof(this.TakeProfitParameter));
+    }
     
     //// //// ////
-    
+
     internal override async Task MakeMoveAsync()
     {
         if (this.Signal is null)
@@ -41,7 +48,7 @@ public sealed class SimpleLongStrategyEngine : SimpleStrategyEngine
     private async Task OpenLongPositionAsync()
     {
         var price = await this.FuturesTrader.GetCurrentPriceAsync();
-        await this.FuturesTrader.OpenPositionAtMarketPriceAsync(OrderSide.Buy, 20, 0.99m * price, 1.01m * price);
+        await this.FuturesTrader.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.Margin, this.StopLossParameter * price, this.TakeProfitParameter * price);
 
         var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval);
         await this.Mediator.Publish(new PositionOpenedNotification(candlesticks.Last(), this.FuturesTrader.Position!));

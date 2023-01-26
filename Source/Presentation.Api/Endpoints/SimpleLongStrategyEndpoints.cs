@@ -21,12 +21,18 @@ public class SimpleLongStrategyEndpoints : IEndpoints
     {
         var currencyPair = new CurrencyPair("ETH", "BUSD");
         var timeframe = KlineInterval.OneMinute;
+        var margin = 20m;
+        var stopLossParameter = 0.99m;
+        var takeProfitParameter = 1.01m;
         var leverage = 10;
-
+        
         services.AddSingleton<SimpleLongStrategyEngine>(services =>
             new SimpleLongStrategyEngine(
                currencyPair,
                timeframe,
+               margin,
+               stopLossParameter,
+               takeProfitParameter,
                services.GetRequiredService<ICfdTradingServiceFactory>().Create(currencyPair, leverage, services),
                services.GetRequiredService<ICfdMarketDataProvider>(),
                services.GetRequiredService<IFuturesMarketsCandlestickAwaiterFactory>().Create(currencyPair, timeframe, services),

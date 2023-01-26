@@ -25,8 +25,11 @@ public abstract class SimpleStrategyEngineTestsBase
         .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
 
     protected IReadOnlyList<Candlestick> Candlesticks = default!;
-
+    
     protected SimpleStrategyEngine SUT = default!;
+    protected decimal Margin;
+    protected decimal StopLossParameter;
+    protected decimal TakeProfitParameter;
 
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly KlineInterval KlineInterval = KlineInterval.FifteenMinutes;

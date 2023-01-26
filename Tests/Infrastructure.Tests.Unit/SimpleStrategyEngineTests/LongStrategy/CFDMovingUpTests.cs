@@ -21,7 +21,7 @@ public class CFDMovingUpTests : LongStrategyEngineTestsBase
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.Received(1).OpenPositionAtMarketPriceAsync(OrderSide.Buy, 20m, 0.99m * currentPrice, 1.01m * currentPrice);
+        await this.FuturesTrader.Received(1).OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.Margin, this.StopLossParameter * currentPrice, this.TakeProfitParameter * currentPrice);
         await this.Mediator.Received().Publish(Arg.Any<PositionOpenedNotification>());
         this.SUT.Signal.Should().BeNull();
     }

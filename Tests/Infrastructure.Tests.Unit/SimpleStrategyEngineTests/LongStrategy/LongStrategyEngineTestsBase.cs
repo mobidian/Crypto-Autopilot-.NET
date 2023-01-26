@@ -7,7 +7,21 @@ public abstract class LongStrategyEngineTestsBase : SimpleStrategyEngineTestsBas
 {
     public LongStrategyEngineTestsBase() : base()
     {
-        this.SUT = new SimpleLongStrategyEngine(this.CurrencyPair, this.KlineInterval, this.FuturesTrader, this.FuturesDataProvider, this.CandlestickAwaiter, this.Mediator);
+        this.Margin = this.Random.Next(100, 1000);
+        this.StopLossParameter = Convert.ToDecimal(this.Random.NextDouble());
+        this.TakeProfitParameter = Convert.ToDecimal(this.Random.Next(1, 10) + this.Random.NextDouble());
+
+        this.SUT = new SimpleLongStrategyEngine(
+            this.CurrencyPair,
+            this.KlineInterval,
+            this.Margin,
+            this.StopLossParameter,
+            this.TakeProfitParameter,
+            this.FuturesTrader,
+            this.FuturesDataProvider,
+            this.CandlestickAwaiter,
+            this.Mediator);
+        
         this.Candlesticks = this.CandlestickGenerator.Generate(100);
     }
 }
