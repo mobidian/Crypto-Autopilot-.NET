@@ -59,6 +59,9 @@ public abstract class StrategyEngine : IStrategyEngine
             await this.MakeMoveAsync();
         }
 
+        if (this.ShouldContinue && this.FuturesTrader.IsInPosition())
+            await this.FuturesTrader.ClosePositionAsync();
+
         this.Running = false;
     }
 
