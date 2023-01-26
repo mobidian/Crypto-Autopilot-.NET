@@ -46,8 +46,8 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         for (int i = 0; i < 10; i++)
         {
             var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
-            var randomFuturesOrders = this.FuturesOrderGenerator.GenerateBetween(10, 20);
-
+            var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, randomCandlestick.CurrencyPair.Name).GenerateBetween(10, 20);
+            
             await AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
         }
 
