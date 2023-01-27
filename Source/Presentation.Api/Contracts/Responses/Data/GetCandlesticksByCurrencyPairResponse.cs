@@ -1,6 +1,6 @@
 ﻿using Domain.Models;
 
-namespace Presentation.Api.Contracts.Responses;
+namespace Presentation.Api.Contracts.Responses.Data;
 
 public class GetCandlesticksByCurrencyPairResponse
 {

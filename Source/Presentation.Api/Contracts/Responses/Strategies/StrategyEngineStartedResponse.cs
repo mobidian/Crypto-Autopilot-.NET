@@ -1,4 +1,4 @@
-﻿namespace Presentation.Api.Contracts.Responses;
+﻿namespace Presentation.Api.Contracts.Responses.Strategies;
 
 public class StrategyEngineStartedResponse
 {

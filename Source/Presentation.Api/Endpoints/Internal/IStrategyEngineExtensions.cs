@@ -3,9 +3,7 @@
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading.Strategy;
 
-using Binance.Net.Enums;
-
-using Presentation.Api.Contracts.Responses;
+using Presentation.Api.Contracts.Responses.Strategies;
 
 namespace Presentation.Api.Endpoints.Internal;
 

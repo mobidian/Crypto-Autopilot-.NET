@@ -1,6 +1,6 @@
 ﻿using Binance.Net.Objects.Models.Futures;
 
-namespace Presentation.Api.Contracts.Responses;
+namespace Presentation.Api.Contracts.Responses.Data;
 
 public class GetAllFuturesOrdersResponse
 {

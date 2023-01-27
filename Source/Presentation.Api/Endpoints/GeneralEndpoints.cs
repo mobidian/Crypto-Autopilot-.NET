@@ -20,8 +20,11 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Presentation.Api.Contracts.Responses;
+using Presentation.Api.Contracts.Responses.Data;
+using Presentation.Api.Endpoints.Internal;
 using Presentation.Api.Factories;
+using Presentation.Api.Services;
+using Presentation.Api.Services.Interfaces;
 
 namespace Presentation.Api.Endpoints;
 
@@ -44,6 +47,8 @@ public static class GeneralEndpoints
         AddBinanceClientsAndServicesDerivedFromThem(services, configuration);
 
         AddServiceFactories(services);
+
+        services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
     }
     private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)
     {
@@ -117,6 +122,32 @@ public static class GeneralEndpoints
                 };
                 return Results.Ok(response);
             }
+        });
+
+
+        app.MapGet("strategies", ([FromServices] IStrategiesTracker StrategiesTracker, Guid? guid, IServiceProvider services) =>
+        {
+            if (guid is null)
+            {
+                return Results.Ok(StrategiesTracker.GetAll());
+            }
+            else
+            {
+                var strategy = StrategiesTracker.Get(guid.Value);
+                if(strategy is null)
+                    return Results.NotFound();
+                
+                return Results.Ok(strategy);
+            }
+        });
+
+        app.MapDelete($"StopStrategy/{{guid}}", async ([FromServices] IStrategiesTracker StrategiesTracker, Guid guid, IServiceProvider services) =>
+        {
+            var strategy = StrategiesTracker.Get(guid);
+            if (strategy is null)
+                return Results.NotFound();
+            
+            return await strategy.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15));
         });
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
-
-using Presentation.Api.Contracts.Responses;
+using Presentation.Api.Contracts.Responses.Data;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
