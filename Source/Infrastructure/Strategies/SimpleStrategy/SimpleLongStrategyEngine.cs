@@ -18,6 +18,7 @@ namespace Infrastructure.Strategies.SimpleStrategy;
 /// </summary>
 public sealed class SimpleLongStrategyEngine : SimpleStrategyEngine
 {
+    internal SimpleLongStrategyEngine(Guid guid, CurrencyPair currencyPair, KlineInterval klineInterval) : base(guid, currencyPair, klineInterval) { }
     public SimpleLongStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, decimal margin, decimal stopLossParameter, decimal takeProfitParameter, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, margin, stopLossParameter, takeProfitParameter, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator)
     {
         if (this.StopLossParameter is >= 1 or <= 0)

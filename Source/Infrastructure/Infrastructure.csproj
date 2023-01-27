@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -27,6 +27,10 @@
 		<InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
 		<InternalsVisibleTo Include="$(MSBuildProjectName).Tests.Unit" />
 		<InternalsVisibleTo Include="$(MSBuildProjectName).Tests.Integration" />
+
+		<InternalsVisibleTo Include="Presentation.Api.Tests" />
+		<InternalsVisibleTo Include="Presentation.Api.Tests.Unit" />
+		<InternalsVisibleTo Include="Presentation.Api.Tests.Integration" />
 	</ItemGroup>
 
 </Project>

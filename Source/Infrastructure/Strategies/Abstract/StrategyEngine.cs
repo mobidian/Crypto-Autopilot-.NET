@@ -25,7 +25,13 @@ public abstract class StrategyEngine : IStrategyEngine
     protected readonly ICfdMarketDataProvider FuturesDataProvider;
     protected readonly IFuturesMarketsCandlestickAwaiter CandlestickAwaiter;
     protected readonly IMediator Mediator;
-    
+
+    internal StrategyEngine(Guid guid, CurrencyPair currencyPair, KlineInterval klineInterval)
+    {
+        this.Guid = guid;
+        this.CurrencyPair = currencyPair;
+        this.KlineInterval = klineInterval;
+    }
     protected StrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator)
     {
         const string exceptionMessage = $"Unable to initialize an object of type {nameof(StrategyEngine)} with a NULL parameter";

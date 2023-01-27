@@ -16,7 +16,8 @@ public abstract class SimpleStrategyEngine : StrategyEngine
     protected readonly decimal Margin;
     protected readonly decimal StopLossParameter;
     protected readonly decimal TakeProfitParameter;
-    
+
+    internal SimpleStrategyEngine(Guid guid, CurrencyPair currencyPair, KlineInterval klineInterval) : base(guid, currencyPair, klineInterval) { }
     protected SimpleStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, decimal margin, decimal stopLossParameter, decimal takeProfitParameter, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator)
     {
         this.Margin = margin;
