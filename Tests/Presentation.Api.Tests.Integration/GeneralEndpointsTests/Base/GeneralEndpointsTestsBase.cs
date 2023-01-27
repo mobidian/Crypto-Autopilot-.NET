@@ -1,15 +1,20 @@
-﻿using Application.Interfaces.Services.Trading;
+﻿using System.Reflection;
+
+using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Strategy;
 
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
 
 using Domain.Models;
 
+using Infrastructure;
 using Infrastructure.Database.Contexts;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using Presentation.Api.Services.Interfaces;
 using Presentation.Api.Tests.Integration.Common;
 
 using Respawn;
@@ -31,7 +36,7 @@ public abstract class GeneralEndpointsTestsBase
         .RuleFor(c => c.Low, (f, c) => Math.Round(f.Random.Decimal(c.Open - 100, c.Open), precision))
         .RuleFor(c => c.Close, (f, c) => Math.Round(f.Random.Decimal(1000, 1500), precision))
         .RuleFor(c => c.Volume, f => Math.Round(f.Random.Decimal(100000, 300000), precision));
-    
+
     protected readonly Faker<BinanceFuturesOrder> FuturesOrderGenerator = new Faker<BinanceFuturesOrder>()
         .RuleFor(o => o.Id, f => f.Random.Long(1000000))
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
@@ -47,6 +52,17 @@ public abstract class GeneralEndpointsTestsBase
         .RuleFor(o => o.TimeInForce, f => f.Random.Enum<TimeInForce>())
         .RuleFor(o => o.Status, f => f.Random.Enum<OrderStatus>());
 
+    protected readonly Faker<IStrategyEngine> StrategyEnginesGenerator = new Faker<IStrategyEngine>()
+        .CustomInstantiator(f =>
+        {
+            var types = typeof(IInfrastructureMarker).Assembly.DefinedTypes.Where(typeInfo => !typeInfo.IsInterface && !typeInfo.IsAbstract && typeof(IStrategyEngine).IsAssignableFrom(typeInfo));
+            var type = f.PickRandom(types);
+
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var parameters = new object[] { Guid.NewGuid(), new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code), f.PickRandom<KlineInterval>() };
+            return (IStrategyEngine)Activator.CreateInstance(type, flags, null, parameters, null)!;
+        });
+
 
 
     protected readonly ApiFactory ApiFactory;
@@ -54,6 +70,7 @@ public abstract class GeneralEndpointsTestsBase
 
     protected readonly IFuturesTradesDBService FuturesTradesDBService;
     private FuturesTradingDbContext DbContext;
+    protected readonly IStrategiesTracker StrategiesTracker;
 
     public GeneralEndpointsTestsBase()
     {
@@ -62,10 +79,12 @@ public abstract class GeneralEndpointsTestsBase
 
         this.FuturesTradesDBService = this.ApiFactory.Services.GetRequiredService<IFuturesTradesDBService>();
         this.DbContext = this.ApiFactory.Services.GetRequiredService<FuturesTradingDbContext>();
+
+        this.StrategiesTracker = this.ApiFactory.Services.GetRequiredService<IStrategiesTracker>();
     }
 
-
     
+
     private Respawner DbRespawner;
     protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.DbContext.Database.GetConnectionString()!);
 
@@ -88,9 +107,11 @@ public abstract class GeneralEndpointsTestsBase
 
 
     [TearDown]
-    public async Task TearDown() => await this.ClearDatabaseAsync();
-
-
+    public async Task TearDown()
+    {
+        await this.ClearDatabaseAsync();
+        this.StrategiesTracker.Clear();
+    }
 
     protected static CurrencyPair GetRandomCurrencyPairExcept(Faker f, CurrencyPair currencyPair)
     {
