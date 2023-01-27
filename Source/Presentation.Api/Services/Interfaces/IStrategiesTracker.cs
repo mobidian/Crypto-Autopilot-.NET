@@ -10,4 +10,5 @@ public interface IStrategiesTracker
     public IEnumerable<IStrategyEngine> GetAll();
     public IStrategyEngine? Get(Guid guid);
     public void Remove(Guid guid);
+    public void Clear();
 }
