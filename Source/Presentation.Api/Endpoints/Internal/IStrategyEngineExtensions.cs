@@ -4,6 +4,7 @@ using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading.Strategy;
 
 using Presentation.Api.Contracts.Responses.Strategies;
+using Presentation.Api.Services.Interfaces;
 
 namespace Presentation.Api.Endpoints.Internal;
 
@@ -16,6 +17,7 @@ internal static class IStrategyEngineExtensions
         if (await engine.AwaitStartupAsync(timeout) == false)
             return Results.Problem(detail: $"The operation of starting the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
 
+        services.GetRequiredService<IStrategiesTracker>().Add(engine);
         return Results.Ok(new StrategyEngineStartedResponse
         {
             Guid = engine.Guid,

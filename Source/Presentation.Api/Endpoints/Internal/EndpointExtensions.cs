@@ -23,7 +23,4 @@ internal static class EndpointExtensions
         foreach (Type endpointType in endpointTypes)
             endpointType.GetMethod(nameof(IEndpoints.MapEndpoints))!.Invoke(null, new object[] { app });
     }
-
-
-    // // TODO add services required before adding the trading strategies // //
 }

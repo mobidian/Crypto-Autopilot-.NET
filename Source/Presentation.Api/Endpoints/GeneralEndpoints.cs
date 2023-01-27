@@ -2,6 +2,7 @@
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Strategy;
 
 using Binance.Net.Clients;
 using Binance.Net.Interfaces.Clients;
@@ -21,6 +22,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using Presentation.Api.Contracts.Responses.Data;
+using Presentation.Api.Contracts.Responses.Strategies;
 using Presentation.Api.Endpoints.Internal;
 using Presentation.Api.Factories;
 using Presentation.Api.Services;
@@ -46,6 +48,8 @@ public static class GeneralEndpoints
         
         AddBinanceClientsAndServicesDerivedFromThem(services, configuration);
 
+        // factories are used here because theese services need to be created
+        // with respect to parameters such as currencyPair, timeframe, leverage and so on
         AddServiceFactories(services);
 
         services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
@@ -76,8 +80,6 @@ public static class GeneralEndpoints
     }
     private static void AddServiceFactories(IServiceCollection services)
     {
-        // factories are used here because theese services need to be created
-        // with respect to parameters such as currencyPair, timeframe, leverage and so on
         services.AddSingleton<ICfdTradingServiceFactory>();
         services.AddSingleton<IFuturesMarketsCandlestickAwaiterFactory>();
     }
@@ -124,23 +126,27 @@ public static class GeneralEndpoints
             }
         });
 
-
+        
         app.MapGet("strategies", ([FromServices] IStrategiesTracker StrategiesTracker, Guid? guid, IServiceProvider services) =>
         {
             if (guid is null)
             {
-                return Results.Ok(StrategiesTracker.GetAll());
+                var strategies = StrategiesTracker.GetAll();
+                var responses = strategies.Select(StrategyEngineToResponse);
+                var response = new GetAllStrategyEnginesResponse { Strategies = responses };
+                return Results.Ok(response);
             }
             else
             {
                 var strategy = StrategiesTracker.Get(guid.Value);
-                if(strategy is null)
+                if (strategy is null)
                     return Results.NotFound();
-                
-                return Results.Ok(strategy);
+
+                var response = StrategyEngineToResponse(strategy);
+                return Results.Ok(response);
             }
         });
-
+        
         app.MapDelete($"StopStrategy/{{guid}}", async ([FromServices] IStrategiesTracker StrategiesTracker, Guid guid, IServiceProvider services) =>
         {
             var strategy = StrategiesTracker.Get(guid);
@@ -150,4 +156,10 @@ public static class GeneralEndpoints
             return await strategy.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15));
         });
     }
+    private static GetStrategyEngineResponse StrategyEngineToResponse(IStrategyEngine strategy) => new GetStrategyEngineResponse
+    {
+        Guid = strategy.Guid,
+        StartedStrategyTypeName = strategy.GetType().Name,
+        IsRunning = strategy.IsRunning(),
+    };
 }
