@@ -1,5 +1,6 @@
 using Presentation.Api.Endpoints;
-using Presentation.Api.Endpoints.Internal;
+using Presentation.Api.Endpoints.Internal.Automation.General;
+using Presentation.Api.Endpoints.Internal.Automation.Strategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddServices<Program>(builder.Configuration);
+builder.Services.AddStrategies<Program>(builder.Configuration);
 
 var app = builder.Build();
 
@@ -26,5 +28,6 @@ app.UseHttpsRedirection();
 
 app.MapEndpoints();
 app.MapEndpoints<Program>();
+app.MapStrategyEndpoints<Program>();
 
 app.Run();

@@ -9,15 +9,14 @@ using Infrastructure.Strategies.SimpleStrategy;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
-
-using Presentation.Api.Endpoints.Internal;
+using Presentation.Api.Endpoints.Internal.Automation.Strategies;
 using Presentation.Api.Factories;
 
 namespace Presentation.Api.Endpoints;
 
-public class SimpleShortStrategyEndpoints : IEndpoints
+public class SimpleShortStrategyEndpoints : IStrategyEndpoints<SimpleShortStrategyEngine>
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
+    public static void AddStrategy(IServiceCollection services, IConfiguration configuration)
     {
         var currencyPair = new CurrencyPair("ETH", "USDT");
         var timeframe = KlineInterval.OneMinute;
@@ -25,7 +24,7 @@ public class SimpleShortStrategyEndpoints : IEndpoints
         var stopLossParameter = 1.01m;
         var takeProfitParameter = 0.99m;
         var leverage = 10;
-        
+
         services.AddSingleton<SimpleShortStrategyEngine>(services =>
             new SimpleShortStrategyEngine(
                currencyPair,
@@ -38,30 +37,20 @@ public class SimpleShortStrategyEndpoints : IEndpoints
                services.GetRequiredService<IFuturesMarketsCandlestickAwaiterFactory>().Create(currencyPair, timeframe, services),
                services.GetRequiredService<IMediator>()));
     }
-    
-    public static void MapEndpoints(IEndpointRouteBuilder app)
-    {
-        MapStartStopEndpoints(app);
-        MapStrategySignalsEndpoints(app);
-    }
-    private static void MapStartStopEndpoints(IEndpointRouteBuilder app)
-    {
-        app.MapPost("StartSimpleShortStrategy", async ([FromServices] SimpleShortStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitStartupAsync(services, TimeSpan.FromSeconds(15)));
 
-        app.MapPost("StopSimpleShortStrategy", async ([FromServices] SimpleShortStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15)));
-    }
-    private static void MapStrategySignalsEndpoints(IEndpointRouteBuilder app)
+    public static void MapStrategySignalsEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("SimpleShortStrategyCfdUp", ([FromServices] SimpleShortStrategyEngine engine) =>
         {
             engine.CFDMovingUp();
             return Results.Ok();
         });
-
+        
         app.MapPost("SimpleShortStrategyCfdDown", ([FromServices] SimpleShortStrategyEngine engine) =>
         {
             engine.CFDMovingDown();
             return Results.Ok();
         });
     }
+
 }

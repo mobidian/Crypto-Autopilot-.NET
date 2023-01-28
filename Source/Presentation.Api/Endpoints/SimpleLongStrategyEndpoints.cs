@@ -9,15 +9,14 @@ using Infrastructure.Strategies.SimpleStrategy;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
-
-using Presentation.Api.Endpoints.Internal;
+using Presentation.Api.Endpoints.Internal.Automation.Strategies;
 using Presentation.Api.Factories;
 
 namespace Presentation.Api.Endpoints;
 
-public class SimpleLongStrategyEndpoints : IEndpoints
+public class SimpleLongStrategyEndpoints : IStrategyEndpoints<SimpleLongStrategyEngine>
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
+    public static void AddStrategy(IServiceCollection services, IConfiguration configuration)
     {
         var currencyPair = new CurrencyPair("ETH", "BUSD");
         var timeframe = KlineInterval.OneMinute;
@@ -25,7 +24,7 @@ public class SimpleLongStrategyEndpoints : IEndpoints
         var stopLossParameter = 0.99m;
         var takeProfitParameter = 1.01m;
         var leverage = 10;
-        
+
         services.AddSingleton<SimpleLongStrategyEngine>(services =>
             new SimpleLongStrategyEngine(
                currencyPair,
@@ -39,18 +38,7 @@ public class SimpleLongStrategyEndpoints : IEndpoints
                services.GetRequiredService<IMediator>()));
     }
 
-    public static void MapEndpoints(IEndpointRouteBuilder app)
-    {
-        MapStartStopEndpoints(app);
-        MapStrategySignalsEndpoints(app);
-    }
-    private static void MapStartStopEndpoints(IEndpointRouteBuilder app)
-    {
-        app.MapPost("StartSimpleLongStrategy", async ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitStartupAsync(services, TimeSpan.FromSeconds(15)));
-
-        app.MapPost("StopSimpleLongStrategy", async ([FromServices] SimpleLongStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15)));
-    }
-    private static void MapStrategySignalsEndpoints(IEndpointRouteBuilder app)
+    public static void MapStrategySignalsEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("SimpleLongStrategyCfdUp", ([FromServices] SimpleLongStrategyEngine engine) =>
         {
