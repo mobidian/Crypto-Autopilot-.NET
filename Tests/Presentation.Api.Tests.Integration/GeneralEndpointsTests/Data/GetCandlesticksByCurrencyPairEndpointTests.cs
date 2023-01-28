@@ -1,8 +1,9 @@
 ﻿using System.Net.Http.Json;
+
 using Presentation.Api.Contracts.Responses.Data;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
+namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
 public class GetCandlesticksByCurrencyPairEndpointTests : GeneralEndpointsTestsBase
 {
@@ -16,7 +17,7 @@ public class GetCandlesticksByCurrencyPairEndpointTests : GeneralEndpointsTestsB
 
         foreach (var matchingCandlestick in matchingCandlesticks)
             await this.FuturesTradesDBService.AddCandlestickAsync(matchingCandlestick);
-        
+
         foreach (var randomCandlestick in randomCandlesticks)
             await this.FuturesTradesDBService.AddCandlestickAsync(randomCandlestick);
 
@@ -24,7 +25,7 @@ public class GetCandlesticksByCurrencyPairEndpointTests : GeneralEndpointsTestsB
         // Act
         var candlesticksResponse = await this.HttpClient.GetAsync($"candlesticks?currencyPair={currencyPair}");
 
-        
+
         // Assert
         var response = await candlesticksResponse.Content.ReadFromJsonAsync<GetCandlesticksByCurrencyPairResponse>();
         response!.CurrencyPair.Should().Be(currencyPair.Name);

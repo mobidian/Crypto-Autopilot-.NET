@@ -1,10 +1,11 @@
 ﻿using System.Net.Http.Json;
 
 using Binance.Net.Objects.Models.Futures;
+
 using Presentation.Api.Contracts.Responses.Data;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
+namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
 public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
 {
@@ -25,13 +26,13 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
         response!.FuturesOrders.Should().BeEquivalentTo(futuresOrders);
     }
-    
+
     [Test]
     public async Task GetAllFuturesOrdersEndpoint_ShouldReturnEmptyEnumerable_WhenNoFurutresOrdersAreInTheDatabase()
     {
         // Act
         var candlesticksResponse = await this.HttpClient.GetAsync("futuresorders");
-        
+
         // Assert
         var response = await candlesticksResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
         response!.FuturesOrders.Should().BeEquivalentTo(Enumerable.Empty<BinanceFuturesOrder>());

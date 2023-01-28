@@ -1,9 +1,9 @@
-﻿using Presentation.Api.Contracts.Responses.Strategies;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
+using Presentation.Api.Contracts.Responses.Strategies;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
+namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Strategies;
 
 public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
 {
@@ -31,7 +31,7 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
     public async Task GetAllStrategyEnginesEndpoint_ShouldReturnEmptyEnumerable_WhenNoStrategyEnginesExist()
     {
         // Act
-        var strategiesResponse = await this.HttpClient.GetAsync("strategies");
+        var strategiesResponse = await HttpClient.GetAsync("strategies");
 
         // Assert
         var response = await strategiesResponse.Content.ReadFromJsonAsync<GetAllStrategyEnginesResponse>();

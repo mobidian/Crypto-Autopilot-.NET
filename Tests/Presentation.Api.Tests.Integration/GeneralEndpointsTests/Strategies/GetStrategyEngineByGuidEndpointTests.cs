@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using Presentation.Api.Contracts.Responses.Strategies;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
+namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Strategies;
 
 public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
 {
@@ -12,10 +12,10 @@ public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
     public async Task GetStrategyEngineByGuidEndpoint_ShouldReturnStrategyEngine_WhenStrategyEngineWithSpecifiedGuidExists()
     {
         // Arrange
-        int i = 3;
+        var i = 3;
         var engines = this.StrategyEnginesGenerator.Generate(10);
         engines.ForEach(this.StrategiesTracker.Add);
-        
+
         // Act
         var strategyResponse = await this.HttpClient.GetAsync($"strategies?guid={engines[i].Guid}");
 
@@ -31,7 +31,7 @@ public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
     {
         // Act
         var strategyResponse = await this.HttpClient.GetAsync($"strategies/{Guid.NewGuid()}");
-        
+
         // Assert
         strategyResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }

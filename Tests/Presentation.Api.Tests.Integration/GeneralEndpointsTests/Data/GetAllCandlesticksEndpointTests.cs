@@ -1,10 +1,11 @@
 ﻿using System.Net.Http.Json;
 
 using Domain.Models;
+
 using Presentation.Api.Contracts.Responses.Data;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
+namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
 public class GetAllCandlesticksEndpointTests : GeneralEndpointsTestsBase
 {
@@ -19,12 +20,12 @@ public class GetAllCandlesticksEndpointTests : GeneralEndpointsTestsBase
 
         // Act
         var candlesticksResponse = await this.HttpClient.GetAsync("candlesticks");
-        
+
         // Assert
         var response = await candlesticksResponse.Content.ReadFromJsonAsync<GetAllCandlesticksResponse>();
         response!.Candlesticks.Should().BeEquivalentTo(candlesticks);
     }
-    
+
     [Test]
     public async Task GetAllCandlesticksEndpoint_ShouldReturnEmptyEnumerable_WhenNoCandlesticksAreInTheDatabase()
     {

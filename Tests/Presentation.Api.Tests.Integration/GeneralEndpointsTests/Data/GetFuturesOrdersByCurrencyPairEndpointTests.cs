@@ -3,10 +3,11 @@
 using Binance.Net.Objects.Models.Futures;
 
 using Domain.Models;
+
 using Presentation.Api.Contracts.Responses.Data;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests;
+namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
 public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTestsBase
 {
@@ -18,13 +19,13 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
 
         var matchingCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, currencyPair).Generate();
         var matchingFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, matchingCandlestick.CurrencyPair.Name).GenerateBetween(10, 20);
-        await AddCandlestickAndFuturesOrdersInTheDatabaseAsync(matchingCandlestick, matchingFuturesOrders);
-        
-        for (int i = 0; i < 10; i++)
+        await this.AddCandlestickAndFuturesOrdersInTheDatabaseAsync(matchingCandlestick, matchingFuturesOrders);
+
+        for (var i = 0; i < 10; i++)
         {
             var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
             var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, randomCandlestick.CurrencyPair.Name).GenerateBetween(10, 20);
-            await AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
+            await this.AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
         }
 
         // Act
@@ -41,25 +42,25 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
-        
-        for (int i = 0; i < 10; i++)
+
+        for (var i = 0; i < 10; i++)
         {
             var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
             var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, randomCandlestick.CurrencyPair.Name).GenerateBetween(10, 20);
-            
-            await AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
+
+            await this.AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
         }
 
         // Act
         var futuresOrdersResponse = await this.HttpClient.GetAsync($"futuresorders?currencyPair={currencyPair}");
-        
+
         // Assert
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByCurrencyPairResponse>();
         response!.CurrencyPair.Should().Be(currencyPair.Name);
         response!.FuturesOrders.Should().BeEmpty();
     }
 
-    
+
     private async Task AddCandlestickAndFuturesOrdersInTheDatabaseAsync(Candlestick randomCandlestick, List<BinanceFuturesOrder> randomFuturesOrders)
     {
         foreach (var randomFuturesOrder in randomFuturesOrders)
