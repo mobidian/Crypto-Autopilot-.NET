@@ -2,6 +2,7 @@
 
 using Application.Interfaces.Services.Trading.Strategy;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Api.Endpoints.Internal.Automation.Strategies;
@@ -32,8 +33,8 @@ internal interface IStrategyEndpoints<TStrategyEngine> where TStrategyEngine : c
     /// <param name="app">The <see cref="IEndpointRouteBuilder"/> to add the endpoints to</param>
     public static void MapStartStopEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapPost(Regex.Replace($"Start{typeof(TStrategyEngine).Name}", @"(Engine)$", String.Empty, RegexOptions.IgnoreCase), async ([FromServices] TStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitStartupAsync(services, TimeSpan.FromSeconds(15)));
+        app.MapPost(Regex.Replace($"Start{typeof(TStrategyEngine).Name}", @"(Engine)$", String.Empty, RegexOptions.IgnoreCase), async ([FromServices] TStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitStartupAsync(services, TimeSpan.FromSeconds(15))).WithTags(typeof(TStrategyEngine).Name);
         
-        app.MapPost(Regex.Replace($"Stop{typeof(TStrategyEngine).Name}", @"(Engine)$", String.Empty, RegexOptions.IgnoreCase), async ([FromServices] TStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15)));
+        app.MapPost(Regex.Replace($"Stop{typeof(TStrategyEngine).Name}", @"(Engine)$", String.Empty, RegexOptions.IgnoreCase), async ([FromServices] TStrategyEngine engine, IServiceProvider services) => await engine.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15))).WithTags(typeof(TStrategyEngine).Name);
     }
 }

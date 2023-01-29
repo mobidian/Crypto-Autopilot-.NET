@@ -44,12 +44,12 @@ public class SimpleLongStrategyEndpoints : IStrategyEndpoints<SimpleLongStrategy
         {
             engine.CFDMovingUp();
             return Results.Ok();
-        });
+        }).WithTags(nameof(SimpleLongStrategyEngine));
 
         app.MapPost("SimpleLongStrategyCfdDown", ([FromServices] SimpleLongStrategyEngine engine) =>
         {
             engine.CFDMovingDown();
             return Results.Ok();
-        });
+        }).WithTags(nameof(SimpleLongStrategyEngine));
     }
 }

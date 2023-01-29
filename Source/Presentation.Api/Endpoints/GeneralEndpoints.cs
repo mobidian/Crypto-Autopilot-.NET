@@ -104,7 +104,7 @@ public static class GeneralEndpoints
                 };
                 return Results.Ok(response);
             }
-        });
+        }).WithTags("Data");
         
         app.MapGet("futuresorders", async ([FromServices] IFuturesTradesDBService DBService, [FromQuery] string? currencyPair) =>
         {
@@ -124,7 +124,7 @@ public static class GeneralEndpoints
                 };
                 return Results.Ok(response);
             }
-        });
+        }).WithTags("Data");
 
         
         app.MapGet("strategies", ([FromServices] IStrategiesTracker StrategiesTracker, Guid? guid, IServiceProvider services) =>
@@ -145,7 +145,7 @@ public static class GeneralEndpoints
                 var response = StrategyEngineToResponse(strategy);
                 return Results.Ok(response);
             }
-        });
+        }).WithTags("Strategies");
         
         app.MapDelete($"StopStrategy/{{guid}}", async ([FromServices] IStrategiesTracker StrategiesTracker, Guid guid, IServiceProvider services) =>
         {
@@ -154,7 +154,7 @@ public static class GeneralEndpoints
                 return Results.NotFound();
             
             return await strategy.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15));
-        });
+        }).WithTags("Strategies");
     }
     private static GetStrategyEngineResponse StrategyEngineToResponse(IStrategyEngine strategy) => new GetStrategyEngineResponse
     {
