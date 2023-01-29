@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /Tests/Infrastructure.Tests.Integration/Common/Credentials.cs
 /Source/Presentation.Api/appsettings.Credentials.json
 /Tests/Presentation.Api.Tests.Integration/Common/Credentials.cs
+/.editorconfig
