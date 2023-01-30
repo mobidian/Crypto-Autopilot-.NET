@@ -21,13 +21,20 @@ public class ExampleStrategyEngine : StrategyEngine
     protected readonly decimal Margin;
     protected readonly decimal RiskRewardRatio;
 
+    internal ExampleStrategyEngine(Guid guid, CurrencyPair currencyPair, KlineInterval klineInterval) : base(guid, currencyPair, klineInterval) { }
+    public ExampleStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, int emaLength, decimal margin, decimal riskRewardRatio, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator)
+    {
+        this.EMALength = emaLength;
+        this.Margin = margin;
+        this.RiskRewardRatio = riskRewardRatio;
+        this.IndicatorsAdapter = new IndicatorsAdapter(this.Candlesticks);
+    }
     
     private IList<Candlestick> Candlesticks = default!;
     internal IIndicatorsAdapter IndicatorsAdapter = default!;
     internal decimal Price;
     internal decimal EMA;
-
-
+    
     internal override async Task MakeMoveAsync()
     {
         await GetLatestMarketDataAsync();
