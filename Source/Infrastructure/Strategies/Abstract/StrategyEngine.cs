@@ -61,7 +61,6 @@ public abstract class StrategyEngine : IStrategyEngine
 
         while (this.ShouldContinue)
         {
-            await this.CandlestickAwaiter.WaitForNextCandlestickAsync();
             await this.MakeMoveAsync();
         }
 

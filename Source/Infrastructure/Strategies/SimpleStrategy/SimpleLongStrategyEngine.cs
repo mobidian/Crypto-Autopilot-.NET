@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Strategy;
 
 using Binance.Net.Enums;
 
@@ -7,7 +6,6 @@ using Domain.Models;
 
 using Infrastructure.Notifications;
 using Infrastructure.Services.Trading;
-using Infrastructure.Strategies.Abstract;
 
 using MediatR;
 
@@ -32,6 +30,9 @@ public sealed class SimpleLongStrategyEngine : SimpleStrategyEngine
 
     internal override async Task MakeMoveAsync()
     {
+        await this.CandlestickAwaiter.WaitForNextCandlestickAsync();
+
+
         if (this.Signal is null)
             return;
 

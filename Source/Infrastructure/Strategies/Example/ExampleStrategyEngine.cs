@@ -41,6 +41,9 @@ public class ExampleStrategyEngine : StrategyEngine
     
     internal override async Task MakeMoveAsync()
     {
+        await this.CandlestickAwaiter.WaitForNextCandlestickAsync();
+
+
         await GetLatestMarketDataAsync();
 
         var BuyCondition = this.Divergence == RsiDivergence.Bullish && this.Price > this.EMA;

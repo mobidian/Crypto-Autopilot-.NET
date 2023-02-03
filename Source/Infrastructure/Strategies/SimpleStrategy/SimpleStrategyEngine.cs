@@ -30,6 +30,6 @@ public abstract class SimpleStrategyEngine : StrategyEngine
     protected internal TradingviewSignal? Signal = null; // a null value indicates that the signal does not exist or has been consumed
 
 
-    public void CFDMovingUp() => Signal = TradingviewSignal.Up;
-    public void CFDMovingDown() => Signal = TradingviewSignal.Down;
+    public void CFDMovingUp() => this.Signal = TradingviewSignal.Up;
+    public void CFDMovingDown() => this.Signal = TradingviewSignal.Down;
 }

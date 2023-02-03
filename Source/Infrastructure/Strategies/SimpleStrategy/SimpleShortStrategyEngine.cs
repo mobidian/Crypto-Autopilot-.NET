@@ -30,6 +30,9 @@ public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
     
     internal override async Task MakeMoveAsync()
     {
+        await this.CandlestickAwaiter.WaitForNextCandlestickAsync();
+
+
         if (this.Signal is null)
             return;
         
