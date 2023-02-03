@@ -6,6 +6,7 @@ using Domain.Models;
 
 using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.Abstract;
+using Infrastructure.Strategies.SimpleStrategy.Enums;
 
 using MediatR;
 
@@ -26,9 +27,7 @@ public abstract class SimpleStrategyEngine : StrategyEngine
     }
 
 
-    protected internal enum TradingviewSignal { Up, Down }
     protected internal TradingviewSignal? Signal = null; // a null value indicates that the signal does not exist or has been consumed
-
 
     public void CFDMovingUp() => this.Signal = TradingviewSignal.Up;
     public void CFDMovingDown() => this.Signal = TradingviewSignal.Down;
