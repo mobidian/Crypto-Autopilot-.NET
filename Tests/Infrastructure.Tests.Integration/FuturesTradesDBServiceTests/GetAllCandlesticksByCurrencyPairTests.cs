@@ -14,11 +14,11 @@ public class GetAllCandlesticksByCurrencyPairTests : FuturesTradesDBServiceTests
         var candlesticks = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, currencyPair).Generate(100);
         var randomCandlesticks = this.CandlestickGenerator.Generate(300);
         
-        using (var transaction = await this.dbContext.Database.BeginTransactionAsync())
+        using (var transaction = await this.DbContext.Database.BeginTransactionAsync())
         {
-            this.dbContext.Candlesticks.AddRange(candlesticks.Select(x => x.ToDbEntity()));
-            this.dbContext.Candlesticks.AddRange(randomCandlesticks.Select(x => x.ToDbEntity()));
-            await this.dbContext.SaveChangesAsync();
+            this.DbContext.Candlesticks.AddRange(candlesticks.Select(x => x.ToDbEntity()));
+            this.DbContext.Candlesticks.AddRange(randomCandlesticks.Select(x => x.ToDbEntity()));
+            await this.DbContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
         }
@@ -38,10 +38,10 @@ public class GetAllCandlesticksByCurrencyPairTests : FuturesTradesDBServiceTests
         var currencyPair = this.CurrencyPairGenerator.Generate();
         var randomCandlesticks = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate(300);
 
-        using (var transaction = await this.dbContext.Database.BeginTransactionAsync())
+        using (var transaction = await this.DbContext.Database.BeginTransactionAsync())
         {
-            this.dbContext.Candlesticks.AddRange(randomCandlesticks.Select(x => x.ToDbEntity()));
-            await this.dbContext.SaveChangesAsync();
+            this.DbContext.Candlesticks.AddRange(randomCandlesticks.Select(x => x.ToDbEntity()));
+            await this.DbContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
         }

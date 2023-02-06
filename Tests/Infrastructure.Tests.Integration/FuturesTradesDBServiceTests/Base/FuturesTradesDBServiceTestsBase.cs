@@ -20,8 +20,11 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected readonly string ConnectionString = new SecretsManager().GetConnectionString("CryptoPilotTrades");
 
     protected FuturesTradesDBService SUT;
-    protected FuturesTradingDbContext dbContext;
+    protected FuturesTradingDbContext DbContext;
     protected IDateTimeProvider DateTimeProvider = Substitute.For<IDateTimeProvider>();
+
+    
+    protected readonly Random Random = new Random();
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
@@ -61,10 +64,10 @@ public abstract class FuturesTradesDBServiceTestsBase
     {
         this.MockIDateTimeProvider();
 
-        this.dbContext = new FuturesTradingDbContext(this.ConnectionString, this.DateTimeProvider);
-        await this.dbContext.Database.EnsureCreatedAsync();
+        this.DbContext = new FuturesTradingDbContext(this.ConnectionString, this.DateTimeProvider);
+        await this.DbContext.Database.EnsureCreatedAsync();
 
-        this.SUT = new FuturesTradesDBService(this.dbContext);
+        this.SUT = new FuturesTradesDBService(this.DbContext);
 
         this.DbRespawner = await Respawner.CreateAsync(this.ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
         await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
@@ -78,7 +81,7 @@ public abstract class FuturesTradesDBServiceTestsBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        await this.dbContext.Database.EnsureDeletedAsync();
+        await this.DbContext.Database.EnsureDeletedAsync();
     }
 
 
@@ -100,25 +103,28 @@ public abstract class FuturesTradesDBServiceTestsBase
     }
     protected async Task InsertOneCandlestickAndMultipleFuturesOrdersAsync(Candlestick candlestick, List<BinanceFuturesOrder> futuresOrders)
     {
-        using var transaction = await this.dbContext.Database.BeginTransactionAsync();
+        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
         
         var candlesticksEntity = candlestick.ToDbEntity();
         var futuresOrdersEntities = futuresOrders.Select(x => x.ToDbEntity()).ToList();
 
-        await this.dbContext.Candlesticks.AddAsync(candlesticksEntity);
-        await this.dbContext.SaveChangesAsync();
+        await this.DbContext.Candlesticks.AddAsync(candlesticksEntity);
+        await this.DbContext.SaveChangesAsync();
 
         futuresOrdersEntities.ForEach(x => x.CandlestickId = candlesticksEntity.Id);
 
-        this.dbContext.FuturesOrders.AddRange(futuresOrdersEntities);
-        await this.dbContext.SaveChangesAsync();
+        this.DbContext.FuturesOrders.AddRange(futuresOrdersEntities);
+        await this.DbContext.SaveChangesAsync();
 
         await transaction.CommitAsync();
     }
 
-    protected void AssertAgainstAddedEntityAuditRecords(BaseEntity addedEntity)
+    protected void AssertAgainstAddedEntitiesAuditRecords(IEnumerable<BaseEntity> addedEntities)
     {
-        addedEntity.RecordCreatedDate.Should().Be(this.DateTimeProvider.Now);
-        addedEntity.RecordModifiedDate.Should().Be(DateTime.MinValue);
+        foreach (var addedEntity in addedEntities)
+        {
+            addedEntity.RecordCreatedDate.Should().Be(this.DateTimeProvider.Now);
+            addedEntity.RecordModifiedDate.Should().Be(DateTime.MinValue);
+        }
     }
 }

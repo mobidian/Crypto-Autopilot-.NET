@@ -19,8 +19,8 @@ public class AddCandlestickTests : FuturesTradesDBServiceTestsBase
         await this.SUT.AddCandlestickAsync(candlestick);
 
         // Assert
-        var addedEntity = this.dbContext.Candlesticks.Single();
-        base.AssertAgainstAddedEntityAuditRecords(addedEntity);
+        var addedEntity = this.DbContext.Candlesticks.Single();
+        base.AssertAgainstAddedEntitiesAuditRecords(new[] { addedEntity });
         addedEntity.ToDomainObject().Should().BeEquivalentTo(candlestick);
     }
     

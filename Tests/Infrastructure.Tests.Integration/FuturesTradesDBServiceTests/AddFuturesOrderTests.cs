@@ -14,16 +14,15 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Generate();
-        futuresorder.Symbol = candlestick.CurrencyPair.Name;
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate(this.Random.Next(1, 10));
         
         // Act
-        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
-
+        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder.ToArray());
+        
         // Assert
-        var addedEntity = this.dbContext.FuturesOrders.Single();
-        base.AssertAgainstAddedEntityAuditRecords(addedEntity);
-        addedEntity.ToDomainObject().Should().BeEquivalentTo(futuresorder);
+        var addedEntities = this.DbContext.FuturesOrders.ToList();
+        base.AssertAgainstAddedEntitiesAuditRecords(addedEntities);
+        addedEntities.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(futuresorder);
     }
 
     [Test, Order(2)]
@@ -31,19 +30,18 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Generate();
-        futuresorder.Symbol = candlestick.CurrencyPair.Name;
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate(this.Random.Next(1, 10));
 
         await this.SUT.AddCandlestickAsync(candlestick);
 
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
+        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder.ToArray());
 
         // Assert
-        var addedEntity = this.dbContext.FuturesOrders.Single();
-        base.AssertAgainstAddedEntityAuditRecords(addedEntity);
-        addedEntity.ToDomainObject().Should().BeEquivalentTo(futuresorder);
+        var addedEntities = this.DbContext.FuturesOrders.ToList();
+        base.AssertAgainstAddedEntitiesAuditRecords(addedEntities);
+        addedEntities.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(futuresorder);
     }
     
     [Test, Order(3)]
@@ -51,8 +49,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Generate();
-        futuresorder.Symbol = candlestick.CurrencyPair.Name;
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate();
 
         // Act
         await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
@@ -106,6 +103,6 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(candlestick, null!);
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<ArgumentNullException>()).WithMessage("Value cannot be null. (Parameter 'FuturesOrder')");
+        (await func.Should().ThrowExactlyAsync<ArgumentNullException>()).WithMessage("Value cannot be null. (Parameter 'FuturesOrders')");
     }
 }

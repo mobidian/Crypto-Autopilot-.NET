@@ -12,10 +12,10 @@ public class GetAllCandlesticksTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var candlesticks = this.CandlestickGenerator.GenerateBetween(100, 300);
 
-        using (var transaction = await this.dbContext.Database.BeginTransactionAsync())
+        using (var transaction = await this.DbContext.Database.BeginTransactionAsync())
         {
-            this.dbContext.Candlesticks.AddRange(candlesticks.Select(x => x.ToDbEntity()));
-            await this.dbContext.SaveChangesAsync();
+            this.DbContext.Candlesticks.AddRange(candlesticks.Select(x => x.ToDbEntity()));
+            await this.DbContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
         }
