@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
-public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
+public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 {
     [Test, Order(1)]
-    public async Task AddFuturesOrderAsync_ShouldAddFuturesOrder_WhenFuturesOrderIsValidAndCandlestickDoesNotExist()
+    public async Task AddFuturesOrdersAsync_ShouldAddFuturesOrders_WhenFuturesOrdersAreValidAndCandlestickDoesNotExist()
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
@@ -26,7 +26,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
 
     [Test, Order(2)]
-    public async Task AddFuturesOrderAsync_ShouldAddFuturesOrder_WhenFuturesOrderIsValidAndCandlestickExists()
+    public async Task AddFuturesOrdersAsync_ShouldAddFuturesOrders_WhenFuturesOrdersAreValidAndCandlestickExists()
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
@@ -45,7 +45,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
     
     [Test, Order(3)]
-    public async Task AddFuturesOrderAsync_ShouldThrow_WhenFuturesOrderAlreadyExists()
+    public async Task AddFuturesOrdersAsync_ShouldThrow_WhenFuturesOrderAlreadyExists()
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
@@ -63,7 +63,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
 
     [Test, Order(4)]
-    public async Task AddFuturesOrderAsync_ShouldThrow_WhenFuturesOrderAndCandlestickDontHaveTheSameCurrencyPair()
+    public async Task AddFuturesOrdersAsync_ShouldThrow_WhenFuturesOrderAndCandlestickDontHaveTheSameCurrencyPair()
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
@@ -81,7 +81,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
     [Test, Order(5)]
-    public async Task AddFuturesOrderAsync_ShouldThrow_WhenCandlestickIsNull()
+    public async Task AddFuturesOrdersAsync_ShouldThrow_WhenCandlestickIsNull()
     {
         // Arrange
         var futuresorder = this.FuturesOrderGenerator.Generate();
@@ -94,7 +94,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
 
     [Test, Order(6)]
-    public async Task AddFuturesOrderAsync_ShouldThrow_WhenFuturesOrderIsNull()
+    public async Task AddFuturesOrdersAsync_ShouldThrow_WhenFuturesOrderIsNull()
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
