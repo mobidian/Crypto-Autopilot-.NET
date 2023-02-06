@@ -29,7 +29,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         using var transaction = this.BeginTransaction();
         await this.AddCandlestickToDbAsync(CandlestickEntity);
     }
-    public async Task AddFuturesOrderAsync(Candlestick Candlestick, params BinanceFuturesOrder[] FuturesOrders)
+    public async Task AddFuturesOrdersAsync(Candlestick Candlestick, params BinanceFuturesOrder[] FuturesOrders)
     {
         _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
         ValidateFuturesOrdersArray(Candlestick, FuturesOrders);

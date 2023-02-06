@@ -38,11 +38,9 @@ public class PositionOpenedNotificationHandler : INotificationHandler<PositionOp
             notification.FuturesPosition.TakeProfitOrder!,
         }
         .Where(x => x is not null)
-        .Where(x => x.Id != 0);
-
-        foreach (var futuresOrder in futuresOrders)
-        {
-            await this.FuturesTradesDBService.AddFuturesOrderAsync(notification.Candlestick, futuresOrder);
-        }
+        .Where(x => x.Id != 0)
+        .ToArray();
+        
+        await this.FuturesTradesDBService.AddFuturesOrdersAsync(notification.Candlestick, futuresOrders);
     }
 }

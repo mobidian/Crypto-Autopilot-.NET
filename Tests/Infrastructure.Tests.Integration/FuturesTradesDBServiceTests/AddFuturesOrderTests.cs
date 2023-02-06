@@ -17,7 +17,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate(this.Random.Next(1, 10));
         
         // Act
-        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder.ToArray());
+        await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder.ToArray());
         
         // Assert
         var addedEntities = this.DbContext.FuturesOrders.ToList();
@@ -36,7 +36,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder.ToArray());
+        await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder.ToArray());
 
         // Assert
         var addedEntities = this.DbContext.FuturesOrders.ToList();
@@ -52,8 +52,8 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate();
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
-        var func = async () => await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
+        await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder);
+        var func = async () => await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder);
         
         // Assert
         (await func.Should().ThrowExactlyAsync<DbUpdateException>())
@@ -70,7 +70,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, f => GetRandomCurrencyPairExcept(f, candlestick.CurrencyPair).Name).Generate();
 
         // Act
-        var func = async () => await this.SUT.AddFuturesOrderAsync(candlestick, futuresorder);
+        var func = async () => await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder);
         
         // Assert
         (await func.Should().ThrowExactlyAsync<DbUpdateException>())
@@ -87,7 +87,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var futuresorder = this.FuturesOrderGenerator.Generate();
 
         // Act
-        var func = async () => await this.SUT.AddFuturesOrderAsync(null!, futuresorder);
+        var func = async () => await this.SUT.AddFuturesOrdersAsync(null!, futuresorder);
 
         // Assert
         (await func.Should().ThrowExactlyAsync<ArgumentNullException>()).WithMessage("Value cannot be null. (Parameter 'Candlestick')");
@@ -100,7 +100,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var candlestick = this.CandlestickGenerator.Generate();
         
         // Act
-        var func = async () => await this.SUT.AddFuturesOrderAsync(candlestick, null!);
+        var func = async () => await this.SUT.AddFuturesOrdersAsync(candlestick, null!);
 
         // Assert
         (await func.Should().ThrowExactlyAsync<ArgumentNullException>()).WithMessage("Value cannot be null. (Parameter 'FuturesOrders')");
