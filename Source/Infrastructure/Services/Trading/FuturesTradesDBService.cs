@@ -29,30 +29,39 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         using var transaction = this.BeginTransaction();
         await this.AddCandlestickToDbAsync(CandlestickEntity);
     }
-    public async Task AddFuturesOrderAsync(Candlestick Candlestick, BinanceFuturesOrder FuturesOrder)
+    public async Task AddFuturesOrderAsync(Candlestick Candlestick, params BinanceFuturesOrder[] FuturesOrders)
     {
-        _ = FuturesOrder ?? throw new ArgumentNullException(nameof(FuturesOrder));
         _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
-
-        using var transaction = this.BeginTransaction();
-
+        ValidateFuturesOrdersArray(Candlestick, FuturesOrders);
         var CandlestickEntity = this.GetCandlestickEntityFromDb(Candlestick) ?? Candlestick.ToDbEntity();
 
-        ThrowIfCurrencyPairsDoNotMatch(Candlestick, FuturesOrder);
         
+        using var transaction = this.BeginTransaction();
+
         if (CandlestickEntity.Id == 0)
             await this.AddCandlestickToDbAsync(CandlestickEntity);
 
-        var FuturesOrderEntity = FuturesOrder.ToDbEntity();
-        FuturesOrderEntity.CandlestickId = CandlestickEntity.Id;
-        await this.AddFuturesOrderToDbAsync(FuturesOrderEntity);
-    }
-    private static void ThrowIfCurrencyPairsDoNotMatch(Candlestick Candlestick, BinanceFuturesOrder FuturesOrder)
-    {
-        if (Candlestick.CurrencyPair != FuturesOrder.Symbol)
+        var futuresOrderDbEntities = FuturesOrders.Select(o =>
         {
-            var innerException = new ArgumentException($"Cannot insert the specified candlestick and futures order since the FuturesOrder.Symbol ({FuturesOrder.Symbol}) does not match the Candlestick.CurrencyPair ({Candlestick.CurrencyPair}).", nameof(FuturesOrder.Symbol));
-            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+            var entity = o.ToDbEntity();
+            entity.CandlestickId = CandlestickEntity.Id;
+            return entity;
+        });
+        await this.AddFuturesOrdersToDbAsync(futuresOrderDbEntities);
+    }
+    private static void ValidateFuturesOrdersArray(Candlestick Candlestick, BinanceFuturesOrder[] FuturesOrders)
+    {
+        _ = FuturesOrders ?? throw new ArgumentNullException(nameof(FuturesOrders));
+
+        foreach (var FuturesOrder in FuturesOrders)
+        {
+            _ = FuturesOrder ?? throw new ArgumentNullException(nameof(FuturesOrder));
+
+            if (Candlestick.CurrencyPair != FuturesOrder.Symbol)
+            {
+                var innerException = new ArgumentException($"Cannot insert the specified candlestick and futures order since the FuturesOrder.Symbol ({FuturesOrder.Symbol}) does not match the Candlestick.CurrencyPair ({Candlestick.CurrencyPair}).", nameof(FuturesOrder.Symbol));
+                throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+            }
         }
     }
     private CandlestickDbEntity? GetCandlestickEntityFromDb(Candlestick Candlestick)
@@ -65,9 +74,9 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         await this.DbContext.Candlesticks.AddAsync(candlestickDbEntity);
         await this.DbContext.SaveChangesAsync();
     }
-    private async Task AddFuturesOrderToDbAsync(FuturesOrderDbEntity futuresOrderDbEntity)
+    private async Task AddFuturesOrdersToDbAsync(IEnumerable<FuturesOrderDbEntity> futuresOrderDbEntities)
     {
-        await this.DbContext.FuturesOrders.AddAsync(futuresOrderDbEntity);
+        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
     

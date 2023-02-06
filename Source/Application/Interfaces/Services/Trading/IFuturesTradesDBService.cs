@@ -8,7 +8,7 @@ public interface IFuturesTradesDBService
 {
     public Task AddCandlestickAsync(Candlestick Candlestick);
     
-    public Task AddFuturesOrderAsync(Candlestick Candlestick, BinanceFuturesOrder FuturesOrder);
+    public Task AddFuturesOrderAsync(Candlestick Candlestick, params BinanceFuturesOrder[] FuturesOrders);
 
     public Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync();
     public Task<IEnumerable<Candlestick>> GetCandlesticksByCurrencyPairAsync(string currencyPair);
