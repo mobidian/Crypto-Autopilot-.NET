@@ -26,11 +26,11 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Source\Presentation.Api\Presentation.Api.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Source\Presentation\CryptoAutopilot.Api\CryptoAutopilot.Api.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <Folder Include="GeneralEndpointsTests\Base\" />
   </ItemGroup>
 
