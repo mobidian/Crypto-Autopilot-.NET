@@ -7,7 +7,6 @@ using Domain.Models;
 using Generated;
 
 using Infrastructure.Notifications;
-using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.Abstract;
 using Infrastructure.Strategies.Example.Enums;
 

@@ -1,4 +1,4 @@
-﻿namespace Presentation.Api.Endpoints.Internal.Automation.General;
+﻿namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 
 /// <summary>
 /// An interface whose methods will be called during runtime for any type that implements it by methods from <see cref="EndpointExtensions"/>

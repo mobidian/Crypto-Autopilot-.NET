@@ -4,7 +4,6 @@ using Binance.Net.Enums;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.Abstract;
 using Infrastructure.Strategies.SimpleStrategy.Enums;
 

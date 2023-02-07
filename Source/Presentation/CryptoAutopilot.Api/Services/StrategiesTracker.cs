@@ -2,9 +2,9 @@
 
 using Application.Interfaces.Services.Trading.Strategy;
 
-using Presentation.Api.Services.Interfaces;
+using CryptoAutopilot.Api.Services.Interfaces;
 
-namespace Presentation.Api.Services;
+namespace CryptoAutopilot.Api.Services;
 
 public class StrategiesTracker : IStrategiesTracker
 {

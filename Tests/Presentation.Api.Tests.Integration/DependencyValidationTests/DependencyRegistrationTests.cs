@@ -10,6 +10,9 @@ using Binance.Net.Clients.UsdFuturesApi;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
+using CryptoAutopilot.Api;
+using CryptoAutopilot.Api.Factories;
+
 using CryptoExchange.Net.Authentication;
 
 using Infrastructure.Database.Contexts;
@@ -21,8 +24,6 @@ using Infrastructure.Strategies.SimpleStrategy;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-
-using Presentation.Api.Factories;
 
 namespace Presentation.Api.Tests.Integration.DependencyValidationTests;
 

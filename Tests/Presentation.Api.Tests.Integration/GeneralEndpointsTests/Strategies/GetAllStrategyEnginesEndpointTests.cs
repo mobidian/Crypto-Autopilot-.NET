@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 
-using Presentation.Api.Contracts.Responses.Strategies;
+using CryptoAutopilot.Api.Contracts.Responses.Strategies;
+
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Strategies;

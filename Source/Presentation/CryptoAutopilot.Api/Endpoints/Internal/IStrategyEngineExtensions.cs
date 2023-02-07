@@ -3,10 +3,10 @@
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading.Strategy;
 
-using Presentation.Api.Contracts.Responses.Strategies;
-using Presentation.Api.Services.Interfaces;
+using CryptoAutopilot.Api.Contracts.Responses.Strategies;
+using CryptoAutopilot.Api.Services.Interfaces;
 
-namespace Presentation.Api.Endpoints.Internal;
+namespace CryptoAutopilot.Api.Endpoints.Internal;
 
 internal static class IStrategyEngineExtensions
 {
@@ -28,10 +28,10 @@ internal static class IStrategyEngineExtensions
     internal static async Task<bool> AwaitStartupAsync(this IStrategyEngine engine, TimeSpan timeout)
     {
         var stopwatch = Stopwatch.StartNew();
-        
+
         while (!engine.IsRunning() && stopwatch.Elapsed < timeout)
             await Task.Delay(50);
-        
+
         return engine.IsRunning();
     }
 
@@ -53,7 +53,7 @@ internal static class IStrategyEngineExtensions
     internal static async Task<bool> AwaitShutdownAsync(this IStrategyEngine engine, TimeSpan timeout)
     {
         var stopwatch = Stopwatch.StartNew();
-                
+
         while (engine.IsRunning() && stopwatch.Elapsed < timeout)
             await Task.Delay(50);
 

@@ -5,6 +5,7 @@ using Infrastructure.Notifications;
 namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.LongStrategy;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 public class CFDMovingUpTests : LongStrategyEngineTestsBase
 {
     [Test]

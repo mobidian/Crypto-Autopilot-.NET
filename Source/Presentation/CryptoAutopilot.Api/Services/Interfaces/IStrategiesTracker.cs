@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Services.Trading.Strategy;
 
-namespace Presentation.Api.Services.Interfaces;
+namespace CryptoAutopilot.Api.Services.Interfaces;
 
 public interface IStrategiesTracker
 {

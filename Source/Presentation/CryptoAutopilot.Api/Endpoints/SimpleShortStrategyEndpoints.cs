@@ -2,6 +2,9 @@
 
 using Binance.Net.Enums;
 
+using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.Factories;
+
 using Domain.Models;
 
 using Infrastructure.Strategies.SimpleStrategy;
@@ -9,10 +12,8 @@ using Infrastructure.Strategies.SimpleStrategy;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Api.Endpoints.Internal.Automation.Strategies;
-using Presentation.Api.Factories;
 
-namespace Presentation.Api.Endpoints;
+namespace CryptoAutopilot.Api.Endpoints;
 
 public class SimpleShortStrategyEndpoints : IStrategyEndpoints<SimpleShortStrategyEngine>
 {
@@ -25,7 +26,7 @@ public class SimpleShortStrategyEndpoints : IStrategyEndpoints<SimpleShortStrate
         var takeProfitParameter = 0.99m;
         var leverage = 10;
 
-        services.AddSingleton<SimpleShortStrategyEngine>(services =>
+        services.AddSingleton(services =>
             new SimpleShortStrategyEngine(
                currencyPair,
                timeframe,
@@ -45,7 +46,7 @@ public class SimpleShortStrategyEndpoints : IStrategyEndpoints<SimpleShortStrate
             engine.CFDMovingUp();
             return Results.Ok();
         }).WithTags(nameof(SimpleShortStrategyEngine));
-        
+
         app.MapPost("SimpleShortStrategyCfdDown", ([FromServices] SimpleShortStrategyEngine engine) =>
         {
             engine.CFDMovingDown();

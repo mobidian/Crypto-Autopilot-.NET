@@ -17,7 +17,7 @@ using CryptoExchange.Net.Objects;
 using Domain.Extensions;
 using Domain.Models;
 
-using Infrastructure.Common;
+using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Trading;
 

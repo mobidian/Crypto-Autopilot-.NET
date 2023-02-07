@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using CryptoAutopilot.Api;
+using CryptoAutopilot.Api.Services.Interfaces;
+
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-
-using Presentation.Api.Services.Interfaces;
 
 namespace Presentation.Api.Tests.Unit.Common;
 

@@ -1,4 +1,4 @@
-﻿namespace Presentation.Api;
+﻿namespace CryptoAutopilot.Api;
 
 public interface IApiMarker
 {

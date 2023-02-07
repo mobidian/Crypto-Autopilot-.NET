@@ -2,6 +2,9 @@
 
 using Binance.Net.Enums;
 
+using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.Factories;
+
 using Domain.Models;
 
 using Infrastructure.Strategies.Example;
@@ -11,10 +14,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Presentation.Api.Endpoints.Internal.Automation.Strategies;
-using Presentation.Api.Factories;
-
-namespace Presentation.Api.Endpoints;
+namespace CryptoAutopilot.Api.Endpoints;
 
 public class ExampleStrategyEndpoints : IStrategyEndpoints<ExampleStrategyEngine>
 {
@@ -26,8 +26,8 @@ public class ExampleStrategyEndpoints : IStrategyEndpoints<ExampleStrategyEngine
         var margin = 20m;
         var riskRewardRatio = 3;
         var leverage = 10;
-        
-        services.AddSingleton<ExampleStrategyEngine>(services => 
+
+        services.AddSingleton(services =>
             new ExampleStrategyEngine(
                currencyPair,
                timeframe,
@@ -39,7 +39,7 @@ public class ExampleStrategyEndpoints : IStrategyEndpoints<ExampleStrategyEngine
                services.GetRequiredService<IFuturesMarketsCandlestickAwaiterFactory>().Create(currencyPair, timeframe, services),
                services.GetRequiredService<IMediator>()));
     }
-    
+
     public static void MapStrategySignalsEndpoints(IEndpointRouteBuilder app)
     {
         app.MapPost("ExampleStrategy", ([FromServices] ExampleStrategyEngine engine, [FromQuery] RsiDivergence divergence) => engine.FlagDivergence(divergence)).WithTags(nameof(ExampleStrategyEngine));

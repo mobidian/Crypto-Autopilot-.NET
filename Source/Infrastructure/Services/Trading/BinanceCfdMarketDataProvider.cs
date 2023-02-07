@@ -10,7 +10,7 @@ using CryptoExchange.Net.Objects;
 
 using Domain.Models;
 
-using Infrastructure.Common;
+using Infrastructure.Extensions;
 
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 

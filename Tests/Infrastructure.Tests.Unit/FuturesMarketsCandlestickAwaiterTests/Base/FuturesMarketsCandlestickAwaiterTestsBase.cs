@@ -15,7 +15,7 @@ using Domain.Models;
 using Infrastructure.Logging;
 using Infrastructure.Services.Trading;
 
-namespace Infrastructure.Tests.Unit.FuturesMarketsObserverTests.Base;
+namespace Infrastructure.Tests.Unit.FuturesMarketsCandlestickAwaiterTests.Base;
 
 public abstract class FuturesMarketsCandlestickAwaiterTestsBase
 {

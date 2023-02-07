@@ -1,6 +1,6 @@
-using Presentation.Api.Endpoints;
-using Presentation.Api.Endpoints.Internal.Automation.General;
-using Presentation.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.Endpoints;
+using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
+using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
 
 var builder = WebApplication.CreateBuilder(args);
 

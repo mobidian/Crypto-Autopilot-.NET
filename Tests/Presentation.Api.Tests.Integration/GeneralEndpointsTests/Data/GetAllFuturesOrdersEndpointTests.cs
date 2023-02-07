@@ -2,7 +2,8 @@
 
 using Binance.Net.Objects.Models.Futures;
 
-using Presentation.Api.Contracts.Responses.Data;
+using CryptoAutopilot.Api.Contracts.Responses.Data;
+
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;

@@ -2,18 +2,18 @@
 
 using CryptoExchange.Net.Objects;
 
-namespace Infrastructure.Common;
+namespace Infrastructure.Extensions;
 
 internal static class CallResultExtensions
 {
-    internal static void ThrowIfHasError(this CallResult callResult) => ThrowIfHasError_private(callResult);
-    internal static void ThrowIfHasError<T>(this CallResult<T> callResult) => ThrowIfHasError_private(callResult);
+    internal static void ThrowIfHasError(this CallResult callResult) => callResult.ThrowIfHasError_private();
+    internal static void ThrowIfHasError<T>(this CallResult<T> callResult) => callResult.ThrowIfHasError_private();
 
-    internal static void ThrowIfHasError(this CallResult callResult, string additionalMessage) => ThrowIfHasError_private(callResult, additionalMessage);
-    internal static void ThrowIfHasError<T>(this CallResult<T> callResult, string additionalMessage) => ThrowIfHasError_private(callResult, additionalMessage);
+    internal static void ThrowIfHasError(this CallResult callResult, string additionalMessage) => callResult.ThrowIfHasError_private(additionalMessage);
+    internal static void ThrowIfHasError<T>(this CallResult<T> callResult, string additionalMessage) => callResult.ThrowIfHasError_private(additionalMessage);
 
-    internal static void ThrowIfHasError(this CallResult callResult, Exception exception) => ThrowIfHasError_private(callResult, exception);
-    internal static void ThrowIfHasError<T>(this CallResult<T> callResult, Exception exception) => ThrowIfHasError_private(callResult, exception);
+    internal static void ThrowIfHasError(this CallResult callResult, Exception exception) => callResult.ThrowIfHasError_private(exception);
+    internal static void ThrowIfHasError<T>(this CallResult<T> callResult, Exception exception) => callResult.ThrowIfHasError_private(exception);
 
 
 
@@ -29,7 +29,7 @@ internal static class CallResultExtensions
     {
         if (callResult.Success)
             return;
-        
+
         var errorMessage = callResult.Error!.ToString().Trim();
         throw new InternalTradingServiceException($"{additionalMessage!.Trim()} | Error: {errorMessage}");
     }
@@ -37,7 +37,7 @@ internal static class CallResultExtensions
     {
         if (callResult.Success)
             return;
-        
+
         throw exception;
     }
 }

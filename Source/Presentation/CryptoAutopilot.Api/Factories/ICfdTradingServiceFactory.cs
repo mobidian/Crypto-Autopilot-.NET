@@ -7,7 +7,7 @@ using Domain.Models;
 
 using Infrastructure.Services.Trading;
 
-namespace Presentation.Api.Factories;
+namespace CryptoAutopilot.Api.Factories;
 
 public class ICfdTradingServiceFactory
 {

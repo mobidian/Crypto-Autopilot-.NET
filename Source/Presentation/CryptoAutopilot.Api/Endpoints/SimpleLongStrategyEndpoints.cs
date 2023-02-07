@@ -2,6 +2,9 @@
 
 using Binance.Net.Enums;
 
+using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.Factories;
+
 using Domain.Models;
 
 using Infrastructure.Strategies.SimpleStrategy;
@@ -9,10 +12,8 @@ using Infrastructure.Strategies.SimpleStrategy;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Api.Endpoints.Internal.Automation.Strategies;
-using Presentation.Api.Factories;
 
-namespace Presentation.Api.Endpoints;
+namespace CryptoAutopilot.Api.Endpoints;
 
 public class SimpleLongStrategyEndpoints : IStrategyEndpoints<SimpleLongStrategyEngine>
 {
@@ -25,7 +26,7 @@ public class SimpleLongStrategyEndpoints : IStrategyEndpoints<SimpleLongStrategy
         var takeProfitParameter = 1.01m;
         var leverage = 10;
 
-        services.AddSingleton<SimpleLongStrategyEngine>(services =>
+        services.AddSingleton(services =>
             new SimpleLongStrategyEngine(
                currencyPair,
                timeframe,

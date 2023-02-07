@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
+using Application.Interfaces.Services.Trading;
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
@@ -9,7 +10,7 @@ using CryptoExchange.Net.Sockets;
 
 using Domain.Models;
 
-using Infrastructure.Common;
+using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Trading;
 

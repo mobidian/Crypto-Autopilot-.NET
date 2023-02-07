@@ -8,6 +8,13 @@ using Binance.Net.Clients;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
+using CryptoAutopilot.Api.Contracts.Responses.Data;
+using CryptoAutopilot.Api.Contracts.Responses.Strategies;
+using CryptoAutopilot.Api.Endpoints.Internal;
+using CryptoAutopilot.Api.Factories;
+using CryptoAutopilot.Api.Services;
+using CryptoAutopilot.Api.Services.Interfaces;
+
 using CryptoExchange.Net.Authentication;
 
 using Infrastructure;
@@ -21,14 +28,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Presentation.Api.Contracts.Responses.Data;
-using Presentation.Api.Contracts.Responses.Strategies;
-using Presentation.Api.Endpoints.Internal;
-using Presentation.Api.Factories;
-using Presentation.Api.Services;
-using Presentation.Api.Services.Interfaces;
-
-namespace Presentation.Api.Endpoints;
+namespace CryptoAutopilot.Api.Endpoints;
 
 public static class GeneralEndpoints
 {
@@ -36,16 +36,16 @@ public static class GeneralEndpoints
     {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-        
+
         services.AddMediatR(typeof(IInfrastructureMarker).Assembly);
 
-        services.AddTransient<FuturesTradingDbContext>(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
+        services.AddTransient(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
         services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
 
 
         services.AddSingleton<ICfdMarketDataProvider, BinanceCfdMarketDataProvider>();
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
-        
+
         AddBinanceClientsAndServicesDerivedFromThem(services, configuration);
 
         // factories are used here because theese services need to be created
@@ -56,8 +56,8 @@ public static class GeneralEndpoints
     }
     private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
-        
+        services.AddTransient(_ => new ApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
+
         // binance client
         services.AddTransient<IBinanceClient, BinanceClient>(services =>
         {
@@ -65,9 +65,9 @@ public static class GeneralEndpoints
             client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return client;
         });
-        services.AddTransient<IBinanceClientUsdFuturesApi>(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
-        services.AddTransient<IBinanceClientUsdFuturesApiTrading>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
-        services.AddTransient<IBinanceClientUsdFuturesApiExchangeData>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
+        services.AddTransient(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
+        services.AddTransient(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
+        services.AddTransient(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
 
         // binance socket client
         services.AddTransient<IBinanceSocketClient, BinanceSocketClient>(services =>
@@ -76,7 +76,7 @@ public static class GeneralEndpoints
             socketClient.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return socketClient;
         });
-        services.AddTransient<IBinanceSocketClientUsdFuturesStreams>(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
+        services.AddTransient(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
     }
     private static void AddServiceFactories(IServiceCollection services)
     {
@@ -105,7 +105,7 @@ public static class GeneralEndpoints
                 return Results.Ok(response);
             }
         }).WithTags("Data");
-        
+
         app.MapGet("futuresorders", async ([FromServices] IFuturesTradesDBService DBService, [FromQuery] string? currencyPair) =>
         {
             if (currencyPair is null)
@@ -126,7 +126,7 @@ public static class GeneralEndpoints
             }
         }).WithTags("Data");
 
-        
+
         app.MapGet("strategies", ([FromServices] IStrategiesTracker StrategiesTracker, Guid? guid, IServiceProvider services) =>
         {
             if (guid is null)
@@ -146,13 +146,13 @@ public static class GeneralEndpoints
                 return Results.Ok(response);
             }
         }).WithTags("Strategies");
-        
+
         app.MapDelete($"StopStrategy/{{guid}}", async ([FromServices] IStrategiesTracker StrategiesTracker, Guid guid, IServiceProvider services) =>
         {
             var strategy = StrategiesTracker.Get(guid);
             if (strategy is null)
                 return Results.NotFound();
-            
+
             return await strategy.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15));
         }).WithTags("Strategies");
     }

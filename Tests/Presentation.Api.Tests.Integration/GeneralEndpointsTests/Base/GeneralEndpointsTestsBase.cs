@@ -6,6 +6,8 @@ using Application.Interfaces.Services.Trading.Strategy;
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
 
+using CryptoAutopilot.Api.Services.Interfaces;
+
 using Domain.Models;
 
 using Infrastructure;
@@ -14,7 +16,6 @@ using Infrastructure.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using Presentation.Api.Services.Interfaces;
 using Presentation.Api.Tests.Integration.Common;
 
 using Respawn;

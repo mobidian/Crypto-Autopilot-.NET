@@ -4,7 +4,7 @@ using Infrastructure.Services.General;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Presentation.Api.Data;
+namespace CryptoAutopilot.Api.Data;
 
 public class DesignTimeFuturesTradingDbContextDbContextFactory : IDesignTimeDbContextFactory<FuturesTradingDbContext>
 {

@@ -1,4 +1,4 @@
-﻿namespace Presentation.Api.Contracts.Responses.Strategies;
+﻿namespace CryptoAutopilot.Api.Contracts.Responses.Strategies;
 
 public class StrategyEngineStoppedResponse
 {

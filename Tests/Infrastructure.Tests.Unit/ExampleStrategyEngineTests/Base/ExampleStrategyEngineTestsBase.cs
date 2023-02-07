@@ -6,7 +6,6 @@ using Domain.Models;
 
 using Generated;
 
-using Infrastructure.Services.Trading;
 using Infrastructure.Strategies.Example;
 
 using MediatR;

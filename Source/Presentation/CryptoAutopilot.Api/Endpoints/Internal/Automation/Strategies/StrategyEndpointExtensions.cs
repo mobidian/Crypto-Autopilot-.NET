@@ -2,7 +2,7 @@
 
 using Application.Interfaces.Services.Trading.Strategy;
 
-namespace Presentation.Api.Endpoints.Internal.Automation.Strategies;
+namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
 
 /// <summary>
 /// Provides extension methods for <see cref="IServiceCollection"/> and <see cref="IApplicationBuilder"/> to register trading strategies and add endpoints for them
@@ -20,7 +20,7 @@ internal static class StrategyEndpointExtensions
     internal static void AddStrategies<TMarker>(this IServiceCollection services, IConfiguration configuration)
     {
         var endpointTypes = GetStrategyEndpointTypes(typeof(TMarker).Assembly);
-        foreach (Type endpointType in endpointTypes)
+        foreach (var endpointType in endpointTypes)
             endpointType.GetMethod(nameof(IStrategyEndpoints<IStrategyEngine>.AddStrategy))!.Invoke(null, new object[] { services, configuration });
     }
 
@@ -32,7 +32,7 @@ internal static class StrategyEndpointExtensions
     internal static void MapStrategyEndpoints<TMarker>(this IApplicationBuilder app)
     {
         var endpointTypes = GetStrategyEndpointTypes(typeof(TMarker).Assembly);
-        foreach (Type endpointType in endpointTypes)
+        foreach (var endpointType in endpointTypes)
         {
             endpointType.GetMethod(nameof(IStrategyEndpoints<IStrategyEngine>.MapStrategySignalsEndpoints))!.Invoke(null, new object[] { app });
             endpointType.GetInterface(typeof(IStrategyEndpoints<>).Name)!.GetMethod(nameof(IStrategyEndpoints<IStrategyEngine>.MapStartStopEndpoints))!.Invoke(null, new object[] { app });

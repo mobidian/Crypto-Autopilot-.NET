@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
+using Application.Interfaces.Services.Trading;
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
@@ -8,7 +9,7 @@ using Domain.Models;
 
 using Infrastructure.Services.Trading;
 
-namespace Presentation.Api.Factories;
+namespace CryptoAutopilot.Api.Factories;
 
 public class IFuturesMarketsCandlestickAwaiterFactory
 {

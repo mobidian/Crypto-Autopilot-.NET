@@ -3,7 +3,7 @@ using Binance.Net.Interfaces;
 
 using Domain.Models;
 
-namespace Infrastructure.Services.Trading;
+namespace Application.Interfaces.Services.Trading;
 
 public interface IFuturesMarketsCandlestickAwaiter : IDisposable
 {
