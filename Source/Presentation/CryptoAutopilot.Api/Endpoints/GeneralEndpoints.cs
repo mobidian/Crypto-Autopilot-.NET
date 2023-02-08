@@ -8,7 +8,6 @@ using Binance.Net.Clients;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
-using CryptoAutopilot.Api.Contracts.Responses.Data;
 using CryptoAutopilot.Api.Contracts.Responses.Strategies;
 using CryptoAutopilot.Api.Endpoints.Internal;
 using CryptoAutopilot.Api.Factories;
@@ -86,47 +85,6 @@ public static class GeneralEndpoints
 
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("candlesticks", async ([FromServices] IFuturesTradesDBService DBService, [FromQuery] string? currencyPair) =>
-        {
-            if (currencyPair is null)
-            {
-                var candlesticks = await DBService.GetAllCandlesticksAsync();
-                var response = new GetAllCandlesticksResponse { Candlesticks = candlesticks };
-                return Results.Ok(response);
-            }
-            else
-            {
-                var candlesticks = await DBService.GetCandlesticksByCurrencyPairAsync(currencyPair);
-                var response = new GetCandlesticksByCurrencyPairResponse
-                {
-                    CurrencyPair = currencyPair.ToUpper(),
-                    Candlesticks = candlesticks,
-                };
-                return Results.Ok(response);
-            }
-        }).WithTags("Data");
-
-        app.MapGet("futuresorders", async ([FromServices] IFuturesTradesDBService DBService, [FromQuery] string? currencyPair) =>
-        {
-            if (currencyPair is null)
-            {
-                var futuresOrders = await DBService.GetAllFuturesOrdersAsync();
-                var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrders };
-                return Results.Ok(response);
-            }
-            else
-            {
-                var futuresOrders = await DBService.GetFuturesOrdersByCurrencyPairAsync(currencyPair);
-                var response = new GetFuturesOrdersByCurrencyPairResponse
-                {
-                    CurrencyPair = currencyPair.ToUpper(),
-                    FuturesOrders = futuresOrders,
-                };
-                return Results.Ok(response);
-            }
-        }).WithTags("Data");
-
-
         app.MapGet("strategies", ([FromServices] IStrategiesTracker StrategiesTracker, Guid? guid, IServiceProvider services) =>
         {
             if (guid is null)

@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoAutopilot.Api", "Source\Presentation\CryptoAutopilot.Api\CryptoAutopilot.Api.csproj", "{6C93A993-936F-433C-B3CA-A2E9045D335E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureFunctions", "AzureFunctions", "{A4D7BBA0-E74E-471B-A5B1-6E139E9E9CF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoAutopilot.DataFunctions", "Source\Presentation\AzureFunctions\CryptoAutopilot.DataFunctions\CryptoAutopilot.DataFunctions.csproj", "{3AA9BA75-1EE5-4B80-87A2-F13C96F7BA34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,10 @@ Global
 		{6C93A993-936F-433C-B3CA-A2E9045D335E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C93A993-936F-433C-B3CA-A2E9045D335E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C93A993-936F-433C-B3CA-A2E9045D335E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AA9BA75-1EE5-4B80-87A2-F13C96F7BA34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AA9BA75-1EE5-4B80-87A2-F13C96F7BA34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AA9BA75-1EE5-4B80-87A2-F13C96F7BA34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AA9BA75-1EE5-4B80-87A2-F13C96F7BA34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +92,8 @@ Global
 		{ED66866A-54D6-4786-AE3B-D5B87CB79C1A} = {CDBBE7A1-0F9B-4B81-AD2B-37F41DB55D2D}
 		{38D8D778-FB32-4265-8F27-1601E8B36E9F} = {CDBBE7A1-0F9B-4B81-AD2B-37F41DB55D2D}
 		{6C93A993-936F-433C-B3CA-A2E9045D335E} = {38D8D778-FB32-4265-8F27-1601E8B36E9F}
+		{A4D7BBA0-E74E-471B-A5B1-6E139E9E9CF6} = {38D8D778-FB32-4265-8F27-1601E8B36E9F}
+		{3AA9BA75-1EE5-4B80-87A2-F13C96F7BA34} = {A4D7BBA0-E74E-471B-A5B1-6E139E9E9CF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A4C812BD-00F6-4D22-A520-D14559F1176B}
