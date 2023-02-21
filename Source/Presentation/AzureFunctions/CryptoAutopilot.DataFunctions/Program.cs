@@ -9,4 +9,4 @@ var host = new HostBuilder()
     .ConfigureServices((host, services) => services.AddServices(host.Configuration))
     .Build();
 
-host.Run();
+await host.RunAsync();

@@ -4,51 +4,54 @@ using Application.Interfaces.Logging;
 using Application.Interfaces.Services.Trading;
 
 using CryptoAutopilot.Api.Contracts.Responses.Data;
+using CryptoAutopilot.DataFunctions.Extensions;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 
 namespace CryptoAutopilot.DataFunctions.Functions;
 
-public class GetFuturesOrdersFunction
+public class GetFuturesOrdersFunction : DataFunctionBase
 {
-    private readonly IFuturesTradesDBService DbService;
-    private readonly ILoggerAdapter<GetCandlesticksFunction> Logger;
-
-    public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetCandlesticksFunction> logger)
-    {
-        this.DbService = dbService;
-        this.Logger = logger;
-    }
+    public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetCandlesticksFunction> logger) : base(dbService, logger) { }
 
 
     [Function("futuresorders")]
-    public async Task<IResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] string? currencyPair)
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, string? currencyPair)
     {
         try
         {
             if (currencyPair is null)
             {
                 var futuresOrders = await DbService.GetAllFuturesOrdersAsync();
-                var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrders };
-                return Results.Ok(response);
+                var resp = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrders };
+
+                return await request.CreateOkJsonResponseAsync(resp);
             }
             else
             {
                 var futuresOrders = await DbService.GetFuturesOrdersByCurrencyPairAsync(currencyPair);
-                var response = new GetFuturesOrdersByCurrencyPairResponse
+                var resp = new GetFuturesOrdersByCurrencyPairResponse
                 {
                     CurrencyPair = currencyPair.ToUpper(),
                     FuturesOrders = futuresOrders,
                 };
-                return Results.Ok(response);
+
+                return await request.CreateOkJsonResponseAsync(resp);
             }
         }
         catch (Exception exception)
         {
             this.Logger.LogError(exception, $"{exception.GetType().FullName}: {exception.Message}\n{exception.StackTrace}");
-            return Results.Problem(exception.Message, exception.StackTrace, (int)HttpStatusCode.InternalServerError, "Exception while trying to query database", exception.GetType().FullName);
+
+            var response = request.CreateResponse(HttpStatusCode.InternalServerError);
+            await response.WriteAsJsonAsync(new
+            {
+                Message = exception.Message
+            });
+            return response;
         }
     }
 }
