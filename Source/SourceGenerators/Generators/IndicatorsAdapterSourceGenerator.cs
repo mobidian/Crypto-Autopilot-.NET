@@ -86,7 +86,7 @@ namespace SourceGenerators.Generators
         {
             var returnType = method.ReturnType.ToDisplayString();
             var name = method.Name;
-            var parametersInSignature = string.Join(", ", method.Parameters.Skip(1).Select(p => $"{p.ToDisplayString()} {p.Name}").ToArray());
+            var parametersInSignature = string.Join(", ", method.Parameters.Skip(1).Select(p => p.ToDisplayString()).ToArray());
             return $"{returnType} {name}({parametersInSignature})".Replace("System.Collections.Generic.", string.Empty).Replace("Skender.Stock.Indicators.", string.Empty);
         }
         private static string GetXmlDocumentationComment(IMethodSymbol method)
