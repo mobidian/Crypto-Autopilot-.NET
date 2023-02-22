@@ -6,6 +6,7 @@ using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
+[Ignore("Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
 public class GetCandlesticksByCurrencyPairEndpointTests : GeneralEndpointsTestsBase
 {
     [Test]
