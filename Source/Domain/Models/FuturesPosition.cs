@@ -1,6 +1,8 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
 
+using Domain.Extensions;
+
 namespace Domain.Models;
 
 public class FuturesPosition
@@ -9,7 +11,7 @@ public class FuturesPosition
 
     public DateTime CreateTime => this.EntryOrder.CreateTime;
 
-    public PositionSide Side => this.EntryOrder.Side == OrderSide.Buy ? PositionSide.Long : PositionSide.Short;
+    public PositionSide Side => this.EntryOrder.Side.ToPositionSide();
 
     public required decimal Leverage { get; init; }
     public required decimal Margin { get; init; }

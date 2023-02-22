@@ -12,4 +12,7 @@ public static class BinanceEnumsExtensions
         PositionSide.Short => PositionSide.Long,
         PositionSide.Both => PositionSide.Both
     };
+
+
+    public static PositionSide ToPositionSide(this OrderSide orderSide) => orderSide == OrderSide.Buy ? PositionSide.Long : PositionSide.Short;
 }
