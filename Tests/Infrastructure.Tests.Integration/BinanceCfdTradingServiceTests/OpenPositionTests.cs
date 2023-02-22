@@ -18,7 +18,7 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
 
         // Act
-        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
@@ -38,7 +38,7 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
 
         // Act
-        var func = async () => await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin, 1.01m * current_price, 0.99m * current_price);
+        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 1.01m * current_price, 0.99m * current_price);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>();
@@ -52,7 +52,7 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
 
         // Act
-        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price);
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
@@ -72,7 +72,7 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
 
         // Act
-        var func = async () => await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Sell, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.testMargin, 0.99m * current_price, 1.01m * current_price);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>();
@@ -83,10 +83,10 @@ public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
     public async Task OpenPosition_ShouldThrow_WhenPositionIsAlreadyOpen()
     {
         // Arrange
-        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin);
 
         // Act
-        var func = async () => await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin);
+        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("A position is open already");

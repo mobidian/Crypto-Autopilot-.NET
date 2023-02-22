@@ -70,7 +70,7 @@ public class ExampleStrategyEngine : StrategyEngine
         decimal stopLoss = this.EMA;
         decimal takeProfit = this.Price + (this.Price - this.EMA) * this.RiskRewardRatio;
 
-        await this.FuturesTrader.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.Margin, stopLoss, takeProfit);
+        await this.FuturesTrader.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, stopLoss, takeProfit);
         await this.Mediator.Publish(new PositionOpenedNotification(this.Candlesticks.Last(), this.FuturesTrader.Position!));
     }
     private async Task ClosePositionAsync()

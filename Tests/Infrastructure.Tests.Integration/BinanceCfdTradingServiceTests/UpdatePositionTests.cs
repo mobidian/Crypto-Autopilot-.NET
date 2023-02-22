@@ -16,7 +16,7 @@ public class UpdatePositionTests : BinanceCfdTradingServiceTestsBase
     {
         // Arrange
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
-        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
 
         // Act
         var placedOrder = await this.SUT.PlaceStopLossAsync(prc * current_price);
@@ -35,7 +35,7 @@ public class UpdatePositionTests : BinanceCfdTradingServiceTestsBase
     {
         // Arrange
         decimal current_price = await this.SUT.GetCurrentPriceAsync();
-        await this.SUT.OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
         decimal initial_stop_loss = this.SUT.Position!.StopLossPrice!.Value;
 
         // Act

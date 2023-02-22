@@ -24,7 +24,7 @@ public class OuterSignalBuyTests : ExampleStrategyEngineTestsBase
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.Received(1).OpenPositionAtMarketPriceAsync(OrderSide.Buy, this.Margin, stopLoss, takeProfit);
+        await this.FuturesTrader.Received(1).PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, stopLoss, takeProfit);
         await this.Mediator.Received(1).Publish(Arg.Any<PositionOpenedNotification>());
     }
 
@@ -39,7 +39,7 @@ public class OuterSignalBuyTests : ExampleStrategyEngineTestsBase
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.DidNotReceive().OpenPositionAtMarketPriceAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
+        await this.FuturesTrader.DidNotReceive().PlaceMarketOrderAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
         await this.Mediator.DidNotReceive().Publish(Arg.Any<PositionOpenedNotification>());
     }
     
@@ -54,7 +54,7 @@ public class OuterSignalBuyTests : ExampleStrategyEngineTestsBase
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.DidNotReceive().OpenPositionAtMarketPriceAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
+        await this.FuturesTrader.DidNotReceive().PlaceMarketOrderAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
         await this.Mediator.DidNotReceive().Publish(Arg.Any<PositionOpenedNotification>());
     }
 }

@@ -69,59 +69,46 @@ public class BinanceCfdTradingService : ICfdTradingService
         return asset.AvailableBalance;
     }
 
-
-    /// <summary>
-    /// Opens a new position
-    /// </summary>
-    /// <param name="OrderSide"></param>
-    /// <param name="MarginBUSD"></param>
-    /// <param name="StopLoss_price"></param>
-    /// <param name="TakeProfit_price"></param>
-    /// <returns>The orders that were placed to open the position</returns>
-    /// <exception cref="InvalidOrderException"></exception>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <exception cref="InternalTradingServiceException"></exception>
-    public async Task<IEnumerable<BinanceFuturesPlacedOrder>> OpenPositionAtMarketPriceAsync(OrderSide OrderSide, decimal MarginBUSD = decimal.MaxValue, decimal? StopLoss_price = null, decimal? TakeProfit_price = null)
+    public async Task<IEnumerable<BinanceFuturesPlacedOrder>> PlaceMarketOrderAsync(OrderSide OrderSide, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         if (this.IsInPosition())
         {
             throw new InvalidOperationException("A position is open already");
         }
 
-        (var BaseQuantity, var CurrentPrice) = await this.Get_BaseQuantity_and_CurrentPrice_Async(MarginBUSD);
-        ValidateTpSl(OrderSide, CurrentPrice, StopLoss_price, TakeProfit_price);
+        (var BaseQuantity, var CurrentPrice) = await this.Get_BaseQuantity_and_CurrentPrice_Async(QuoteMargin);
+        ValidateTpSl(OrderSide, CurrentPrice, StopLoss, TakeProfit);
 
 
-        var BatchOrders = this.CreateBinanceBatchOrders(OrderSide, StopLoss_price, TakeProfit_price, BaseQuantity).ToArray();
+        var BatchOrders = this.CreateBatchOrdersForNewMarketOrder(OrderSide, StopLoss, TakeProfit, BaseQuantity);
         var PlaceOrdersCallResult = await this.TradingClient.PlaceMultipleOrdersAsync(BatchOrders);
         PlaceOrdersCallResult.ThrowIfHasError();
 
-
-        this.Position = this.CreateFuturesPosition(PlaceOrdersCallResult, MarginBUSD);
+        this.Position = this.CreateFuturesPositionInstance(PlaceOrdersCallResult, QuoteMargin);
         
         return PlaceOrdersCallResult.Data.Select(callRes => callRes.Data);
     }
-    private async Task<(decimal BaseQuantity, decimal CurrentPrice)> Get_BaseQuantity_and_CurrentPrice_Async(decimal MarginBUSD)
+    private async Task<(decimal BaseQuantity, decimal CurrentPrice)> Get_BaseQuantity_and_CurrentPrice_Async(decimal QuoteMargin)
     {
         decimal BaseQuantity;
         decimal equityBUSD;
         decimal CurrentPrice;
 
         var GetCurrentPrice_Task = this.GetCurrentPriceAsync();
-        equityBUSD = MarginBUSD == decimal.MaxValue ? await this.GetEquityAsync() : MarginBUSD;
+        equityBUSD = QuoteMargin == decimal.MaxValue ? await this.GetEquityAsync() : QuoteMargin;
         CurrentPrice = await GetCurrentPrice_Task;
 
         BaseQuantity = Math.Round(equityBUSD * this.Leverage / CurrentPrice, this.NrDecimals, MidpointRounding.ToZero);
 
         return (BaseQuantity, CurrentPrice);
     }
-    private static void ValidateTpSl(OrderSide OrderSide, decimal Price, decimal? StopLoss_price, decimal? TakeProfit_price)
+    private static void ValidateTpSl(OrderSide OrderSide, decimal Price, decimal? StopLoss, decimal? TakeProfit_price)
     {
         var builder = new StringBuilder();
 
         #region SL/TP validate positive
-        if (StopLoss_price <= 0)
-            builder.AppendLine($"Specified {nameof(StopLoss_price)} was negative");
+        if (StopLoss <= 0)
+            builder.AppendLine($"Specified {nameof(StopLoss)} was negative");
 
         if (TakeProfit_price <= 0)
             builder.AppendLine($"Specified {nameof(TakeProfit_price)} was negative");
@@ -133,16 +120,16 @@ public class BinanceCfdTradingService : ICfdTradingService
         #region SL/TP validate against current price
         if (OrderSide == OrderSide.Buy)
         {
-            if (StopLoss_price >= Price)
-                builder.AppendLine($"The stop loss can't be greater than or equal to the current price for a {OrderSide} order, current price was {Price} and stop loss was {StopLoss_price}");
+            if (StopLoss >= Price)
+                builder.AppendLine($"The stop loss can't be greater than or equal to the current price for a {OrderSide} order, current price was {Price} and stop loss was {StopLoss}");
 
             if (TakeProfit_price <= Price)
                 builder.AppendLine($"The take profit can't be less greater than or equal to the current price for a {OrderSide} order, current price was {Price} and take profit was {TakeProfit_price}");
         }
         else
         {
-            if (StopLoss_price <= Price)
-                builder.AppendLine($"The stop loss can't be less greater than or equal to the current price for a {OrderSide} order, current price was {Price} and stop loss was {StopLoss_price}");
+            if (StopLoss <= Price)
+                builder.AppendLine($"The stop loss can't be less greater than or equal to the current price for a {OrderSide} order, current price was {Price} and stop loss was {StopLoss}");
 
             if (TakeProfit_price >= Price)
                 builder.AppendLine($"The take profit can't be greater than or equal to the current price for a {OrderSide} order, current price was {Price} and take profit was {TakeProfit_price}");
@@ -152,7 +139,7 @@ public class BinanceCfdTradingService : ICfdTradingService
             throw new InvalidOrderException(builder.Remove(builder.Length - 1, 1).ToString());
         #endregion
     }
-    private List<BinanceFuturesBatchOrder> CreateBinanceBatchOrders(OrderSide OrderSide, decimal? StopLoss_price, decimal? TakeProfit_price, decimal BaseQuantity)
+    private BinanceFuturesBatchOrder[] CreateBatchOrdersForNewMarketOrder(OrderSide OrderSide, decimal? StopLoss, decimal? TakeProfit, decimal BaseQuantity)
     {
         List<BinanceFuturesBatchOrder> BatchOrders = new()
         {
@@ -164,7 +151,7 @@ public class BinanceCfdTradingService : ICfdTradingService
                 Quantity = BaseQuantity,
             }
         };
-        if (StopLoss_price.HasValue)
+        if (StopLoss.HasValue)
         {
             BatchOrders.Add(new BinanceFuturesBatchOrder
             {
@@ -172,10 +159,10 @@ public class BinanceCfdTradingService : ICfdTradingService
                 Side = OrderSide.Invert(),
                 Type = FuturesOrderType.StopMarket,
                 Quantity = BaseQuantity,
-                StopPrice = Math.Round(StopLoss_price.Value, this.NrDecimals),
+                StopPrice = Math.Round(StopLoss.Value, this.NrDecimals),
             });
         }
-        if (TakeProfit_price.HasValue)
+        if (TakeProfit.HasValue)
         {
             BatchOrders.Add(new BinanceFuturesBatchOrder
             {
@@ -183,13 +170,13 @@ public class BinanceCfdTradingService : ICfdTradingService
                 Side = OrderSide.Invert(),
                 Type = FuturesOrderType.TakeProfitMarket,
                 Quantity = BaseQuantity,
-                StopPrice = Math.Round(TakeProfit_price.Value, this.NrDecimals),
+                StopPrice = Math.Round(TakeProfit.Value, this.NrDecimals),
             });
         }
 
-        return BatchOrders;
+        return BatchOrders.ToArray();
     }
-    private FuturesPosition CreateFuturesPosition(CallResult<IEnumerable<CallResult<BinanceFuturesPlacedOrder>>> PlacedOrdersCallResult, decimal MarginBUSD)
+    private FuturesPosition CreateFuturesPositionInstance(CallResult<IEnumerable<CallResult<BinanceFuturesPlacedOrder>>> PlacedOrdersCallResult, decimal QuoteMargin)
     {
         var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToList();
         var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToList();
@@ -205,20 +192,14 @@ public class BinanceCfdTradingService : ICfdTradingService
             CurrencyPair = this.CurrencyPair,
 
             Leverage = this.Leverage,
-            Margin = MarginBUSD,
+            Margin = QuoteMargin,
 
             EntryOrder = FuturesOrders[0],
             StopLossOrder = FuturesOrders[1].Id != 0 ? FuturesOrders[1] : null,
             TakeProfitOrder = FuturesOrders[2].Id != 0 ? FuturesOrders[2] : null
         };
     }
-
-    /// <summary>
-    /// Closes the existing position
-    /// </summary>
-    /// <returns>The futures order that was placed to close the position</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="InternalTradingServiceException"></exception>
+    
     public async Task<BinanceFuturesOrder> ClosePositionAsync()
     {
         if (this.Position is null)
@@ -240,13 +221,6 @@ public class BinanceCfdTradingService : ICfdTradingService
         return await GetFuturesClosingOrderTask;
     }
 
-    /// <summary>
-    /// Places a stop loss futures order and then updates this.Position.StopLossOrder
-    /// </summary>
-    /// <param name="price"></param>
-    /// <returns>The order that has been placed as a <see cref="BinanceFuturesPlacedOrder"/></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <exception cref="InternalTradingServiceException"></exception>
     public async Task<BinanceFuturesPlacedOrder> PlaceStopLossAsync(decimal price)
     {
         if (this.Position is null)
@@ -275,7 +249,7 @@ public class BinanceCfdTradingService : ICfdTradingService
 
     public bool IsInPosition() => this.Position is not null;
 
-
+    
     //// //// ////
     
 

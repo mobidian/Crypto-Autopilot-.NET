@@ -22,7 +22,7 @@ public class CFDMovingDownTests : ShortStrategyEngineTestsBase
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.Received(1).OpenPositionAtMarketPriceAsync(OrderSide.Sell, this.Margin, this.StopLossParameter * currentPrice, this.TakeProfitParameter * currentPrice);
+        await this.FuturesTrader.Received(1).PlaceMarketOrderAsync(OrderSide.Sell, this.Margin, this.StopLossParameter * currentPrice, this.TakeProfitParameter * currentPrice);
         await this.Mediator.Received().Publish(Arg.Any<PositionOpenedNotification>());
         this.SUT.Signal.Should().BeNull();
     }
@@ -47,7 +47,7 @@ public class CFDMovingDownTests : ShortStrategyEngineTestsBase
 
 
         // Assert
-        await this.FuturesTrader.DidNotReceive().OpenPositionAtMarketPriceAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
+        await this.FuturesTrader.DidNotReceive().PlaceMarketOrderAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
         await this.Mediator.DidNotReceive().Publish(Arg.Any<PositionOpenedNotification>());
         this.SUT.Signal.Should().BeNull();
     }
@@ -63,7 +63,7 @@ public class CFDMovingDownTests : ShortStrategyEngineTestsBase
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.DidNotReceive().OpenPositionAtMarketPriceAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
+        await this.FuturesTrader.DidNotReceive().PlaceMarketOrderAsync(Arg.Any<OrderSide>(), Arg.Any<decimal>(), Arg.Any<decimal>(), Arg.Any<decimal>());
         await this.Mediator.DidNotReceive().Publish(Arg.Any<PositionOpenedNotification>());
         this.SUT.Signal.Should().BeNull();
     }

@@ -50,7 +50,7 @@ public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
     private async Task OpenShortPositionAsync()
     {
         var price = await this.FuturesTrader.GetCurrentPriceAsync();
-        await this.FuturesTrader.OpenPositionAtMarketPriceAsync(OrderSide.Sell, this.Margin, this.StopLossParameter * price, this.TakeProfitParameter * price);
+        await this.FuturesTrader.PlaceMarketOrderAsync(OrderSide.Sell, this.Margin, this.StopLossParameter * price, this.TakeProfitParameter * price);
 
         var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval);
         await this.Mediator.Publish(new PositionOpenedNotification(candlesticks.Last(), this.FuturesTrader.Position!));
