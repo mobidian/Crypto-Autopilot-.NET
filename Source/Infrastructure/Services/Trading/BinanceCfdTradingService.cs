@@ -141,13 +141,18 @@ public class BinanceCfdTradingService : ICfdTradingService
     }
     private BinanceFuturesBatchOrder[] CreateBatchOrdersForNewMarketOrder(OrderSide OrderSide, decimal? StopLoss, decimal? TakeProfit, decimal BaseQuantity)
     {
-        List<BinanceFuturesBatchOrder> BatchOrders = new()
+        var symbolName = this.CurrencyPair.Name;
+        var positionSide = OrderSide.ToPositionSide();
+        var inverseOrderSide = OrderSide.Invert();
+
+        var BatchOrders = new List<BinanceFuturesBatchOrder>()
         {
             new BinanceFuturesBatchOrder
             {
-                Symbol = this.CurrencyPair.Name,
+                Symbol = symbolName,
                 Side = OrderSide,
                 Type = FuturesOrderType.Market,
+                PositionSide = positionSide,
                 Quantity = BaseQuantity,
             }
         };
@@ -155,9 +160,10 @@ public class BinanceCfdTradingService : ICfdTradingService
         {
             BatchOrders.Add(new BinanceFuturesBatchOrder
             {
-                Symbol = this.CurrencyPair.Name,
-                Side = OrderSide.Invert(),
+                Symbol = symbolName,
+                Side = inverseOrderSide,
                 Type = FuturesOrderType.StopMarket,
+                PositionSide = positionSide,
                 Quantity = BaseQuantity,
                 StopPrice = Math.Round(StopLoss.Value, this.NrDecimals),
             });
@@ -166,14 +172,15 @@ public class BinanceCfdTradingService : ICfdTradingService
         {
             BatchOrders.Add(new BinanceFuturesBatchOrder
             {
-                Symbol = this.CurrencyPair.Name,
-                Side = OrderSide.Invert(),
+                Symbol = symbolName,
+                Side = inverseOrderSide,
                 Type = FuturesOrderType.TakeProfitMarket,
+                PositionSide = positionSide,
                 Quantity = BaseQuantity,
                 StopPrice = Math.Round(TakeProfit.Value, this.NrDecimals),
             });
         }
-
+        
         return BatchOrders.ToArray();
     }
     private FuturesPosition CreateFuturesPositionInstance(CallResult<IEnumerable<CallResult<BinanceFuturesPlacedOrder>>> PlacedOrdersCallResult, decimal QuoteMargin)
@@ -208,7 +215,7 @@ public class BinanceCfdTradingService : ICfdTradingService
         }
 
 
-        var ClosingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.Market, quantity: this.Position.EntryOrder.Quantity);
+        var ClosingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.Market, quantity: this.Position.EntryOrder.Quantity, positionSide: this.Position.Side);
         ClosingCallResult.ThrowIfHasError("The current position could not be closed");
 
         var GetFuturesClosingOrderTask = this.GetOrderAsync(ClosingCallResult.Data.Id);
@@ -229,7 +236,7 @@ public class BinanceCfdTradingService : ICfdTradingService
         }
 
         
-        var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals));
+        var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
         SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed");
         // // RARE EXCEPTION: InternalTradingServiceException : The stop loss could not be placed | Error: -1001: Internal error; unable to process your request. Please try again.
         // TODO retry policy //
