@@ -10,8 +10,12 @@ public class FuturesPosition
     public required CurrencyPair CurrencyPair { get; init; } = default!;
 
     public DateTime CreateTime => this.EntryOrder.CreateTime;
+    public PositionSide Side => this.EntryOrder.PositionSide;
 
-    public PositionSide Side => this.EntryOrder.Side.ToPositionSide();
+    public decimal EntryPrice => this.EntryOrder.AvgPrice;
+    public decimal? StopLossPrice => this.StopLossOrder?.StopPrice;
+    public decimal? TakeProfitPrice => this.TakeProfitOrder?.StopPrice;
+
 
     public required decimal Leverage { get; init; }
     public required decimal Margin { get; init; }
@@ -67,6 +71,9 @@ public class FuturesPosition
         
         if (value.Type != FuturesOrderType.Market)
             throw new ArgumentException($"The {nameof(this.EntryOrder)} property was given a {value.Type} order instead of a market order", nameof(value));
+
+        if (value.Side.ToPositionSide() != value.PositionSide)
+            throw new ArgumentException($"The {nameof(this.EntryOrder)} property was given an order with conflicting order side and position side values", nameof(value));
     }
     private void ValidateGivenSLorTP(BinanceFuturesOrder value, string paramName)
     {
@@ -75,8 +82,12 @@ public class FuturesPosition
 
         if (value.Type == FuturesOrderType.Market)
             throw new ArgumentException($"The {paramName} property was given a market order", nameof(value));
+        
+        if (value.Side.ToPositionSide() != value.PositionSide.Invert())
+            throw new ArgumentException($"The {paramName} property was given an order with conflicting order side and position side values", nameof(value));
     }
 
+    
     /// <summary>
     /// Returns the binance IDs of the open orders
     /// </summary>
@@ -86,10 +97,4 @@ public class FuturesPosition
         foreach (BinanceFuturesOrder item in this.OrdersBatch.Where(x => x is not null))
             yield return item.Id;
     }
-    
-    #region Position prices of interest getters
-    public decimal EntryPrice => this.EntryOrder.AvgPrice;
-    public decimal? StopLossPrice => this.StopLossOrder?.StopPrice;
-    public decimal? TakeProfitPrice => this.TakeProfitOrder?.StopPrice;
-    #endregion
 }
