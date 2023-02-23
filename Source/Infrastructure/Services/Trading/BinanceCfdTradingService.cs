@@ -15,6 +15,8 @@ using Domain.Models;
 
 using Infrastructure.Extensions;
 
+using Polly;
+
 namespace Infrastructure.Services.Trading;
 
 public class BinanceCfdTradingService : ICfdTradingService
@@ -52,6 +54,18 @@ public class BinanceCfdTradingService : ICfdTradingService
     }
 
     /////  /////
+
+    #region Retry Policies
+    private readonly IAsyncPolicy<BinanceFuturesOrder> MarketOrderRetryPolicy =
+        Policy<BinanceFuturesOrder>
+            .Handle<Exception>()
+            .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
+    
+    private readonly IAsyncPolicy<WebCallResult<BinanceFuturesPlacedOrder>> StopLossRetryPolicy =
+        Policy<WebCallResult<BinanceFuturesPlacedOrder>>
+            .Handle<InternalTradingServiceException>(exc => exc.Message != "The stop loss could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.")
+            .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
+    #endregion
 
     public async Task<decimal> GetCurrentPriceAsync()
     {
@@ -187,13 +201,19 @@ public class BinanceCfdTradingService : ICfdTradingService
     {
         var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToList();
         var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToList();
-        Parallel.For(0, PlacedOrders.Count, i => FuturesOrders[i] = this.GetOrderAsync(PlacedOrders[i].Id).GetAwaiter().GetResult() ?? new BinanceFuturesOrder()); // Parallel.For isn't async await friendly
+        
+        try { Parallel.For(0, PlacedOrders.Count, i => FuturesOrders[i] = GetOrderFromPlacedOrderAndValidate(PlacedOrders[i])); }
+        catch
+        {
+            var entryOrder = PlacedOrders.First();
+            var task1 = this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name, entryOrder.Side.Invert(), FuturesOrderType.Market, entryOrder.Quantity, positionSide: entryOrder.PositionSide);
+            var task2 = this.TradingClient.CancelMultipleOrdersAsync(this.CurrencyPair.Name, PlacedOrders.Select(x => x.Id).ToList());
+            
+            Task.WaitAll(task1, task2);
 
-        // RARE EXCEPTION: ArgumentException : The EntryOrder property was given a StopMarket order instead of a market order (Parameter 'value')
-        // TODO retry policy //
-        // Error happened due to binance exception
-        // Discovered in the 12th run of a "run ultil failure integration testing
-
+            throw;
+        }
+        
         return new FuturesPosition
         {
             CurrencyPair = this.CurrencyPair,
@@ -206,7 +226,27 @@ public class BinanceCfdTradingService : ICfdTradingService
             TakeProfitOrder = FuturesOrders[2].Id != 0 ? FuturesOrders[2] : null
         };
     }
-    
+    public BinanceFuturesOrder GetOrderFromPlacedOrderAndValidate(BinanceFuturesPlacedOrder placedOrder)
+        => this.MarketOrderRetryPolicy.ExecuteAsync(async () =>
+        {
+            var futuresOrder = await this.GetOrderAsync(placedOrder.Id);
+
+            if (futuresOrder is null)
+                return new BinanceFuturesOrder();
+
+            if (futuresOrder.Symbol != placedOrder.Symbol ||
+                futuresOrder.Id != placedOrder.Id ||
+                futuresOrder.ClientOrderId != placedOrder.ClientOrderId ||
+                futuresOrder.Side != placedOrder.Side ||
+                futuresOrder.Type != placedOrder.Type ||
+                futuresOrder.WorkingType != placedOrder.WorkingType ||
+                futuresOrder.PositionSide != placedOrder.PositionSide)
+                throw new InternalTradingServiceException();
+
+            return futuresOrder;
+        }).GetAwaiter().GetResult();
+
+
     public async Task<BinanceFuturesOrder> ClosePositionAsync()
     {
         if (this.Position is null)
@@ -235,22 +275,22 @@ public class BinanceCfdTradingService : ICfdTradingService
             throw new InvalidOperationException("No position is open thus a stop loss can't be placed");
         }
 
-        
-        var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
-        SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed");
-        // // RARE EXCEPTION: InternalTradingServiceException : The stop loss could not be placed | Error: -1001: Internal error; unable to process your request. Please try again.
-        // TODO retry policy //
-        // Error happened due to binance exception
-        // Discovered in the 12th run of a "run ultil failure integration testing
 
-        var GetSLOrderTask = this.GetOrderAsync(SLPlacingCallResult.Data.Id);
+        var SLPlacingCallResult = await this.StopLossRetryPolicy.ExecuteAsync(async () =>
+        {
+            var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
+            SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed");
+            return SLPlacingCallResult;
+        });
+        
+        var GetSLOrderTask = this.GetOrderAsync(SLPlacingCallResult!.Data.Id);
         if (this.Position.StopLossOrder is not null)
         {
             await this.TradingClient.CancelOrderAsync(symbol: this.CurrencyPair.Name, this.Position.StopLossOrder.Id);
         }
 
         this.Position.StopLossOrder = await GetSLOrderTask;
-        
+
         return SLPlacingCallResult.Data;
     }
 
