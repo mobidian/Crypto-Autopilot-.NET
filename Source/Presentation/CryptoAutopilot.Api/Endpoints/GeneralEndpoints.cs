@@ -22,8 +22,6 @@ using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
 
-using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints;
@@ -34,8 +32,8 @@ public static class GeneralEndpoints
     {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
-        services.AddMediatR(typeof(IInfrastructureMarker).Assembly);
+        
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
 
         services.AddTransient(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
         services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
