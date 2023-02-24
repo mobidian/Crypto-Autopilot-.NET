@@ -1,7 +1,6 @@
 ﻿using Binance.Net.Clients;
 using Binance.Net.Enums;
-
-using CryptoExchange.Net.Authentication;
+using Binance.Net.Objects;
 
 using Domain.Models;
 
@@ -22,7 +21,7 @@ public abstract class BinanceCfdMarketDataProviderTestsBase
     public BinanceCfdMarketDataProviderTestsBase()
     {
         var binanceClient = new BinanceClient();
-        binanceClient.SetApiCredentials(new ApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
+        binanceClient.SetApiCredentials(new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
 
         this.SUT = new BinanceCfdMarketDataProvider(binanceClient, binanceClient.UsdFuturesApi);
     }

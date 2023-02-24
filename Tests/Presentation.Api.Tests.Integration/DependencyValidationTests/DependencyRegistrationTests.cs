@@ -9,11 +9,10 @@ using Binance.Net.Clients;
 using Binance.Net.Clients.UsdFuturesApi;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
+using Binance.Net.Objects;
 
 using CryptoAutopilot.Api;
 using CryptoAutopilot.Api.Factories;
-
-using CryptoExchange.Net.Authentication;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
@@ -45,7 +44,7 @@ public class DependencyRegistrationTests
 
 
         #region AddBinanceClientsAndServicesDerivedFromThem
-        (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Transient),
+        (typeof(BinanceApiCredentials), typeof(BinanceApiCredentials), ServiceLifetime.Transient),
 
         (typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
         (typeof(IBinanceClientUsdFuturesApi), typeof(BinanceClientUsdFuturesApi), ServiceLifetime.Transient),
