@@ -98,7 +98,7 @@ public class BinanceCfdTradingService : ICfdTradingService
         var PlaceOrdersCallResult = await this.TradingClient.PlaceMultipleOrdersAsync(BatchOrders);
         PlaceOrdersCallResult.ThrowIfHasError();
 
-        this.Position = this.CreateFuturesPositionInstance(PlaceOrdersCallResult, QuoteMargin);
+        this.Position = await this.CreateFuturesPositionInstanceAsync(PlaceOrdersCallResult, QuoteMargin);
         
         return PlaceOrdersCallResult.Data.Select(callRes => callRes.Data);
     }
@@ -197,37 +197,51 @@ public class BinanceCfdTradingService : ICfdTradingService
         
         return BatchOrders.ToArray();
     }
-    private FuturesPosition CreateFuturesPositionInstance(CallResult<IEnumerable<CallResult<BinanceFuturesPlacedOrder>>> PlacedOrdersCallResult, decimal QuoteMargin)
+    private async Task<FuturesPosition> CreateFuturesPositionInstanceAsync(CallResult<IEnumerable<CallResult<BinanceFuturesPlacedOrder>>> PlacedOrdersCallResult, decimal QuoteMargin)
     {
-        var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToList();
-        var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToList();
+        var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToArray();
         
-        try { Parallel.For(0, PlacedOrders.Count, i => FuturesOrders[i] = GetOrderFromPlacedOrderAndValidate(PlacedOrders[i])); }
+        try
+        {
+            var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToArray();
+
+            Parallel.For(0, PlacedOrders.Length, i =>
+            {
+                var task = this.GetOrderFromPlacedOrderAndValidateAsync(PlacedOrders[i]);
+                FuturesOrders[i] = task.GetAwaiter().GetResult();
+            });
+
+            //await Parallel.ForEachAsync(PlacedOrders, async (placedOrder, _) =>
+            //{
+            //    var index = Array.IndexOf(PlacedOrders, placedOrder);
+            //    FuturesOrders[index] = await this.GetOrderFromPlacedOrderAndValidateAsync(placedOrder);
+            //});
+
+            return new FuturesPosition
+            {
+                CurrencyPair = this.CurrencyPair,
+
+                Leverage = this.Leverage,
+                Margin = QuoteMargin,
+
+                EntryOrder = FuturesOrders[0],
+                StopLossOrder = FuturesOrders[1].Id != 0 ? FuturesOrders[1] : null,
+                TakeProfitOrder = FuturesOrders[2].Id != 0 ? FuturesOrders[2] : null
+            };
+        }
         catch
         {
             var entryOrder = PlacedOrders.First();
             var task1 = this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name, entryOrder.Side.Invert(), FuturesOrderType.Market, entryOrder.Quantity, positionSide: entryOrder.PositionSide);
             var task2 = this.TradingClient.CancelMultipleOrdersAsync(this.CurrencyPair.Name, PlacedOrders.Select(x => x.Id).ToList());
             
-            Task.WaitAll(task1, task2);
+            await Task.WhenAll(task1, task2);
 
             throw;
         }
-        
-        return new FuturesPosition
-        {
-            CurrencyPair = this.CurrencyPair,
-
-            Leverage = this.Leverage,
-            Margin = QuoteMargin,
-
-            EntryOrder = FuturesOrders[0],
-            StopLossOrder = FuturesOrders[1].Id != 0 ? FuturesOrders[1] : null,
-            TakeProfitOrder = FuturesOrders[2].Id != 0 ? FuturesOrders[2] : null
-        };
     }
-    public BinanceFuturesOrder GetOrderFromPlacedOrderAndValidate(BinanceFuturesPlacedOrder placedOrder)
-        => this.MarketOrderRetryPolicy.ExecuteAsync(async () =>
+    public async Task<BinanceFuturesOrder> GetOrderFromPlacedOrderAndValidateAsync(BinanceFuturesPlacedOrder placedOrder)
+        => await this.MarketOrderRetryPolicy.ExecuteAsync(async () =>
         {
             var futuresOrder = await this.GetOrderAsync(placedOrder.Id);
 
@@ -244,7 +258,7 @@ public class BinanceCfdTradingService : ICfdTradingService
                 throw new InternalTradingServiceException();
 
             return futuresOrder;
-        }).GetAwaiter().GetResult();
+        });
 
 
     public async Task<BinanceFuturesOrder> ClosePositionAsync()
