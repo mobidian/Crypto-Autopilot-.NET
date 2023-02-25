@@ -211,11 +211,11 @@ public class BinanceCfdTradingService : ICfdTradingService
                 FuturesOrders[i] = task.GetAwaiter().GetResult();
             });
 
-            //await Parallel.ForEachAsync(PlacedOrders, async (placedOrder, _) =>
-            //{
-            //    var index = Array.IndexOf(PlacedOrders, placedOrder);
-            //    FuturesOrders[index] = await this.GetOrderFromPlacedOrderAndValidateAsync(placedOrder);
-            //});
+            // await Parallel.ForEachAsync(PlacedOrders, async (placedOrder, _) =>
+            // {
+            //     var index = Array.IndexOf(PlacedOrders, placedOrder);
+            //     FuturesOrders[index] = await this.GetOrderFromPlacedOrderAndValidateAsync(placedOrder);
+            // });
 
             return new FuturesPosition
             {
