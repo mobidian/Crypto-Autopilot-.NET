@@ -43,6 +43,7 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.UpdateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())
+        .RuleFor(o => o.PositionSide, f => f.Random.Enum<PositionSide>())
         .RuleFor(o => o.Type, f => f.Random.Enum<FuturesOrderType>())
         .RuleFor(o => o.WorkingType, f => f.Random.Enum<WorkingType>())
         .RuleFor(o => o.Price, f => f.Random.Decimal(0, 1000))
