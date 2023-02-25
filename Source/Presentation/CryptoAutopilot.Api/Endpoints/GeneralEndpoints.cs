@@ -7,6 +7,7 @@ using Application.Interfaces.Services.Trading.Strategy;
 using Binance.Net.Clients;
 using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
+using Binance.Net.Objects;
 
 using CryptoAutopilot.Api.Contracts.Responses.Strategies;
 using CryptoAutopilot.Api.Endpoints.Internal;
@@ -14,16 +15,12 @@ using CryptoAutopilot.Api.Factories;
 using CryptoAutopilot.Api.Services;
 using CryptoAutopilot.Api.Services.Interfaces;
 
-using CryptoExchange.Net.Authentication;
-
 using Infrastructure;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
 using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
-
-using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,8 +32,8 @@ public static class GeneralEndpoints
     {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
-        services.AddMediatR(typeof(IInfrastructureMarker).Assembly);
+        
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
 
         services.AddTransient(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
         services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
@@ -55,13 +52,13 @@ public static class GeneralEndpoints
     }
     private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient(_ => new ApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
+        services.AddTransient(_ => new BinanceApiCredentials(configuration.GetValue<string>("BinanceApiCredentials:key")!, configuration.GetValue<string>("BinanceApiCredentials:secret")!));
 
         // binance client
         services.AddTransient<IBinanceClient, BinanceClient>(services =>
         {
             var client = new BinanceClient();
-            client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
+            client.SetApiCredentials(services.GetRequiredService<BinanceApiCredentials>());
             return client;
         });
         services.AddTransient(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
@@ -72,7 +69,7 @@ public static class GeneralEndpoints
         services.AddTransient<IBinanceSocketClient, BinanceSocketClient>(services =>
         {
             var socketClient = new BinanceSocketClient();
-            socketClient.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
+            socketClient.SetApiCredentials(services.GetRequiredService<BinanceApiCredentials>());
             return socketClient;
         });
         services.AddTransient(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);

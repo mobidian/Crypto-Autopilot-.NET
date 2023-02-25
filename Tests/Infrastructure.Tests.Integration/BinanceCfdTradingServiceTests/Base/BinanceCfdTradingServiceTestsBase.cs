@@ -1,6 +1,5 @@
 ﻿using Binance.Net.Clients;
-
-using CryptoExchange.Net.Authentication;
+using Binance.Net.Objects;
 
 using Domain.Models;
 
@@ -25,7 +24,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     public BinanceCfdTradingServiceTestsBase()
     {
         var binanceClient = new BinanceClient();
-        binanceClient.SetApiCredentials(new ApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
+        binanceClient.SetApiCredentials(new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
 
         this.SUT = new BinanceCfdTradingService(this.CurrencyPair, 10, binanceClient, binanceClient.UsdFuturesApi, binanceClient.UsdFuturesApi.Trading, binanceClient.UsdFuturesApi.ExchangeData);
     }

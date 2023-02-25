@@ -22,6 +22,11 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
                .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<OrderSide>(@string))
                .HasMaxLength(8)
                .HasColumnName("Order Side");
+        
+        builder.Property(x => x.PositionSide)
+               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<PositionSide>(@string))
+               .HasMaxLength(8)
+               .HasColumnName("Position Side");
 
         builder.Property(x => x.OrderType)
                .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<FuturesOrderType>(@string))

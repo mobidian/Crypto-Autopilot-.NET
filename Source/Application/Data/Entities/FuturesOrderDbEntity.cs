@@ -12,6 +12,7 @@ public class FuturesOrderDbEntity : BaseEntity
     public required DateTime CreateTime { get; set; }
     public required DateTime UpdateTime { get; set; }
     public required OrderSide OrderSide { get; set; }
+    public required PositionSide PositionSide { get; set; }
     public required FuturesOrderType OrderType { get; set; }
     public required WorkingType OrderWorkingType { get; set; }
     public required decimal Price { get; set; }
