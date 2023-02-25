@@ -61,9 +61,9 @@ public class BinanceCfdTradingService : ICfdTradingService
             .Handle<Exception>()
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
     
-    private readonly IAsyncPolicy<WebCallResult<BinanceFuturesPlacedOrder>> StopLossRetryPolicy =
+    private readonly IAsyncPolicy<WebCallResult<BinanceFuturesPlacedOrder>> SlTpRetryPolicy =
         Policy<WebCallResult<BinanceFuturesPlacedOrder>>
-            .Handle<InternalTradingServiceException>(exc => exc.Message != "The stop loss could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.")
+            .Handle<InternalTradingServiceException>(exc => !exc.Message.EndsWith("Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed."))
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
     #endregion
 
@@ -290,7 +290,7 @@ public class BinanceCfdTradingService : ICfdTradingService
         }
 
 
-        var SLPlacingCallResult = await this.StopLossRetryPolicy.ExecuteAsync(async () =>
+        var SLPlacingCallResult = await this.SlTpRetryPolicy.ExecuteAsync(async () =>
         {
             var SLPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
             SLPlacingCallResult.ThrowIfHasError("The stop loss could not be placed");
@@ -306,6 +306,32 @@ public class BinanceCfdTradingService : ICfdTradingService
         this.Position.StopLossOrder = await GetSLOrderTask;
 
         return SLPlacingCallResult.Data;
+    }
+
+    public async Task<BinanceFuturesPlacedOrder> PlaceTakeProfitAsync(decimal price)
+    {
+        if (this.Position is null)
+        {
+            throw new InvalidOperationException("No position is open thus a take profit can't be placed");
+        }
+
+        
+        var TPPlacingCallResult = await this.SlTpRetryPolicy.ExecuteAsync(async () =>
+        {
+            var TPPlacingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.TakeProfitMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
+            TPPlacingCallResult.ThrowIfHasError("The take profit could not be placed");
+            return TPPlacingCallResult;
+        });
+        
+        var GetTPOrderTask = this.GetOrderAsync(TPPlacingCallResult!.Data.Id);
+        if (this.Position.TakeProfitOrder is not null)
+        {
+            await this.TradingClient.CancelOrderAsync(symbol: this.CurrencyPair.Name, this.Position.TakeProfitOrder.Id);
+        }
+
+        this.Position.TakeProfitOrder = await GetTPOrderTask;
+
+        return TPPlacingCallResult.Data;
     }
 
     public bool IsInPosition() => this.Position is not null;

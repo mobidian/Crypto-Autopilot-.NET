@@ -46,13 +46,22 @@ public interface ICfdTradingService : IDisposable
     public Task<BinanceFuturesOrder> ClosePositionAsync();
     
     /// <summary>
-    /// Places a stop loss order and then updates this.Position.StopLossOrder
+    /// Places a stop loss limit order if there is an open position and then updates this.Position.StopLossOrder
     /// </summary>
     /// <param name="price">The price for the stop loss order to be placed</param>
     /// <returns>The order that has been placed as a <see cref="BinanceFuturesPlacedOrder"/></returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="InternalTradingServiceException"></exception>
     public Task<BinanceFuturesPlacedOrder> PlaceStopLossAsync(decimal price);
+    
+    /// <summary>
+    /// Places a take profit limit order if there is an open position and then updates this.Position.TakeProfitOrder
+    /// </summary>
+    /// <param name="price">The price for the stop loss order to be placed</param>
+    /// <returns>The order that has been placed as a <see cref="BinanceFuturesPlacedOrder"/></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="InternalTradingServiceException"></exception>
+    public Task<BinanceFuturesPlacedOrder> PlaceTakeProfitAsync(decimal price);
 
 
     public bool IsInPosition();
