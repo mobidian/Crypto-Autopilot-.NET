@@ -35,7 +35,7 @@ public static class GeneralEndpoints
         
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
 
-        services.AddTransient(services => new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, services.GetRequiredService<IDateTimeProvider>()));
+        services.AddTransient(services => new FuturesTradingDbContext(configuration.GetConnectionString("OrderHistoryDB")!, services.GetRequiredService<IDateTimeProvider>()));
         services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
 
 

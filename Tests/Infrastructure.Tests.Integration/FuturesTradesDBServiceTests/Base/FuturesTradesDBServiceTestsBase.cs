@@ -17,7 +17,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
-    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("CryptoPilotTrades");
+    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("OrderHistoryDB");
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;

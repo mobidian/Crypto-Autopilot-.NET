@@ -16,6 +16,6 @@ public class DesignTimeFuturesTradingDbContextDbContextFactory : IDesignTimeDbCo
             .AddUserSecrets<Program>()
             .Build();
 
-        return new FuturesTradingDbContext(configuration.GetConnectionString("CryptoPilotTrades")!, new DateTimeProvider());
+        return new FuturesTradingDbContext(configuration.GetConnectionString("OrderHistoryDB")!, new DateTimeProvider());
     }
 }
