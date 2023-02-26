@@ -44,12 +44,12 @@ public class FuturesMarketsCandlestickAwaiter : IFuturesMarketsCandlestickAwaite
         callResult.ThrowIfHasError("Could not subscribe to kline updates");
 
         this.WaitForFirstKlineUpdate();
-
+        
         this.KlineUpdatesSubscription.SetSubscription(callResult.Data);
-        this.KlineUpdatesSubscription.ConnectionLost += this.HandleKlineUpdatesSubscriptionConnectionLostAsync;
+        this.KlineUpdatesSubscription.ConnectionLost += async () => await this.HandleKlineUpdatesSubscriptionConnectionLostAsync();
         this.SubscribedToKlineUpdates = true;
     }
-    private async void HandleKlineUpdatesSubscriptionConnectionLostAsync()
+    private async Task HandleKlineUpdatesSubscriptionConnectionLostAsync()
     {
         this.Logger.LogInformation("Connection to {0} has been lost, attempting to reconnect", nameof(this.KlineUpdatesSubscription));
         await this.KlineUpdatesSubscription.ReconnectAsync();
