@@ -4,44 +4,26 @@ using Binance.Net.Enums;
 
 using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests;
+namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.AllPositions;
 
 public class UpdatePositionStopLossTests : BinanceCfdTradingServiceTestsBase
 {
-    private const decimal precision = 1; // for assertions
-
-
-    [Test, Order(1)]
-    public async Task PlaceStopLossAsync_ShouldUpdateStopLoss_WhenPositionExistsAndInputIsCorrect([Random(0.99, 0.999, 1, Distinct = true)] decimal prc)
+    [Test]
+    public async Task PlaceStopLossAsync_ShouldNotUpdateStopLoss_WhenPositionExistsButPriceIsInvalid()
     {
         // Arrange
         var current_price = await this.SUT.GetCurrentPriceAsync();
-        var new_stop_loss_price = prc * current_price;
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
-
-        // Act
-        var newStopLossPlacedOrder = await this.SUT.PlaceStopLossAsync(new_stop_loss_price);
-
-
-        // Assert
-        var newStopLossOrder = await this.SUT.GetOrderAsync(this.SUT.Position!.StopLossOrder!.Id);
-        
-        this.SUT.Position!.StopLossPrice.Should().BeApproximately(new_stop_loss_price, precision);
-        newStopLossOrder.Id.Should().Be(newStopLossPlacedOrder.Id);
-        newStopLossOrder.StopPrice.Should().Be(newStopLossPlacedOrder.StopPrice);
-    }
-    
-    [Test, Order(2)]
-    public async Task PlaceStopLossAsync_ShouldNotUpdateStopLoss_WhenPositionExistsButInputIsIncorrect()
-    {
-        // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await (Random.Shared.Next(2) switch
+        {
+            0 => this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price),
+            1 => this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price),
+            _ => throw new NotImplementedException()
+        });
         var initial_stop_loss_price = this.SUT.Position!.StopLossPrice!.Value;
 
         // Act
         var func = async () => await this.SUT.PlaceStopLossAsync(-1);
-        
+
 
         // Assert
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("The stop loss could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
@@ -51,12 +33,12 @@ public class UpdatePositionStopLossTests : BinanceCfdTradingServiceTestsBase
         stopLossPlacedOrder.StopPrice.Should().Be(initial_stop_loss_price);
     }
     
-    [Test, Order(3)]
+    [Test]
     public async Task PlaceStopLossAsync_ShouldThrow_WhenPositionDoesNotExist()
     {
         // Act
         var func = async () => await this.SUT.PlaceStopLossAsync(-1);
-        
+
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("No position is open thus a stop loss can't be placed");
         this.SUT.Position!.Should().BeNull();

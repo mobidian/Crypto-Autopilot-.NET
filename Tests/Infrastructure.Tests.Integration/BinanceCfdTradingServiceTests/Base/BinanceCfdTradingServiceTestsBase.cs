@@ -1,5 +1,7 @@
 ﻿using Binance.Net.Clients;
+using Binance.Net.Enums;
 using Binance.Net.Objects;
+using Binance.Net.Objects.Models.Futures;
 
 using Domain.Models;
 
@@ -19,6 +21,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     protected BinanceCfdTradingService SUT = default!;
     protected decimal testMargin = 5;
 
+    protected const decimal precision = 1; // for assertions
 
 
     public BinanceCfdTradingServiceTestsBase()
@@ -30,6 +33,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     }
 
 
+    //// //// //// ////
 
 
     private bool StopTests = false; // the test execution stops if this field becomes true
@@ -42,7 +46,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     {
         this.StopTests = TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed;
 
-        for (int i = 0; i < 10 && this.SUT.IsInPosition(); i++)
+        for (var i = 0; i < 10 && this.SUT.IsInPosition(); i++)
         {
             try { await this.SUT.ClosePositionAsync(); }
             catch { await Task.Delay(300); }
