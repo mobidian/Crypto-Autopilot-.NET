@@ -59,6 +59,8 @@ public class DependencyRegistrationTests
         (typeof(ICfdTradingServiceFactory), typeof(ICfdTradingServiceFactory), ServiceLifetime.Singleton),
         (typeof(IFuturesMarketsCandlestickAwaiterFactory), typeof(IFuturesMarketsCandlestickAwaiterFactory), ServiceLifetime.Singleton),
 	    #endregion
+        
+        (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
         #endregion
 
 

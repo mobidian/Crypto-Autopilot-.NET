@@ -48,6 +48,8 @@ public static class GeneralEndpoints
         // with respect to parameters such as currencyPair, timeframe, leverage and so on
         AddServiceFactories(services);
 
+        services.AddSingleton<IOrderStatusMonitor, OrderStatusMonitor>();
+
         services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
     }
     private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)
@@ -61,10 +63,11 @@ public static class GeneralEndpoints
             client.SetApiCredentials(services.GetRequiredService<BinanceApiCredentials>());
             return client;
         });
-        services.AddTransient(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
-        services.AddTransient(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
-        services.AddTransient(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
-
+        services.AddTransient<IBinanceClientUsdFuturesApi>(services => services.GetRequiredService<IBinanceClient>().UsdFuturesApi);
+        services.AddTransient<IBinanceClientUsdFuturesApiTrading>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Trading);
+        services.AddTransient<IBinanceClientUsdFuturesApiExchangeData>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().ExchangeData);
+        services.AddTransient<IBinanceClientUsdFuturesApiAccount>(services => services.GetRequiredService<IBinanceClientUsdFuturesApi>().Account);
+        
         // binance socket client
         services.AddTransient<IBinanceSocketClient, BinanceSocketClient>(services =>
         {
@@ -72,7 +75,7 @@ public static class GeneralEndpoints
             socketClient.SetApiCredentials(services.GetRequiredService<BinanceApiCredentials>());
             return socketClient;
         });
-        services.AddTransient(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
+        services.AddTransient<IBinanceSocketClientUsdFuturesStreams>(services => services.GetRequiredService<IBinanceSocketClient>().UsdFuturesStreams);
     }
     private static void AddServiceFactories(IServiceCollection services)
     {
