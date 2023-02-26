@@ -63,7 +63,19 @@ public class BinanceCfdTradingService : ICfdTradingService
     
     private readonly IAsyncPolicy<WebCallResult<BinanceFuturesPlacedOrder>> SlTpRetryPolicy =
         Policy<WebCallResult<BinanceFuturesPlacedOrder>>
-            .Handle<InternalTradingServiceException>(exc => !exc.Message.EndsWith("Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed."))
+            .Handle<InternalTradingServiceException>(exc =>
+            {
+                // These if statements check for specific error messages related to user input errors
+                // Errors raised as a result of bad user input won't be handled
+                
+                if (exc.Message.EndsWith("Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed."))
+                    return false;
+
+                if (exc.Message.EndsWith("Error: -2021: Order would immediately trigger."))
+                    return false;
+                
+                return true;
+            })
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
     #endregion
 
