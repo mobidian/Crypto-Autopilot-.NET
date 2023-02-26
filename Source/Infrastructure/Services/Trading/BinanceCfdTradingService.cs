@@ -28,12 +28,13 @@ public class BinanceCfdTradingService : ICfdTradingService
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IBinanceClientUsdFuturesApiExchangeData ExchangeData;
+    private readonly IOrderStatusMonitor OrderStatusMonitor;
     
     public FuturesPosition? Position { get; private set; }
 
     private readonly int NrDecimals = 2;
 
-    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceClientUsdFuturesApiExchangeData exchangeData)
+    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceClientUsdFuturesApiExchangeData exchangeData, IOrderStatusMonitor orderStatusMonitor)
     {
         this.CurrencyPair = currencyPair;
         this.Leverage = leverage;
@@ -41,6 +42,7 @@ public class BinanceCfdTradingService : ICfdTradingService
         this.FuturesClient = futuresClient;
         this.TradingClient = tradingClient;
         this.ExchangeData = exchangeData;
+        this.OrderStatusMonitor = orderStatusMonitor;
     }
 
     //// //// ////
@@ -107,12 +109,13 @@ public class BinanceCfdTradingService : ICfdTradingService
 
 
         var BatchOrders = this.CreateBatchOrdersForNewMarketOrder(OrderSide, StopLoss, TakeProfit, BaseQuantity);
-        var PlaceOrdersCallResult = await this.TradingClient.PlaceMultipleOrdersAsync(BatchOrders);
-        PlaceOrdersCallResult.ThrowIfHasError();
-
-        this.Position = await this.CreateFuturesPositionInstanceAsync(PlaceOrdersCallResult, QuoteMargin);
+        var PlacedOrdersCallResult = await this.TradingClient.PlaceMultipleOrdersAsync(BatchOrders);
+        PlacedOrdersCallResult.ThrowIfHasError();
         
-        return PlaceOrdersCallResult.Data.Select(callRes => callRes.Data);
+        var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToArray();
+        this.Position = await this.CreateFuturesPositionInstanceAsync(QuoteMargin, PlacedOrders);
+        
+        return PlacedOrdersCallResult.Data.Select(callRes => callRes.Data);
     }
     private async Task<(decimal BaseQuantity, decimal CurrentPrice)> Get_BaseQuantity_and_CurrentPrice_Async(decimal QuoteMargin)
     {
@@ -209,14 +212,12 @@ public class BinanceCfdTradingService : ICfdTradingService
         
         return BatchOrders.ToArray();
     }
-    private async Task<FuturesPosition> CreateFuturesPositionInstanceAsync(CallResult<IEnumerable<CallResult<BinanceFuturesPlacedOrder>>> PlacedOrdersCallResult, decimal QuoteMargin)
+    private async Task<FuturesPosition> CreateFuturesPositionInstanceAsync(decimal QuoteMargin, BinanceFuturesPlacedOrder[] PlacedOrders)
     {
-        var PlacedOrders = PlacedOrdersCallResult.Data.Select(call => call.Data).Where(placedOrder => placedOrder is not null).ToArray();
-        
         try
         {
             var FuturesOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToArray();
-
+            
             Parallel.For(0, PlacedOrders.Length, i =>
             {
                 var task = this.GetOrderFromPlacedOrderAndValidateAsync(PlacedOrders[i]);
@@ -272,26 +273,78 @@ public class BinanceCfdTradingService : ICfdTradingService
             return futuresOrder;
         });
 
-
-    public async Task<BinanceFuturesOrder> ClosePositionAsync()
+    public async Task<BinanceFuturesPlacedOrder> PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
-        if (this.Position is null)
+        if (this.IsInPosition())
         {
-            throw new InvalidOperationException($"No position is open", new NullReferenceException($"{nameof(this.Position)} is NULL"));
+            throw new InvalidOperationException("A position is open already");
         }
-
-
-        var ClosingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.Market, quantity: this.Position.EntryOrder.Quantity, positionSide: this.Position.Side);
-        ClosingCallResult.ThrowIfHasError("The current position could not be closed");
-
-        var GetFuturesClosingOrderTask = this.GetOrderAsync(ClosingCallResult.Data.Id);
         
-        // some orders may still be open so they must be closed
-        var CancellingCallResult = await this.TradingClient.CancelMultipleOrdersAsync(symbol: this.CurrencyPair.Name, this.Position.GetOpenOrdersIDs().ToList());
-        CancellingCallResult.ThrowIfHasError("The remaining orders could not be closed");
+        (var BaseQuantity, var CurrentPrice) = await this.Get_BaseQuantity_and_CurrentPrice_Async(QuoteMargin);
+        
+        if (OrderSide == OrderSide.Buy && LimitPrice > CurrentPrice)
+            throw new InvalidOrderException("The limit price for a buy order can't be greater than the current price");
 
-        this.Position = null;
-        return await GetFuturesClosingOrderTask;
+        if (OrderSide == OrderSide.Sell && LimitPrice < CurrentPrice)
+            throw new InvalidOrderException("The limit price for a sell order can't be less greater than the current price");
+
+        ValidateTpSl(OrderSide, LimitPrice, StopLoss, TakeProfit);
+
+        
+        var PlacedOrderCallResult = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name, OrderSide, FuturesOrderType.Limit, BaseQuantity, LimitPrice, OrderSide.ToPositionSide(), TimeInForce.GoodTillCanceled);
+        PlacedOrderCallResult.ThrowIfHasError();
+        var PlacedLimitOrder = PlacedOrderCallResult.Data;
+        
+        _ = PlaceTpSlAndUpdatePositionWhenLimitOrderIsFilledAsync(OrderSide, PlacedLimitOrder, QuoteMargin, StopLoss, TakeProfit, BaseQuantity);
+        
+        return PlacedLimitOrder;
+    }
+    private async Task PlaceTpSlAndUpdatePositionWhenLimitOrderIsFilledAsync(OrderSide EntryOrderSide, BinanceFuturesPlacedOrder PlacedLimitOrder, decimal QuoteMargin, decimal? StopLoss, decimal? TakeProfit, decimal BaseQuantity)
+    {
+        await this.OrderStatusMonitor.SubscribeToOrderUpdatesAsync();
+        await this.OrderStatusMonitor.WaitForOrderStatusAsync(PlacedLimitOrder.Id, OrderStatus.Filled);
+        
+        var TpSlPlacedOrdersCallResult = await this.TradingClient.PlaceMultipleOrdersAsync(this.CreateTpSlBatchOrders(EntryOrderSide, StopLoss, TakeProfit, BaseQuantity));
+        TpSlPlacedOrdersCallResult.ThrowIfHasError();
+        var TpSlPlacedOrders = TpSlPlacedOrdersCallResult.Data.Select(x => x.Data);
+        
+        this.Position = await this.CreateFuturesPositionInstanceAsync(QuoteMargin, TpSlPlacedOrders.Prepend(PlacedLimitOrder).ToArray());
+    }
+    private BinanceFuturesBatchOrder[] CreateTpSlBatchOrders(OrderSide EntryOrderSide, decimal? StopLoss, decimal? TakeProfit, decimal BaseQuantity)
+    {
+        var symbolName = this.CurrencyPair.Name;
+        var positionSide = EntryOrderSide.ToPositionSide();
+        var inverseOrderSide = EntryOrderSide.Invert();
+        
+        var BatchOrders = new List<BinanceFuturesBatchOrder>();
+        if (StopLoss.HasValue)
+        {
+            BatchOrders.Add(new BinanceFuturesBatchOrder
+            {
+                Symbol = symbolName,
+                Side = inverseOrderSide,
+                Type = FuturesOrderType.StopMarket,
+                PositionSide = positionSide,
+                Quantity = BaseQuantity,
+                StopPrice = Math.Round(StopLoss.Value, this.NrDecimals),
+                TimeInForce = TimeInForce.GoodTillCanceled
+            });
+        }
+        if (TakeProfit.HasValue)
+        {
+            BatchOrders.Add(new BinanceFuturesBatchOrder
+            {
+                Symbol = symbolName,
+                Side = inverseOrderSide,
+                Type = FuturesOrderType.TakeProfitMarket,
+                PositionSide = positionSide,
+                Quantity = BaseQuantity,
+                StopPrice = Math.Round(TakeProfit.Value, this.NrDecimals),
+                TimeInForce = TimeInForce.GoodTillCanceled
+            });
+        }
+        
+        return BatchOrders.ToArray();
     }
 
     public async Task<BinanceFuturesPlacedOrder> PlaceStopLossAsync(decimal price)
@@ -344,6 +397,27 @@ public class BinanceCfdTradingService : ICfdTradingService
         this.Position.TakeProfitOrder = await GetTPOrderTask;
 
         return TPPlacingCallResult.Data;
+    }
+
+    public async Task<BinanceFuturesOrder> ClosePositionAsync()
+    {
+        if (this.Position is null)
+        {
+            throw new InvalidOperationException($"No position is open", new NullReferenceException($"{nameof(this.Position)} is NULL"));
+        }
+
+
+        var ClosingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.Market, quantity: this.Position.EntryOrder.Quantity, positionSide: this.Position.Side);
+        ClosingCallResult.ThrowIfHasError("The current position could not be closed");
+
+        var GetFuturesClosingOrderTask = this.GetOrderAsync(ClosingCallResult.Data.Id);
+
+        // some orders may still be open so they must be closed
+        var CancellingCallResult = await this.TradingClient.CancelMultipleOrdersAsync(symbol: this.CurrencyPair.Name, this.Position.GetOpenOrdersIDs().ToList());
+        CancellingCallResult.ThrowIfHasError("The remaining orders could not be closed");
+
+        this.Position = null;
+        return await GetFuturesClosingOrderTask;
     }
 
     public bool IsInPosition() => this.Position is not null;

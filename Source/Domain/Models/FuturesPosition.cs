@@ -69,8 +69,10 @@ public class FuturesPosition
         if (value.Symbol != this.CurrencyPair)
             throw new ArgumentException($"The {nameof(this.EntryOrder)} property was given a value with a diffrent {typeof(CurrencyPair).Name}", nameof(value));
         
-        if (value.Type != FuturesOrderType.Market)
-            throw new ArgumentException($"The {nameof(this.EntryOrder)} property was given a {value.Type} order instead of a market order", nameof(value));
+        var marketOrder = value.Type == FuturesOrderType.Market;
+        var filledLimitOrder = value.Type == FuturesOrderType.Limit && value.Status == OrderStatus.Filled;
+        if (!marketOrder && !filledLimitOrder)
+            throw new ArgumentException($"The {nameof(this.EntryOrder)} property was given a {value.Status} {value.Type} order", nameof(value));
 
         if (value.Side.ToPositionSide() != value.PositionSide)
             throw new ArgumentException($"The {nameof(this.EntryOrder)} property was given an order with conflicting order side and position side values", nameof(value));
