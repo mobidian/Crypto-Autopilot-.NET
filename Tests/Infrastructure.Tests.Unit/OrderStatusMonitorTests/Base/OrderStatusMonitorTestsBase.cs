@@ -27,10 +27,10 @@ public abstract class OrderStatusMonitorTestsBase
     protected readonly IUpdateSubscriptionProxy UserDataUpdatesSubscription = Substitute.For<IUpdateSubscriptionProxy>();
     protected readonly ILoggerAdapter<OrderStatusMonitor> Logger = Substitute.For<ILoggerAdapter<OrderStatusMonitor>>();
     protected readonly IDictionary<long, OrderStatus?> OrdersStatuses = new Dictionary<long, OrderStatus?>();
-
+    
     public OrderStatusMonitorTestsBase()
     {
-        var listenKeyWebCallReuslt = new WebCallResult<string>(HttpStatusCode.OK, null, TimeSpan.Zero, this.listenKey, String.Empty, String.Empty, HttpMethod.Get, null, this.listenKey, null);
+        var listenKeyWebCallReuslt = new WebCallResult<string>(HttpStatusCode.OK, null, TimeSpan.Zero, this.listenKey, String.Empty, String.Empty, HttpMethod.Post, null, this.listenKey, null);
         this.Account.StartUserStreamAsync().Returns(Task.FromResult(listenKeyWebCallReuslt));
 
         var updateSubscriptionCallResult = new CallResult<UpdateSubscription>(new UpdateSubscription(null!, null!));
