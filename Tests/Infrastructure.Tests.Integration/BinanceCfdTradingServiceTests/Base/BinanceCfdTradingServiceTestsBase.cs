@@ -28,7 +28,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
 
     protected const decimal precision = 1; // for assertions
     protected decimal testMargin = 5;
-
+    
     protected BinanceCfdTradingService SUT = default!;
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly decimal Leverage = 10m;
@@ -65,7 +65,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
 
     //// //// //// ////
     
-    private readonly List<long> LimitOrdersIDs;
+    private readonly List<long> LimitOrdersIDs = new List<long>();
     private bool StopTests = false; // the test execution stops if this field becomes true
 
     [SetUp]
@@ -76,21 +76,21 @@ public abstract class BinanceCfdTradingServiceTestsBase
     {
         this.StopTests = TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed;
 
-        for (var i = 0; i < 10 && this.SUT.IsInPosition(); i++)
-        {
-            try { await this.SUT.ClosePositionAsync(); }
-            catch { await Task.Delay(300); }
-        }
-    }
+        
+        if (this.SUT.IsInPosition())
+            await this.SUT.ClosePositionAsync();
 
+        await this.TradingClient.CancelMultipleOrdersAsync(this.CurrencyPair.Name, this.LimitOrdersIDs);
+        this.LimitOrdersIDs.Clear();
+    }
 
 
     protected async Task<BinanceFuturesPlacedOrder> SUT_PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
-        var task = this.SUT.PlaceLimitOrderAsync(OrderSide.Buy, LimitPrice, this.testMargin, StopLoss, TakeProfit);
-
-        var callResult = await task;
-        this.LimitOrdersIDs.Add(callResult.Id);
+        var task = this.SUT.PlaceLimitOrderAsync(OrderSide, LimitPrice, this.testMargin, StopLoss, TakeProfit);
+        
+        var placedOrder = await task;
+        this.LimitOrdersIDs.Add(placedOrder.Id);
          
         return task.Result;
     }
