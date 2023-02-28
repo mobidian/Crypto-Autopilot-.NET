@@ -12,7 +12,7 @@ public class OpenLongPositionTests : BinanceCfdTradingServiceTestsBase
     public async Task OpenPosition_ShouldOpenLongPosition_WhenInputIsCorrect()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
         // Act
         await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
@@ -32,7 +32,7 @@ public class OpenLongPositionTests : BinanceCfdTradingServiceTestsBase
     public async Task OpenPosition_ShouldNotOpenLongPosition_WhenInputIsIncorrect()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
         // Act
         var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 1.01m * current_price, 0.99m * current_price);

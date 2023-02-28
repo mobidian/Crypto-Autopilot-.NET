@@ -21,7 +21,6 @@ public interface ICfdTradingService : IDisposable
 
     /////  /////
 
-    public Task<decimal> GetCurrentPriceAsync();
     public Task<decimal> GetEquityAsync();
 
     /// <summary>

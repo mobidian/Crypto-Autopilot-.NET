@@ -13,7 +13,7 @@ public class CFDMovingUpTests : ShortStrategyEngineTestsBase
     {
         // Arrange
         decimal currentPrice = this.Random.Next(1000, 3000);
-        this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
+        this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(true);
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
         

@@ -28,21 +28,21 @@ public class BinanceCfdTradingService : ICfdTradingService
     private readonly IBinanceClient BinanceClient;
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
-    private readonly IBinanceClientUsdFuturesApiExchangeData ExchangeData;
+    private readonly ICfdMarketDataProvider CfdMarketDataProvider;
     private readonly IOrderStatusMonitor OrderStatusMonitor;
     
     public FuturesPosition? Position { get; private set; }
 
     private readonly int NrDecimals = 2;
 
-    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceClientUsdFuturesApiExchangeData exchangeData, IOrderStatusMonitor orderStatusMonitor)
+    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, ICfdMarketDataProvider cfdMarketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
         this.CurrencyPair = currencyPair;
         this.Leverage = leverage;
         this.BinanceClient = binanceClient;
         this.FuturesClient = futuresClient;
         this.TradingClient = tradingClient;
-        this.ExchangeData = exchangeData;
+        this.CfdMarketDataProvider = cfdMarketDataProvider;
         this.OrderStatusMonitor = orderStatusMonitor;
     }
 
@@ -82,13 +82,6 @@ public class BinanceCfdTradingService : ICfdTradingService
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
     #endregion
 
-    public async Task<decimal> GetCurrentPriceAsync()
-    {
-        var callResult = await this.ExchangeData.GetPriceAsync(this.CurrencyPair.Name);
-        callResult.ThrowIfHasError();
-
-        return callResult.Data.Price;
-    }
     public async Task<decimal> GetEquityAsync()
     {
         var callResult = await this.FuturesClient.Account.GetAccountInfoAsync();
@@ -123,8 +116,8 @@ public class BinanceCfdTradingService : ICfdTradingService
         decimal BaseQuantity;
         decimal equityBUSD;
         decimal CurrentPrice;
-
-        var GetCurrentPrice_Task = this.GetCurrentPriceAsync();
+        
+        var GetCurrentPrice_Task = this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         equityBUSD = QuoteMargin == decimal.MaxValue ? await this.GetEquityAsync() : QuoteMargin;
         CurrentPrice = await GetCurrentPrice_Task;
 

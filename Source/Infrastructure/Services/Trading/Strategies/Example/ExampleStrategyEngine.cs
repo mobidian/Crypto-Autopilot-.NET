@@ -63,7 +63,7 @@ public class ExampleStrategyEngine : StrategyEngine
     private async Task GetLatestMarketDataAsync()
     {
         this.Candlesticks = (await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval)).ToList();
-        this.Price = await this.FuturesTrader.GetCurrentPriceAsync();
+        this.Price = await this.FuturesDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         this.EMA = Convert.ToDecimal(this.IndicatorsAdapter.GetEma(this.EMALength).Last().Ema);
     }
     private async Task OpenLongPositionAsync()

@@ -10,7 +10,7 @@ public class CloseLongPositionTests : BinanceCfdTradingServiceTestsBase
     public async Task ClosePosition_ShouldCloseLongPosition_WhenLongPositionExists()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
 
         // Act

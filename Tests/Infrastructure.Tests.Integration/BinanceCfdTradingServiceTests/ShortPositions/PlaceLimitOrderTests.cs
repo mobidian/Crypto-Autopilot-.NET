@@ -12,7 +12,7 @@ public class PlaceLimitOrderTests : BinanceCfdTradingServiceTestsBase
     public async Task PlaceLimitOrderAsync_ShouldPlaceLimitOrder_WhenInputIsCorrect()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var limitPrice = current_price + 50;
         var stopLoss = limitPrice + 25;
         var takeProfit = limitPrice - 25;
@@ -29,7 +29,7 @@ public class PlaceLimitOrderTests : BinanceCfdTradingServiceTestsBase
     public async Task PlaceLimitOrderAsync_ShouldThrow_WhenLimitPriceInputIsIncorrect()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var limitPrice = current_price - 50;
         var stopLoss = limitPrice + 25;
         var takeProfit = limitPrice - 25;
@@ -45,7 +45,7 @@ public class PlaceLimitOrderTests : BinanceCfdTradingServiceTestsBase
     public async Task PlaceLimitOrderAsync_ShouldThrow_WhenTpSlInputIsIncorrect()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var limitPrice = current_price - 50;
         var stopLoss = limitPrice + 25;
         var takeProfit = limitPrice - 25;

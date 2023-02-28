@@ -50,7 +50,7 @@ public sealed class SimpleLongStrategyEngine : SimpleStrategyEngine
     }
     private async Task OpenLongPositionAsync()
     {
-        var price = await this.FuturesTrader.GetCurrentPriceAsync();
+        var price = await this.FuturesDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         await this.FuturesTrader.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, this.StopLossParameter * price, this.TakeProfitParameter * price);
 
         var candlesticks = await this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval);

@@ -23,7 +23,7 @@ public abstract class BinanceCfdMarketDataProviderTestsBase
         var binanceClient = new BinanceClient();
         binanceClient.SetApiCredentials(new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
 
-        this.SUT = new BinanceCfdMarketDataProvider(binanceClient, binanceClient.UsdFuturesApi);
+        this.SUT = new BinanceCfdMarketDataProvider(binanceClient, binanceClient.UsdFuturesApi, binanceClient.UsdFuturesApi.ExchangeData);
     }
 
 

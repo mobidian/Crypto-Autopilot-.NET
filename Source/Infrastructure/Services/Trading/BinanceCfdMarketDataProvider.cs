@@ -20,13 +20,23 @@ public class BinanceCfdMarketDataProvider : ICfdMarketDataProvider
 {
     private readonly IBinanceClient BinanceClient;
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
+    private readonly IBinanceClientUsdFuturesApiExchangeData FuturesExchangeData;
 
-    public BinanceCfdMarketDataProvider(IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient)
+    public BinanceCfdMarketDataProvider(IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiExchangeData futuresExchangeData)
     {
         this.BinanceClient = binanceClient ?? throw new ArgumentNullException(nameof(binanceClient));
         this.FuturesClient = futuresClient ?? throw new ArgumentNullException(nameof(futuresClient));
+        this.FuturesExchangeData = futuresExchangeData ?? throw new ArgumentNullException(nameof(futuresExchangeData));
     }
 
+
+    public async Task<decimal> GetCurrentPriceAsync(string currencyPair)
+    {
+        var callResult = await this.FuturesExchangeData.GetPriceAsync(currencyPair);
+        callResult.ThrowIfHasError();
+        
+        return callResult.Data.Price;
+    }
 
     public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync(string currencyPair, KlineInterval timeframe)
     {

@@ -12,7 +12,7 @@ public class UpdateLongPositionStopLossTests : BinanceCfdTradingServiceTestsBase
     public async Task PlaceStopLossAsync_ShouldUpdateStopLoss_WhenPositionExistsAndInputIsCorrect([Random(0.99, 0.999, 1, Distinct = true)] decimal prc)
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var new_stop_loss_price = prc * current_price;
         await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
         
@@ -32,7 +32,7 @@ public class UpdateLongPositionStopLossTests : BinanceCfdTradingServiceTestsBase
     public async Task PlaceStopLossAsync_ShouldThrow_WhenPositionExistsAndPriceIsGreaterThanCurrentPrice()
     {
         // Arrange
-        var current_price = await this.SUT.GetCurrentPriceAsync();
+        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var new_stop_loss_price = current_price + 10;
         await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
         

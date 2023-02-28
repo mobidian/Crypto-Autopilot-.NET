@@ -69,7 +69,7 @@ public class ExampleStrategyEngineTestsBase
         currentPrice = this.Random.Next(1000, 3000);
         emaPrice = currentPrice - this.Random.Next(1, 100); // EMA > PRICE
 
-        this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
+        this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(false, true); // trader not in position
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval).Returns(this.RandomCandlesticks);
         this.IndicatorsAdapter.GetEma(this.EMALength).Returns(new EmaResult[] { new EmaResult(DateTime.MinValue) { Ema = Convert.ToDouble(emaPrice) } });
@@ -79,7 +79,7 @@ public class ExampleStrategyEngineTestsBase
         currentPrice = this.Random.Next(1000, 3000);
         emaPrice = currentPrice - this.Random.Next(10, 50); ; // EMA > PRICE
 
-        this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
+        this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(true); // trader in position
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval).Returns(this.RandomCandlesticks);
         this.IndicatorsAdapter.GetEma(this.EMALength).Returns(new EmaResult[] { new EmaResult(DateTime.MinValue) { Ema = Convert.ToDouble(emaPrice) } });
@@ -89,7 +89,7 @@ public class ExampleStrategyEngineTestsBase
         currentPrice = this.Random.Next(1000, 3000);
         emaPrice = currentPrice + this.Random.Next(0, 50); // EMA < PRICE
         
-        this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
+        this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(false, true); // trader not in position
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval).Returns(this.RandomCandlesticks);
         this.IndicatorsAdapter.GetEma(this.EMALength).Returns(new EmaResult[] { new EmaResult(DateTime.MinValue) { Ema = Convert.ToDouble(emaPrice) } });
@@ -98,7 +98,7 @@ public class ExampleStrategyEngineTestsBase
     protected void ArrangeFor_OuterSignalSell_ShouldTriggerPositionClosing_WhenTraderIsInPosition(out decimal currentPrice)
     {
         currentPrice = this.Random.Next(1000, 3000);
-        this.FuturesTrader.GetCurrentPriceAsync().Returns(currentPrice);
+        this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(true); // trader in position
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.RandomCandlesticks);
         this.IndicatorsAdapter.GetEma(this.EMALength).Returns(new EmaResult[] { new EmaResult(DateTime.MinValue) { Ema = -1.0 } });
