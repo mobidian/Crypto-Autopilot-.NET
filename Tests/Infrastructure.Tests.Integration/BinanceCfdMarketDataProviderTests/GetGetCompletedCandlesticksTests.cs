@@ -1,7 +1,5 @@
 ﻿using Binance.Net.Enums;
 
-using Domain.Models;
-
 using Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests;
@@ -13,11 +11,12 @@ public class GetGetCompletedCandlesticksTests : BinanceCfdMarketDataProviderTest
     public async Task GetAllCandlesticksAsync_ShouldReturnAllCandlesticks_WhenTimeframeIsValid(KlineInterval timeframe)
     {
         // Act
+        var callTimeUtc = DateTime.UtcNow;
         var candlesticks = await SUT.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, timeframe);
-        
+
         // Assert
-        candlesticks.Last().Date.Add(TimeSpan.FromSeconds(2 * (int)timeframe)).Should().BeAfter(DateTime.UtcNow);
-        base.AreCandlesticksTimelyConsistent(candlesticks, timeframe).Should().BeTrue();
+        callTimeUtc.Subtract(TimeSpan.FromSeconds(2 * (int)timeframe)).Should().BeBefore(candlesticks.Last().Date);
+        base.CandlesticksAreTimelyConsistent(candlesticks, timeframe).Should().BeTrue();
     }
 
 

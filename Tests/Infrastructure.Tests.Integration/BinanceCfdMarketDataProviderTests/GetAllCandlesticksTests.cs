@@ -1,7 +1,5 @@
 ﻿using Binance.Net.Enums;
 
-using Domain.Models;
-
 using Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdMarketDataProviderTests;
@@ -13,14 +11,15 @@ public class GetAllCandlesticksTests : BinanceCfdMarketDataProviderTestsBase
     public async Task GetAllCandlesticksAsync_ShouldReturnAllCandlesticks_WhenTimeframeIsValid(KlineInterval timeframe)
     {
         // Act
+        var callTimeUtc = DateTime.UtcNow;
         var candlesticks = await SUT.GetAllCandlesticksAsync(this.CurrencyPair.Name, timeframe);
 
         // Assert
-        candlesticks.Last().Date.Add(TimeSpan.FromSeconds((int)timeframe)).Should().BeAfter(DateTime.UtcNow);
-        base.AreCandlesticksTimelyConsistent(candlesticks, timeframe).Should().BeTrue();
+        callTimeUtc.Subtract(TimeSpan.FromSeconds((int)timeframe)).Should().BeBefore(candlesticks.Last().Date);
+        base.CandlesticksAreTimelyConsistent(candlesticks, timeframe).Should().BeTrue();
     }
 
-
+    
     [Test, TestCaseSource(nameof(GetInvalidKlineIntervals))]
     public async Task GetAllCandlesticksAsync_ShouldThrow_WhenTimeframeIsUnsupported(KlineInterval timeframe)
     {
