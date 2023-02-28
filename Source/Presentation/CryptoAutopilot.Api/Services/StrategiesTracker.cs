@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-using Application.Interfaces.Services.Trading.Strategy;
+using Application.Interfaces.Services.Trading;
 
 using CryptoAutopilot.Api.Services.Interfaces;
 

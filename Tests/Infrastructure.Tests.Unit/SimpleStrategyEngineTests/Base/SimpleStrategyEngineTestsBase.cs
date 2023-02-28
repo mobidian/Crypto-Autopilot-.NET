@@ -1,10 +1,11 @@
 ﻿using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 
 using Domain.Models;
 
-using Infrastructure.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 using MediatR;
 

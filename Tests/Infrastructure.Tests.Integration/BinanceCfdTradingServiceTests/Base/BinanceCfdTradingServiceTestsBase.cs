@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.Trading;
+﻿using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Clients;
 using Binance.Net.Enums;
@@ -12,6 +12,7 @@ using Domain.Models;
 using Infrastructure.Logging;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
+using Infrastructure.Services.Trading.Monitors;
 using Infrastructure.Tests.Integration.Common;
 
 using Microsoft.Extensions.Logging;

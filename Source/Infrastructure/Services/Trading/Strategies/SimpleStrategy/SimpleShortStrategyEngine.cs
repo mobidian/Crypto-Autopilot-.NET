@@ -1,15 +1,16 @@
 ﻿using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 
 using Domain.Models;
 
 using Infrastructure.Notifications;
-using Infrastructure.Strategies.SimpleStrategy.Enums;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy.Enums;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.SimpleStrategy;
+namespace Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 /// <summary>
 /// A simple strategy that opens a short position when <see cref="CFDMovingDown"/> is called and closes the position if it exists when <see cref="CFDMovingUp"/> is called
@@ -27,7 +28,7 @@ public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
     }
 
     //// //// ////
-    
+
     internal override async Task MakeMoveAsync()
     {
         await this.CandlestickMonitor.WaitForNextCandlestickAsync(this.CurrencyPair.Name, ContractType.Perpetual, this.KlineInterval);
@@ -35,7 +36,7 @@ public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
 
         if (this.Signal is null)
             return;
-        
+
         if (this.Signal == TradingviewSignal.Down && !this.FuturesTrader.IsInPosition())
         {
             await this.OpenShortPositionAsync();

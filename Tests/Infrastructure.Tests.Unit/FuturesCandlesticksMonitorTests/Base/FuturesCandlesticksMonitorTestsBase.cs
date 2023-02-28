@@ -11,7 +11,7 @@ using CryptoExchange.Net.Objects;
 
 using CryptoExchange.Net.Sockets;
 
-using Infrastructure.Services.Trading;
+using Infrastructure.Services.Trading.Monitors;
 
 namespace Infrastructure.Tests.Unit.FuturesCandlesticksMonitorTests.Base;
 

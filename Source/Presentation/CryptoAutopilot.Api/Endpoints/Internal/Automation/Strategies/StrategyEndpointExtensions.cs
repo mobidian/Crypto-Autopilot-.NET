@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-using Application.Interfaces.Services.Trading.Strategy;
+using Application.Interfaces.Services.Trading;
 
 namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
 

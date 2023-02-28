@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 
 using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Strategy;
 
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;

@@ -1,15 +1,16 @@
 ﻿using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 
 using Domain.Models;
 
 using Infrastructure.Notifications;
-using Infrastructure.Strategies.SimpleStrategy.Enums;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy.Enums;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.SimpleStrategy;
+namespace Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 /// <summary>
 /// A simple strategy that opens a long position when <see cref="CFDMovingUp"/> is called and closes the position if it exists when <see cref="CFDMovingDown"/> is called
@@ -25,7 +26,7 @@ public sealed class SimpleLongStrategyEngine : SimpleStrategyEngine
         if (this.TakeProfitParameter <= 1)
             throw new ArgumentException($"When trading longs the {nameof(this.TakeProfitParameter)} must be greater than 1", nameof(this.TakeProfitParameter));
     }
-    
+
     //// //// ////
 
     internal override async Task MakeMoveAsync()

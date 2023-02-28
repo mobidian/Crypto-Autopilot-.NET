@@ -1,15 +1,16 @@
 ﻿using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 
 using Domain.Models;
 
-using Infrastructure.Strategies.Abstract;
-using Infrastructure.Strategies.SimpleStrategy.Enums;
+using Infrastructure.Services.Trading.Strategies.Abstract;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy.Enums;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.SimpleStrategy;
+namespace Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 public abstract class SimpleStrategyEngine : StrategyEngine
 {

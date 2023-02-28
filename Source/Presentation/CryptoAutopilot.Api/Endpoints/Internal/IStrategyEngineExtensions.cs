@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 
 using Application.Interfaces.Services.General;
-using Application.Interfaces.Services.Trading.Strategy;
+using Application.Interfaces.Services.Trading;
 
 using CryptoAutopilot.Api.Contracts.Responses.Strategies;
 using CryptoAutopilot.Api.Services.Interfaces;

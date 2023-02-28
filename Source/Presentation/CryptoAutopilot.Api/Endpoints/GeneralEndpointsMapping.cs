@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.Trading.Strategy;
+﻿using Application.Interfaces.Services.Trading;
 
 using CryptoAutopilot.Api.Contracts.Responses.Strategies;
 using CryptoAutopilot.Api.Endpoints.Internal;

@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-using Application.Interfaces.Services.Trading.Strategy;
+using Application.Interfaces.Services.Trading;
 
 using CryptoAutopilot.Api.Endpoints.Internal;
 

@@ -4,6 +4,7 @@ using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Clients;
 using Binance.Net.Clients.UsdFuturesApi;
@@ -19,7 +20,8 @@ using Infrastructure.Logging;
 using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
-using Infrastructure.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Monitors;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

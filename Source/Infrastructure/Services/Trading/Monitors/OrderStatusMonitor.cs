@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
-using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
@@ -10,7 +10,7 @@ using CryptoExchange.Net.Sockets;
 
 using Infrastructure.Extensions;
 
-namespace Infrastructure.Services.Trading;
+namespace Infrastructure.Services.Trading.Monitors;
 
 public class OrderStatusMonitor : IOrderStatusMonitor
 {
@@ -61,10 +61,10 @@ public class OrderStatusMonitor : IOrderStatusMonitor
     internal void HandleOrderUpdate(DataEvent<BinanceFuturesStreamOrderUpdate> dataEvent)
     {
         var order = dataEvent.Data.UpdateData;
-        
+
         if (this.OrdersStatuses.ContainsKey(order.OrderId))
             this.OrdersStatuses[order.OrderId] = order.Status;
-        
+
         // // TODO optimization possibly with CollectionsMarshal // //
     }
 
@@ -73,20 +73,20 @@ public class OrderStatusMonitor : IOrderStatusMonitor
         await this.UserDataUpdatesSubscription.CloseAsync();
         this.Subscribed = false;
     }
-    
+
     public async ValueTask<OrderStatus> GetStatusAsync(long OrderID)
     {
         if (!this.OrdersStatuses.ContainsKey(OrderID))
             throw new KeyNotFoundException($"The given key '{OrderID}' was not present in the dictionary.");
-        
+
         while (this.OrdersStatuses[OrderID] is null)
             await Task.Delay(20);
-        
+
         return await new ValueTask<OrderStatus>(this.OrdersStatuses[OrderID]!.Value);
-        
+
         // // TODO optimization // //
     }
-    
+
     public async Task WaitForOrderStatusAsync(long OrderID, OrderStatus OrderStatus)
     {
         if (!this.Subscribed)

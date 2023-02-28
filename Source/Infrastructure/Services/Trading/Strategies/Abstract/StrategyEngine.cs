@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Strategy;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 
@@ -7,7 +7,7 @@ using Domain.Models;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.Abstract;
+namespace Infrastructure.Services.Trading.Strategies.Abstract;
 
 /// <summary>
 /// The abstract base class for a cryptocurrency trading strategy engine
@@ -33,7 +33,7 @@ public abstract class StrategyEngine : IStrategyEngine
     protected StrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesCandlesticksMonitor candlestickMonitor, IMediator mediator)
     {
         const string exceptionMessage = $"Unable to initialize an object of type {nameof(StrategyEngine)} with a NULL parameter";
-        
+
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair), exceptionMessage);
         this.KlineInterval = klineInterval;
         this.FuturesTrader = futuresTrader ?? throw new ArgumentNullException(nameof(futuresTrader), exceptionMessage);
@@ -74,7 +74,7 @@ public abstract class StrategyEngine : IStrategyEngine
     /// </summary>
     /// <returns>A task that represents the execution of the method</returns>
     internal abstract Task MakeMoveAsync();
-    
+
     public async Task StopTradingAsync()
     {
         this.ShouldContinue = false;
@@ -107,7 +107,7 @@ public abstract class StrategyEngine : IStrategyEngine
             this.StopTradingAsync().GetAwaiter().GetResult();
             this.DisposeProperties();
         }
-                
+
         this.Disposed = true;
     }
 
@@ -127,7 +127,7 @@ public abstract class StrategyEngine : IStrategyEngine
             await this.StopTradingAsync();
             this.DisposeProperties();
         }
-        
+
         this.Disposed = true;
     }
 

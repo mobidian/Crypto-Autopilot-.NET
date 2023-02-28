@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.Trading.Strategy;
+﻿using Application.Interfaces.Services.Trading;
 
 namespace CryptoAutopilot.Api.Services.Interfaces;
 

@@ -1,11 +1,11 @@
-﻿using Application.Interfaces.Services.Trading;
-
-using Binance.Net.Enums;
+﻿using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures;
+
 using Domain.Models;
+
 using Skender.Stock.Indicators;
 
-namespace Application.Interfaces.Services.Trading.Strategy;
+namespace Application.Interfaces.Services.Trading;
 
 public interface IStrategyEngine : IDisposable, IAsyncDisposable
 {
@@ -18,6 +18,6 @@ public interface IStrategyEngine : IDisposable, IAsyncDisposable
     public bool IsRunning();
 
     public Task StartTradingAsync();
-    
+
     public Task StopTradingAsync();
 }

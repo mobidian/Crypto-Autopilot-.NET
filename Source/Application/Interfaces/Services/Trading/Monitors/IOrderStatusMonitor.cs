@@ -1,6 +1,6 @@
 ﻿using Binance.Net.Enums;
 
-namespace Application.Interfaces.Services.Trading;
+namespace Application.Interfaces.Services.Trading.Monitors;
 
 /// <summary>
 /// Interface for monitoring the status of futures markets orders
@@ -21,7 +21,7 @@ public interface IOrderStatusMonitor
     /// Unsubscribes from order updates asynchronously.
     /// </summary>
     public Task UnsubscribeFromOrderUpdatesAsync();
-    
+
     /// <summary>
     /// Gets the status of an order asynchronously
     /// </summary>

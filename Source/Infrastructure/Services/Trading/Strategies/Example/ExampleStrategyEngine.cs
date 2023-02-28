@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 
@@ -7,12 +8,12 @@ using Domain.Models;
 using Generated;
 
 using Infrastructure.Notifications;
-using Infrastructure.Strategies.Abstract;
-using Infrastructure.Strategies.Example.Enums;
+using Infrastructure.Services.Trading.Strategies.Abstract;
+using Infrastructure.Services.Trading.Strategies.Example.Enums;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.Example;
+namespace Infrastructure.Services.Trading.Strategies.Example;
 
 /// <summary>
 /// An implementation of the <see cref="StrategyEngine"/> class that uses Relative Strength Index (RSI) divergence to determine and moving average exponential (EMA) market trend and open/close positions accordingly
@@ -32,12 +33,12 @@ public class ExampleStrategyEngine : StrategyEngine
         this.RiskRewardRatio = riskRewardRatio;
         this.IndicatorsAdapter = new IndicatorsAdapter(this.Candlesticks);
     }
-    
+
     private IList<Candlestick> Candlesticks = default!;
     internal IIndicatorsAdapter IndicatorsAdapter = default!;
     internal decimal Price;
     internal decimal EMA;
-     
+
     internal override async Task MakeMoveAsync()
     {
         await this.CandlestickMonitor.WaitForNextCandlestickAsync(this.CurrencyPair.Name, ContractType.Perpetual, this.KlineInterval);
@@ -47,7 +48,7 @@ public class ExampleStrategyEngine : StrategyEngine
 
         var BuyCondition = this.Divergence == RsiDivergence.Bullish && this.Price > this.EMA;
         var SellCondition = this.Divergence == RsiDivergence.Bearish;
-        
+
         if (BuyCondition && !this.FuturesTrader.IsInPosition())
         {
             await this.OpenLongPositionAsync();
@@ -67,8 +68,8 @@ public class ExampleStrategyEngine : StrategyEngine
     }
     private async Task OpenLongPositionAsync()
     {
-        decimal stopLoss = this.EMA;
-        decimal takeProfit = this.Price + (this.Price - this.EMA) * this.RiskRewardRatio;
+        var stopLoss = this.EMA;
+        var takeProfit = this.Price + (this.Price - this.EMA) * this.RiskRewardRatio;
 
         await this.FuturesTrader.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, stopLoss, takeProfit);
         await this.Mediator.Publish(new PositionOpenedNotification(this.Candlesticks.Last(), this.FuturesTrader.Position!));
@@ -78,11 +79,11 @@ public class ExampleStrategyEngine : StrategyEngine
         var closingOrder = await this.FuturesTrader.ClosePositionAsync();
         await this.Mediator.Publish(new PositionClosedNotification(this.Candlesticks.Last(), closingOrder));
     }
-    
-    
+
+
     // a null value indicates that there is no divergence or it has been consumed
     public RsiDivergence? Divergence { get; private set; }
-    
+
     /// <summary>
     /// Informs the engine about a divergence that has occured in the market
     /// </summary>

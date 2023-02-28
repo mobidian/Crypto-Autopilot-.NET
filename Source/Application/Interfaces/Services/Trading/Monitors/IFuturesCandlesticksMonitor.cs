@@ -1,7 +1,7 @@
 ﻿using Binance.Net.Enums;
 using Binance.Net.Objects.Models.Futures.Socket;
 
-namespace Application.Interfaces.Services.Trading;
+namespace Application.Interfaces.Services.Trading.Monitors;
 
 /// <summary>
 /// Interface for monitoring Binance USDⓈ-M Futures candlestick updates

@@ -1,6 +1,4 @@
-﻿using Application.Interfaces.Services.Trading.Strategy;
-
-namespace CryptoAutopilot.Api.Contracts.Responses.Strategies;
+﻿namespace CryptoAutopilot.Api.Contracts.Responses.Strategies;
 
 public class GetAllStrategyEnginesResponse
 {
