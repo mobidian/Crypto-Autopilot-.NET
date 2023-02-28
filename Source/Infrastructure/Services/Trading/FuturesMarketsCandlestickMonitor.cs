@@ -56,10 +56,13 @@ public class FuturesCandlesticksMonitor : IFuturesCandlesticksMonitor
         var callResult = await this.FuturesStreams.SubscribeToContinuousContractKlineUpdatesAsync(currencyPair, contractType, timeframe, HandleContractKlineUpdate);
         callResult.ThrowIfHasError($"Could not subscribe to {currencyPair} {contractType} contract on the {timeframe} timeframe");
 
-        this.SubscriptionsDictionary[contractIdentifier] = this.SubscriptionFactory.Invoke();
-        this.SubscriptionsDictionary[contractIdentifier].SetSubscription(callResult.Data);
-        this.SubscriptionsDictionary[contractIdentifier].ConnectionLost += async () => await Subscription_ConnectionLost(currencyPair, contractType, timeframe);
-        this.SubscriptionsDictionary[contractIdentifier].ConnectionRestored += async disconnectedTime => await Subscription_ConnectionRestored(disconnectedTime, currencyPair, contractType, timeframe);
+        
+        var subscription = this.SubscriptionFactory.Invoke();
+        subscription.SetSubscription(callResult.Data);
+        subscription.ConnectionLost += async () => await Subscription_ConnectionLost(currencyPair, contractType, timeframe);
+        subscription.ConnectionRestored += async disconnectedTime => await Subscription_ConnectionRestored(disconnectedTime, currencyPair, contractType, timeframe);
+        
+        this.SubscriptionsDictionary[contractIdentifier] = subscription;
     }
     internal void HandleContractKlineUpdate(DataEvent<BinanceStreamContinuousKlineData> dataEvent)
     {
@@ -122,6 +125,8 @@ public class FuturesCandlesticksMonitor : IFuturesCandlesticksMonitor
             await Task.Delay(20);
         
         return this.DataDictionary[contractIdentifier]!;
+        
+        // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) // //
     }
 
 
