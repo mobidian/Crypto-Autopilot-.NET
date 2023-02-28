@@ -15,12 +15,6 @@ public interface ICfdTradingService : IDisposable
 
     /////  /////  /////
 
-    public Task<BinanceFuturesOrder> GetOrderAsync(long orderID);
-    public Task<BinanceFuturesOrder> GetOrderAsync(BinanceFuturesOrder order) => GetOrderAsync(order.Id);
-    public Task<BinanceFuturesOrder> GetOrderAsync(BinanceFuturesPlacedOrder placedOrder) => GetOrderAsync(placedOrder.Id);
-
-    /////  /////
-
     /// <summary>
     /// Places a new order at the currect market price
     /// </summary>

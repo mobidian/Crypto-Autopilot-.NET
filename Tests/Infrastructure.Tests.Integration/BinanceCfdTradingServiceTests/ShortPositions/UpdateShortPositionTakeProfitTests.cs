@@ -21,7 +21,7 @@ public class UpdateShortPositionTakeProfitTests : BinanceCfdTradingServiceTestsB
 
 
         // Assert
-        var newTakeProfitOrder = await this.SUT.GetOrderAsync(this.SUT.Position!.TakeProfitOrder!.Id);
+        var newTakeProfitOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.TakeProfitOrder!.Id);
 
         this.SUT.Position!.TakeProfitPrice.Should().BeApproximately(new_take_profit_price, precision);
         newTakeProfitOrder.Id.Should().Be(newTakeProfitPlacedOrder.Id);

@@ -39,7 +39,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     protected readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
     protected readonly ICfdMarketDataProvider MarketDataProvider;
     protected readonly IOrderStatusMonitor OrderStatusMonitor;
-
+    
     public BinanceCfdTradingServiceTestsBase()
     {
         var apiCredentials = new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret"));
@@ -54,7 +54,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
         this.FuturesClient = this.BinanceClient.UsdFuturesApi;
         this.TradingClient = this.FuturesClient.Trading;
         this.FuturesExchangeData = this.FuturesClient.ExchangeData;
-        this.MarketDataProvider = new BinanceCfdMarketDataProvider(this.BinanceClient, this.FuturesClient, this.FuturesExchangeData);
+        this.MarketDataProvider = new BinanceCfdMarketDataProvider(this.TradingClient, this.FuturesExchangeData);
 
         var logger = new LoggerAdapter<OrderStatusMonitor>(new Logger<OrderStatusMonitor>(new LoggerFactory()));
         this.OrderStatusMonitor = new OrderStatusMonitor(this.FuturesClient.Account, binanceSocketClient.UsdFuturesStreams, new UpdateSubscriptionProxy(), logger);

@@ -48,16 +48,6 @@ public class BinanceCfdTradingService : ICfdTradingService
 
     //// //// ////
 
-    public async Task<BinanceFuturesOrder> GetOrderAsync(long orderID)
-    {
-        var callResult = await this.TradingClient.GetOrderAsync(symbol: this.CurrencyPair.Name, orderId: orderID);
-        callResult.ThrowIfHasError();
-
-        return callResult.Data;
-    }
-
-    /////  /////
-
     #region Retry Policies
     private readonly IAsyncPolicy<BinanceFuturesOrder> MarketOrderRetryPolicy =
         Policy<BinanceFuturesOrder>
@@ -241,7 +231,7 @@ public class BinanceCfdTradingService : ICfdTradingService
     public async Task<BinanceFuturesOrder> GetOrderFromPlacedOrderAndValidateAsync(BinanceFuturesPlacedOrder placedOrder)
         => await this.MarketOrderRetryPolicy.ExecuteAsync(async () =>
         {
-            var futuresOrder = await this.GetOrderAsync(placedOrder.Id);
+            var futuresOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, placedOrder.Id);
 
             if (futuresOrder is null)
                 return new BinanceFuturesOrder();
@@ -347,7 +337,7 @@ public class BinanceCfdTradingService : ICfdTradingService
             return SLPlacingCallResult;
         });
         
-        var GetSLOrderTask = this.GetOrderAsync(SLPlacingCallResult!.Data.Id);
+        var GetSLOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, SLPlacingCallResult!.Data.Id);
         if (this.Position.StopLossOrder is not null)
         {
             await this.TradingClient.CancelOrderAsync(symbol: this.CurrencyPair.Name, this.Position.StopLossOrder.Id);
@@ -373,7 +363,7 @@ public class BinanceCfdTradingService : ICfdTradingService
             return TPPlacingCallResult;
         });
         
-        var GetTPOrderTask = this.GetOrderAsync(TPPlacingCallResult!.Data.Id);
+        var GetTPOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, TPPlacingCallResult!.Data.Id);
         if (this.Position.TakeProfitOrder is not null)
         {
             await this.TradingClient.CancelOrderAsync(symbol: this.CurrencyPair.Name, this.Position.TakeProfitOrder.Id);
@@ -394,8 +384,8 @@ public class BinanceCfdTradingService : ICfdTradingService
 
         var ClosingCallResult = await this.TradingClient.PlaceOrderAsync(symbol: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.Market, quantity: this.Position.EntryOrder.Quantity, positionSide: this.Position.Side);
         ClosingCallResult.ThrowIfHasError("The current position could not be closed");
-
-        var GetFuturesClosingOrderTask = this.GetOrderAsync(ClosingCallResult.Data.Id);
+        
+        var GetFuturesClosingOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, ClosingCallResult.Data.Id);
 
         // some orders may still be open so they must be closed
         var CancellingCallResult = await this.TradingClient.CancelMultipleOrdersAsync(symbol: this.CurrencyPair.Name, this.Position.GetOpenOrdersIDs().ToList());

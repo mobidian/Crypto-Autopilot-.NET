@@ -29,7 +29,7 @@ public class UpdatePositionTakeProfitTests : BinanceCfdTradingServiceTestsBase
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("The take profit could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
         this.SUT.Position!.TakeProfitPrice.Should().Be(initial_take_profit_price);
 
-        var takeProfitPlacedOrder = await this.SUT.GetOrderAsync(this.SUT.Position!.TakeProfitOrder!.Id);
+        var takeProfitPlacedOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.TakeProfitOrder!.Id);
         takeProfitPlacedOrder.StopPrice.Should().Be(initial_take_profit_price);
     }
     

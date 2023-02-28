@@ -21,7 +21,7 @@ public class UpdateShortPositionStopLossTests : BinanceCfdTradingServiceTestsBas
 
 
         // Assert
-        var newStopLossOrder = await this.SUT.GetOrderAsync(this.SUT.Position!.StopLossOrder!.Id);
+        var newStopLossOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.StopLossOrder!.Id);
 
         this.SUT.Position!.StopLossPrice.Should().BeApproximately(new_stop_loss_price, precision);
         newStopLossOrder.Id.Should().Be(newStopLossPlacedOrder.Id);

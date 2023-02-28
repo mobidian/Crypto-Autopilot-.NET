@@ -2,8 +2,8 @@
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
-using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
+using Binance.Net.Objects.Models.Futures;
 using Binance.Net.Objects.Models.Spot;
 
 using CryptoExchange.Net.Objects;
@@ -18,24 +18,30 @@ namespace Infrastructure.Services.Trading;
 
 public class BinanceCfdMarketDataProvider : ICfdMarketDataProvider
 {
-    private readonly IBinanceClient BinanceClient;
-    private readonly IBinanceClientUsdFuturesApi FuturesClient;
+    private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IBinanceClientUsdFuturesApiExchangeData FuturesExchangeData;
 
-    public BinanceCfdMarketDataProvider(IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiExchangeData futuresExchangeData)
+    public BinanceCfdMarketDataProvider(IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceClientUsdFuturesApiExchangeData futuresExchangeData)
     {
-        this.BinanceClient = binanceClient ?? throw new ArgumentNullException(nameof(binanceClient));
-        this.FuturesClient = futuresClient ?? throw new ArgumentNullException(nameof(futuresClient));
+        this.TradingClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
         this.FuturesExchangeData = futuresExchangeData ?? throw new ArgumentNullException(nameof(futuresExchangeData));
     }
 
-
+    
     public async Task<decimal> GetCurrentPriceAsync(string currencyPair)
     {
         var callResult = await this.FuturesExchangeData.GetPriceAsync(currencyPair);
         callResult.ThrowIfHasError();
         
         return callResult.Data.Price;
+    }
+
+    public async Task<BinanceFuturesOrder> GetOrderAsync(string currencyPair, long orderID)
+    {
+        var callResult = await this.TradingClient.GetOrderAsync(currencyPair, orderID);
+        callResult.ThrowIfHasError();
+
+        return callResult.Data;
     }
 
     public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync(string currencyPair, KlineInterval timeframe)
@@ -49,8 +55,8 @@ public class BinanceCfdMarketDataProvider : ICfdMarketDataProvider
         int count1, count2;
         do
         {
-            var Task1 = this.FuturesClient.ExchangeData.GetMarkPriceKlinesAsync(currencyPair, timeframe);
-            var Task2 = this.FuturesClient.ExchangeData.GetKlinesAsync(currencyPair, timeframe);
+            var Task1 = this.FuturesExchangeData.GetMarkPriceKlinesAsync(currencyPair, timeframe);
+            var Task2 = this.FuturesExchangeData.GetKlinesAsync(currencyPair, timeframe);
 
             var marketPriceKlinesCallResult = await Task1;
             var volumesCallResult = await Task2;
@@ -108,14 +114,21 @@ public class BinanceCfdMarketDataProvider : ICfdMarketDataProvider
     }
 
     //// ////
+
+    private bool Disposed = false;
     
     public void Dispose()
     {
-        try
-        {
-            this.FuturesClient.Dispose();
-            this.BinanceClient.Dispose();
-        }
-        finally { GC.SuppressFinalize(this); }
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.Disposed)
+            return;
+        
+        // // nothing to dispose // //
+
+        this.Disposed = true;
     }
 }

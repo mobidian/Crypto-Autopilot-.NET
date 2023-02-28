@@ -20,6 +20,7 @@ public abstract class BinanceCfdMarketDataProviderTestsBase
     protected readonly BinanceCfdMarketDataProvider SUT;
     private readonly IBinanceClient BinanceClient;
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
+    private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IBinanceClientUsdFuturesApiExchangeData FuturesExchangeData;
 
     public BinanceCfdMarketDataProviderTestsBase()
@@ -28,9 +29,10 @@ public abstract class BinanceCfdMarketDataProviderTestsBase
         this.BinanceClient.SetApiCredentials(new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret")));
 
         this.FuturesClient = this.BinanceClient.UsdFuturesApi;
+        this.TradingClient = this.FuturesClient.Trading;
         this.FuturesExchangeData = this.FuturesClient.ExchangeData;
         
-        this.SUT = new BinanceCfdMarketDataProvider(this.BinanceClient, this.FuturesClient, this.FuturesExchangeData);
+        this.SUT = new BinanceCfdMarketDataProvider(this.TradingClient, this.FuturesExchangeData);
     }
 
 

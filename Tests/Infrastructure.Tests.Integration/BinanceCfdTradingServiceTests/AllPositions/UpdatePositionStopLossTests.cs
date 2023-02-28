@@ -29,7 +29,7 @@ public class UpdatePositionStopLossTests : BinanceCfdTradingServiceTestsBase
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("The stop loss could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
         this.SUT.Position!.StopLossPrice.Should().Be(initial_stop_loss_price);
 
-        var stopLossPlacedOrder = await this.SUT.GetOrderAsync(this.SUT.Position!.StopLossOrder!.Id);
+        var stopLossPlacedOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.StopLossOrder!.Id);
         stopLossPlacedOrder.StopPrice.Should().Be(initial_stop_loss_price);
     }
     
