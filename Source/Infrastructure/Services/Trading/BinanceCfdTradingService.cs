@@ -5,7 +5,6 @@ using Application.Interfaces.Services.Trading;
 using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
-using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 using Binance.Net.Objects.Models.Futures;
 
@@ -25,7 +24,6 @@ public class BinanceCfdTradingService : ICfdTradingService
     public CurrencyPair CurrencyPair { get; }
     public decimal Leverage { get; }
 
-    private readonly IBinanceClient BinanceClient;
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
@@ -36,12 +34,11 @@ public class BinanceCfdTradingService : ICfdTradingService
 
     private readonly int NrDecimals = 2;
     
-    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, ICfdMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
+    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, ICfdMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
         
-        this.BinanceClient = binanceClient ?? throw new ArgumentNullException(nameof(binanceClient));
         this.FuturesClient = futuresClient ?? throw new ArgumentNullException(nameof(futuresClient));
         this.TradingClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
         this.AccountDataProvider = accountDataProvider ?? throw new ArgumentNullException(nameof(accountDataProvider));
@@ -410,17 +407,28 @@ public class BinanceCfdTradingService : ICfdTradingService
 
     public bool IsInPosition() => this.Position is not null;
 
-    
+
     //// //// ////
-    
+
+
+    private bool Disposed = false;
 
     public void Dispose()
     {
-        try
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.Disposed)
+            return;
+
+        if (disposing)
         {
             this.FuturesClient.Dispose();
-            this.BinanceClient.Dispose();
+            this.MarketDataProvider.Dispose();
         }
-        finally { GC.SuppressFinalize(this); }
+
+        this.Disposed = true;
     }
 }
