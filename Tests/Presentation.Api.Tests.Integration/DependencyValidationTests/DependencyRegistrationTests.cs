@@ -64,6 +64,8 @@ public class DependencyRegistrationTests
         
         (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
         (typeof(IFuturesCandlesticksMonitor), typeof(FuturesCandlesticksMonitor), ServiceLifetime.Singleton),
+        
+        (typeof(IBinanceFuturesAccountDataProvider), typeof(BinanceFuturesAccountDataProvider), ServiceLifetime.Singleton),
         #endregion
 
 

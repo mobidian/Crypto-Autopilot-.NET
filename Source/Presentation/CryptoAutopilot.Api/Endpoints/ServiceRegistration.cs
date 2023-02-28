@@ -48,6 +48,8 @@ public static partial class ServicesEndpointsExtensions
         services.AddSingleton<IOrderStatusMonitor, OrderStatusMonitor>();
         services.AddSingleton<IFuturesCandlesticksMonitor, FuturesCandlesticksMonitor>();
         
+        services.AddSingleton<IBinanceFuturesAccountDataProvider, BinanceFuturesAccountDataProvider>(services => new BinanceFuturesAccountDataProvider(services.GetRequiredService<IBinanceClientUsdFuturesApiAccount>()));
+        
         services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
     }
     private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)

@@ -19,6 +19,7 @@ public class ICfdTradingServiceFactory
             services.GetRequiredService<IBinanceClient>(),
             services.GetRequiredService<IBinanceClientUsdFuturesApi>(),
             services.GetRequiredService<IBinanceClientUsdFuturesApiTrading>(),
+            services.GetRequiredService<IBinanceFuturesAccountDataProvider>(),
             services.GetRequiredService<ICfdMarketDataProvider>(),
             services.GetRequiredService<IOrderStatusMonitor>());
 }

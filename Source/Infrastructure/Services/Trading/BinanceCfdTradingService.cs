@@ -28,22 +28,25 @@ public class BinanceCfdTradingService : ICfdTradingService
     private readonly IBinanceClient BinanceClient;
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
-    private readonly ICfdMarketDataProvider CfdMarketDataProvider;
+    private readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
+    private readonly ICfdMarketDataProvider MarketDataProvider;
     private readonly IOrderStatusMonitor OrderStatusMonitor;
     
     public FuturesPosition? Position { get; private set; }
 
     private readonly int NrDecimals = 2;
-
-    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, ICfdMarketDataProvider cfdMarketDataProvider, IOrderStatusMonitor orderStatusMonitor)
+    
+    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClient binanceClient, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, ICfdMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
-        this.CurrencyPair = currencyPair;
+        this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
-        this.BinanceClient = binanceClient;
-        this.FuturesClient = futuresClient;
-        this.TradingClient = tradingClient;
-        this.CfdMarketDataProvider = cfdMarketDataProvider;
-        this.OrderStatusMonitor = orderStatusMonitor;
+        
+        this.BinanceClient = binanceClient ?? throw new ArgumentNullException(nameof(binanceClient));
+        this.FuturesClient = futuresClient ?? throw new ArgumentNullException(nameof(futuresClient));
+        this.TradingClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
+        this.AccountDataProvider = accountDataProvider ?? throw new ArgumentNullException(nameof(accountDataProvider));
+        this.MarketDataProvider = marketDataProvider ?? throw new ArgumentNullException(nameof(marketDataProvider));
+        this.OrderStatusMonitor = orderStatusMonitor ?? throw new ArgumentNullException(nameof(orderStatusMonitor));
     }
 
     //// //// ////
@@ -82,15 +85,6 @@ public class BinanceCfdTradingService : ICfdTradingService
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
     #endregion
 
-    public async Task<decimal> GetEquityAsync()
-    {
-        var callResult = await this.FuturesClient.Account.GetAccountInfoAsync();
-        callResult.ThrowIfHasError("Could not get the account information");
-
-        var asset = callResult.Data.Assets.Where(binanceAsset => this.CurrencyPair.Name.EndsWith(binanceAsset.Asset)).Single();
-        return asset.AvailableBalance;
-    }
-
     public async Task<IEnumerable<BinanceFuturesPlacedOrder>> PlaceMarketOrderAsync(OrderSide OrderSide, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         if (this.IsInPosition())
@@ -117,8 +111,8 @@ public class BinanceCfdTradingService : ICfdTradingService
         decimal equityBUSD;
         decimal CurrentPrice;
         
-        var GetCurrentPrice_Task = this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
-        equityBUSD = QuoteMargin == decimal.MaxValue ? await this.GetEquityAsync() : QuoteMargin;
+        var GetCurrentPrice_Task = this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
+        equityBUSD = QuoteMargin == decimal.MaxValue ? await this.AccountDataProvider.GetEquityAsync(this.CurrencyPair.Name) : QuoteMargin;
         CurrentPrice = await GetCurrentPrice_Task;
 
         BaseQuantity = Math.Round(equityBUSD * this.Leverage / CurrentPrice, this.NrDecimals, MidpointRounding.ToZero);

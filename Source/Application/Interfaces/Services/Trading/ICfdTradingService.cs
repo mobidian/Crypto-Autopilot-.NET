@@ -21,8 +21,6 @@ public interface ICfdTradingService : IDisposable
 
     /////  /////
 
-    public Task<decimal> GetEquityAsync();
-
     /// <summary>
     /// Places a new order at the currect market price
     /// </summary>

@@ -12,7 +12,7 @@ public class UpdatePositionTakeProfitTests : BinanceCfdTradingServiceTestsBase
     public async Task PlaceTakeProfitAsync_ShouldNotUpdateTakeProfit_WhenPositionExistsButPriceIsInvalid()
     {
         // Arrange
-        var current_price = await this.CfdMarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
+        var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         await (Random.Shared.Next(2) switch
         {
             0 => this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price),
