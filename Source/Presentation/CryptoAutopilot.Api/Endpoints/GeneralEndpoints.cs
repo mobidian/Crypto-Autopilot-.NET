@@ -47,9 +47,10 @@ public static class GeneralEndpoints
         // factories are used here because theese services need to be created
         // with respect to parameters such as currencyPair, timeframe, leverage and so on
         AddServiceFactories(services);
-
+        
         services.AddSingleton<IOrderStatusMonitor, OrderStatusMonitor>();
-
+        services.AddSingleton<IFuturesCandlesticksMonitor, FuturesCandlesticksMonitor>();
+        
         services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
     }
     private static void AddBinanceClientsAndServicesDerivedFromThem(IServiceCollection services, IConfiguration configuration)
@@ -80,7 +81,7 @@ public static class GeneralEndpoints
     private static void AddServiceFactories(IServiceCollection services)
     {
         services.AddSingleton<ICfdTradingServiceFactory>();
-        services.AddSingleton<IFuturesMarketsCandlestickAwaiterFactory>();
+        services.AddSingleton<Func<IUpdateSubscriptionProxy>>(services => () => services.GetRequiredService<IUpdateSubscriptionProxy>());
     }
 
     public static void MapEndpoints(this IEndpointRouteBuilder app)

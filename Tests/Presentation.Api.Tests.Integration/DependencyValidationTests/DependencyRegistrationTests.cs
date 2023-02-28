@@ -57,10 +57,11 @@ public class DependencyRegistrationTests
 
         #region AddServiceFactories
         (typeof(ICfdTradingServiceFactory), typeof(ICfdTradingServiceFactory), ServiceLifetime.Singleton),
-        (typeof(IFuturesMarketsCandlestickAwaiterFactory), typeof(IFuturesMarketsCandlestickAwaiterFactory), ServiceLifetime.Singleton),
+        (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
 	    #endregion
         
         (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
+        (typeof(IFuturesCandlesticksMonitor), typeof(FuturesCandlesticksMonitor), ServiceLifetime.Singleton),
         #endregion
 
 

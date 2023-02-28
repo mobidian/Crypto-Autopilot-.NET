@@ -17,7 +17,7 @@ namespace Infrastructure.Strategies.SimpleStrategy;
 public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
 {
     internal SimpleShortStrategyEngine(Guid guid, CurrencyPair currencyPair, KlineInterval klineInterval) : base(guid, currencyPair, klineInterval) { }
-    public SimpleShortStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, decimal margin, decimal stopLossParameter, decimal takeProfitParameter, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, margin, stopLossParameter, takeProfitParameter, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator)
+    public SimpleShortStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, decimal margin, decimal stopLossParameter, decimal takeProfitParameter, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesCandlesticksMonitor candlestickMonitor, IMediator mediator) : base(currencyPair, klineInterval, margin, stopLossParameter, takeProfitParameter, futuresTrader, futuresDataProvider, candlestickMonitor, mediator)
     {
         if (this.StopLossParameter is <= 1)
             throw new ArgumentException($"When trading shorts the {nameof(this.StopLossParameter)} must be greater than 1", nameof(this.StopLossParameter));
@@ -30,7 +30,7 @@ public sealed class SimpleShortStrategyEngine : SimpleStrategyEngine
     
     internal override async Task MakeMoveAsync()
     {
-        await this.CandlestickAwaiter.WaitForNextCandlestickAsync();
+        await this.CandlestickMonitor.WaitForNextCandlestickAsync(this.CurrencyPair.Name, ContractType.Perpetual, this.KlineInterval);
 
 
         if (this.Signal is null)

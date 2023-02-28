@@ -19,7 +19,7 @@ public class ShortStrategyEngineTestsBase : SimpleStrategyEngineTestsBase
             this.TakeProfitParameter,
             this.FuturesTrader,
             this.FuturesDataProvider,
-            this.CandlestickAwaiter,
+            this.CandlestickMonitor,
             this.Mediator);
 
         this.Candlesticks = this.CandlestickGenerator.Generate(100);

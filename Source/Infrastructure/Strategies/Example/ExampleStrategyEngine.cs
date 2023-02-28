@@ -25,7 +25,7 @@ public class ExampleStrategyEngine : StrategyEngine
     protected readonly decimal RiskRewardRatio;
 
     internal ExampleStrategyEngine(Guid guid, CurrencyPair currencyPair, KlineInterval klineInterval) : base(guid, currencyPair, klineInterval) { }
-    public ExampleStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, int emaLength, decimal margin, decimal riskRewardRatio, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesMarketsCandlestickAwaiter candlestickAwaiter, IMediator mediator) : base(currencyPair, klineInterval, futuresTrader, futuresDataProvider, candlestickAwaiter, mediator)
+    public ExampleStrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, int emaLength, decimal margin, decimal riskRewardRatio, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesCandlesticksMonitor candlestickMonitor, IMediator mediator) : base(currencyPair, klineInterval, futuresTrader, futuresDataProvider, candlestickMonitor, mediator)
     {
         this.EMALength = emaLength;
         this.Margin = margin;
@@ -37,10 +37,10 @@ public class ExampleStrategyEngine : StrategyEngine
     internal IIndicatorsAdapter IndicatorsAdapter = default!;
     internal decimal Price;
     internal decimal EMA;
-    
+     
     internal override async Task MakeMoveAsync()
     {
-        await this.CandlestickAwaiter.WaitForNextCandlestickAsync();
+        await this.CandlestickMonitor.WaitForNextCandlestickAsync(this.CurrencyPair.Name, ContractType.Perpetual, this.KlineInterval);
 
 
         await GetLatestMarketDataAsync();

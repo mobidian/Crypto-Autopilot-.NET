@@ -39,7 +39,7 @@ public class ExampleStrategyEngineTestsBase
 
     protected readonly ICfdTradingService FuturesTrader = Substitute.For<ICfdTradingService>();
     protected readonly ICfdMarketDataProvider FuturesDataProvider = Substitute.For<ICfdMarketDataProvider>();
-    protected readonly IFuturesMarketsCandlestickAwaiter CandlestickAwaiter = Substitute.For<IFuturesMarketsCandlestickAwaiter>();
+    protected readonly IFuturesCandlesticksMonitor CandlestickMonitor = Substitute.For<IFuturesCandlesticksMonitor>();
     protected readonly IMediator Mediator = Substitute.For<IMediator>();
 
     protected readonly IIndicatorsAdapter IndicatorsAdapter = Substitute.For<IIndicatorsAdapter>();
@@ -50,7 +50,7 @@ public class ExampleStrategyEngineTestsBase
         this.Margin = this.Random.Next(100, 1000);
         this.RiskRewardRatio = Convert.ToDecimal(1 + this.Random.Next(1, 20) * this.Random.NextDouble());
 
-        this.SUT = new ExampleStrategyEngine(this.CurrencyPair, this.KlineInterval, this.EMALength, this.Margin, this.RiskRewardRatio, this.FuturesTrader, this.FuturesDataProvider, this.CandlestickAwaiter, this.Mediator)
+        this.SUT = new ExampleStrategyEngine(this.CurrencyPair, this.KlineInterval, this.EMALength, this.Margin, this.RiskRewardRatio, this.FuturesTrader, this.FuturesDataProvider, this.CandlestickMonitor, this.Mediator)
         {
             IndicatorsAdapter = this.IndicatorsAdapter,
         };

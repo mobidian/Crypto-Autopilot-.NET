@@ -35,6 +35,6 @@ public abstract class SimpleStrategyEngineTestsBase
 
     protected readonly ICfdTradingService FuturesTrader = Substitute.For<ICfdTradingService>();
     protected readonly ICfdMarketDataProvider FuturesDataProvider = Substitute.For<ICfdMarketDataProvider>();
-    protected readonly IFuturesMarketsCandlestickAwaiter CandlestickAwaiter = Substitute.For<IFuturesMarketsCandlestickAwaiter>();
+    protected readonly IFuturesCandlesticksMonitor CandlestickMonitor = Substitute.For<IFuturesCandlesticksMonitor>();
     protected readonly IMediator Mediator = Substitute.For<IMediator>();
 }
