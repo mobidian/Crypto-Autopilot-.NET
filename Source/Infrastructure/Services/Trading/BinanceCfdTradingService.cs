@@ -24,7 +24,6 @@ public class BinanceCfdTradingService : ICfdTradingService
     public CurrencyPair CurrencyPair { get; }
     public decimal Leverage { get; }
 
-    private readonly IBinanceClientUsdFuturesApi FuturesClient;
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
     private readonly ICfdMarketDataProvider MarketDataProvider;
@@ -34,12 +33,11 @@ public class BinanceCfdTradingService : ICfdTradingService
 
     private readonly int NrDecimals = 2;
     
-    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClientUsdFuturesApi futuresClient, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, ICfdMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
+    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, ICfdMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
         
-        this.FuturesClient = futuresClient ?? throw new ArgumentNullException(nameof(futuresClient));
         this.TradingClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
         this.AccountDataProvider = accountDataProvider ?? throw new ArgumentNullException(nameof(accountDataProvider));
         this.MarketDataProvider = marketDataProvider ?? throw new ArgumentNullException(nameof(marketDataProvider));
@@ -414,10 +412,7 @@ public class BinanceCfdTradingService : ICfdTradingService
             return;
 
         if (disposing)
-        {
-            this.FuturesClient.Dispose();
             this.MarketDataProvider.Dispose();
-        }
 
         this.Disposed = true;
     }

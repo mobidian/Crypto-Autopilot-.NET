@@ -15,7 +15,6 @@ public class ICfdTradingServiceFactory
         => new BinanceCfdTradingService(
             currencyPair,
             leverage,
-            services.GetRequiredService<IBinanceClientUsdFuturesApi>(),
             services.GetRequiredService<IBinanceClientUsdFuturesApiTrading>(),
             services.GetRequiredService<IBinanceFuturesAccountDataProvider>(),
             services.GetRequiredService<ICfdMarketDataProvider>(),

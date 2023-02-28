@@ -61,7 +61,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
         
         this.AccountDataProvider = new BinanceFuturesAccountDataProvider(this.FuturesClient.Account);
 
-        this.SUT = new BinanceCfdTradingService(this.CurrencyPair, 10, this.FuturesClient, this.TradingClient, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
+        this.SUT = new BinanceCfdTradingService(this.CurrencyPair, 10, this.TradingClient, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
     }
 
 
