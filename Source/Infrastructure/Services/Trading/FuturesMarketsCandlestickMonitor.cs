@@ -47,17 +47,19 @@ public class FuturesCandlesticksMonitor : IFuturesCandlesticksMonitor
     
     public async Task SubscribeToKlineUpdatesAsync(string currencyPair, ContractType contractType, KlineInterval timeframe)
     {
-        if (this.SubscriptionsDictionary.ContainsKey((currencyPair, contractType, timeframe)))
+        var contractIdentifier = (currencyPair, contractType, timeframe);
+
+        if (this.SubscriptionsDictionary.ContainsKey(contractIdentifier))
             return;
 
         
         var callResult = await this.FuturesStreams.SubscribeToContinuousContractKlineUpdatesAsync(currencyPair, contractType, timeframe, HandleContractKlineUpdate);
         callResult.ThrowIfHasError($"Could not subscribe to {currencyPair} {contractType} contract on the {timeframe} timeframe");
 
-        this.SubscriptionsDictionary[(currencyPair, contractType, timeframe)] = this.SubscriptionFactory.Invoke();
-        this.SubscriptionsDictionary[(currencyPair, contractType, timeframe)].SetSubscription(callResult.Data);
-        this.SubscriptionsDictionary[(currencyPair, contractType, timeframe)].ConnectionLost += async () => await Subscription_ConnectionLost(currencyPair, contractType, timeframe);
-        this.SubscriptionsDictionary[(currencyPair, contractType, timeframe)].ConnectionRestored += async disconnectedTime => await Subscription_ConnectionRestored(disconnectedTime, currencyPair, contractType, timeframe);
+        this.SubscriptionsDictionary[contractIdentifier] = this.SubscriptionFactory.Invoke();
+        this.SubscriptionsDictionary[contractIdentifier].SetSubscription(callResult.Data);
+        this.SubscriptionsDictionary[contractIdentifier].ConnectionLost += async () => await Subscription_ConnectionLost(currencyPair, contractType, timeframe);
+        this.SubscriptionsDictionary[contractIdentifier].ConnectionRestored += async disconnectedTime => await Subscription_ConnectionRestored(disconnectedTime, currencyPair, contractType, timeframe);
     }
     internal void HandleContractKlineUpdate(DataEvent<BinanceStreamContinuousKlineData> dataEvent)
     {
@@ -83,48 +85,67 @@ public class FuturesCandlesticksMonitor : IFuturesCandlesticksMonitor
         throw new NotImplementedException();
     }
     
+    public bool IsSubscribedTo(string currencyPair, ContractType contractType, KlineInterval timeframe) => this.SubscriptionsDictionary.ContainsKey((currencyPair, contractType, timeframe));
     public IEnumerable<(string currencyPair, ContractType contractType, KlineInterval timeframe)> GetSubscriptions() => this.SubscriptionsDictionary.Keys.AsEnumerable();
-
+    
     public async Task UnsubscribeFromKlineUpdatesAsync(string currencyPair, ContractType contractType, KlineInterval timeframe)
     {
-        if (!this.SubscriptionsDictionary.TryGetValue((currencyPair, contractType, timeframe), out var subscription))
-            throw new KeyNotFoundException($"The given key ({nameof(currencyPair)} = {currencyPair}, {nameof(contractType)} = {contractType}, {nameof(timeframe)} = {timeframe}) was not present in the subscriptions dictionary.");
+        var contractIdentifier = (currencyPair, contractType, timeframe);
+
+        if (!this.SubscriptionsDictionary.TryGetValue(contractIdentifier, out var subscription))
+            throw new KeyNotFoundException($"The given contract identifier ({nameof(currencyPair)} = {currencyPair}, {nameof(contractType)} = {contractType}, {nameof(timeframe)} = {timeframe}) was not present in the subscriptions dictionary.");
         
         await subscription.CloseAsync();
-        this.SubscriptionsDictionary.Remove((currencyPair, contractType, timeframe));
-        this.DataDictionary.Remove((currencyPair, contractType, timeframe));
+        this.SubscriptionsDictionary.Remove(contractIdentifier);
+        this.DataDictionary.Remove(contractIdentifier);
     }
-
+    
     public async Task<BinanceStreamContinuousKlineData> WaitForNextCandlestickAsync(string currencyPair, ContractType contractType, KlineInterval timeframe)
     {
-        if (!this.SubscriptionsDictionary.ContainsKey((currencyPair, contractType, timeframe)))
-            throw new KeyNotFoundException($"The given key ({nameof(currencyPair)} = {currencyPair}, {nameof(contractType)} = {contractType}, {nameof(timeframe)} = {timeframe}) was not present in the subscriptions dictionary.");
+        var contractIdentifier = (currencyPair, contractType, timeframe);
+
+        if (!this.SubscriptionsDictionary.ContainsKey(contractIdentifier))
+            throw new KeyNotFoundException($"The given contract identifier ({nameof(currencyPair)} = {currencyPair}, {nameof(contractType)} = {contractType}, {nameof(timeframe)} = {timeframe}) was not present in the subscriptions dictionary.");
 
 
-        var currentTimeUtc = this.DateTimeProvider.UtcNow;
+        var invokeTimeUtc = this.DateTimeProvider.UtcNow;
+
+        // adds null value in case this method was called before any update has been received
+        this.DataDictionary.TryAdd(contractIdentifier, null);
         
-        // in case this method was called right after the SubscribeToKlineUpdatesAsync method
-        // and no update has been received yet, a null value will be added
-        this.DataDictionary.TryAdd((currencyPair, contractType, timeframe), null);
-        
-        while (this.DataDictionary[(currencyPair, contractType, timeframe)] is null)
+        // waits for the first data event update, updating the value
+        while (this.DataDictionary[contractIdentifier] is null)
             await Task.Delay(20);
-
-        do
-        {
-             // //  TODO // //
-        } while (true);
-
-
-        return this.DataDictionary[(currencyPair, contractType, timeframe)]!;
+        
+        // waits for the new candlestick to be created
+        while (this.DataDictionary[contractIdentifier]?.Data.OpenTime <= invokeTimeUtc)
+            await Task.Delay(20);
+        
+        return this.DataDictionary[contractIdentifier]!;
     }
 
 
+    //// //// ////
 
 
-
+    private bool Disposed = false;
+    
     public void Dispose()
     {
-        throw new NotImplementedException();
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.Disposed)
+            return;
+        
+        if (disposing)
+            this.FuturesStreams.Dispose();
+
+        this.DataDictionary.Clear();
+        this.SubscriptionsDictionary.Clear();
+
+        this.Disposed = true;
     }
 }
