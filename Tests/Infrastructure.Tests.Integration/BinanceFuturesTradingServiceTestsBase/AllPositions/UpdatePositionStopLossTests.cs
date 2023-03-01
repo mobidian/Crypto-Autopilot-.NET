@@ -6,7 +6,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.AllPositions;
 
-public class UpdatePositionStopLossTests : BinanceCfdTradingServiceTestsBase
+public class UpdatePositionStopLossTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task PlaceStopLossAsync_ShouldNotUpdateStopLoss_WhenPositionExistsButPriceIsInvalid()

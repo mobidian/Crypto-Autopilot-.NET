@@ -6,7 +6,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.AllPositions;
 
-public class UpdatePositionTakeProfitTests : BinanceCfdTradingServiceTestsBase
+public class UpdatePositionTakeProfitTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task PlaceTakeProfitAsync_ShouldNotUpdateTakeProfit_WhenPositionExistsButPriceIsInvalid()

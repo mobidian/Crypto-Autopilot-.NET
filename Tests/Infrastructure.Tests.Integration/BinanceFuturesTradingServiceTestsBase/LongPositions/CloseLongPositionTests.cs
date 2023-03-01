@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.LongPositions;
 
-public class CloseLongPositionTests : BinanceCfdTradingServiceTestsBase
+public class CloseLongPositionTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task ClosePosition_ShouldCloseLongPosition_WhenLongPositionExists()

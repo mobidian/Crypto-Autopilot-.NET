@@ -36,4 +36,3 @@ public interface IOrderStatusMonitor
     /// <param name="OrderStatus">The status to wait for</param>
     public Task WaitForOrderStatusAsync(long OrderID, OrderStatus OrderStatus);
 }
-

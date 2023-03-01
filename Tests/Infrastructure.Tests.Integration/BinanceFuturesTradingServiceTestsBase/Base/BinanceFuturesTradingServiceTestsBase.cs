@@ -22,7 +22,7 @@ using NUnit.Framework.Interfaces;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
-public abstract class BinanceCfdTradingServiceTestsBase
+public abstract class BinanceFuturesTradingServiceTestsBase
 {
     private readonly SecretsManager SecretsManager = new SecretsManager();
 
@@ -40,7 +40,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     protected readonly IFuturesMarketDataProvider MarketDataProvider;
     protected readonly IOrderStatusMonitor OrderStatusMonitor;
     
-    public BinanceCfdTradingServiceTestsBase()
+    public BinanceFuturesTradingServiceTestsBase()
     {
         var apiCredentials = new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret"));
         

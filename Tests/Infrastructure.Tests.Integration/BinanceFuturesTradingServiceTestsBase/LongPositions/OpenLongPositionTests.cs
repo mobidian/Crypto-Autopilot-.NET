@@ -6,7 +6,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.LongPositions;
 
-public class OpenLongPositionTests : BinanceCfdTradingServiceTestsBase
+public class OpenLongPositionTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task OpenPosition_ShouldOpenLongPosition_WhenInputIsCorrect()

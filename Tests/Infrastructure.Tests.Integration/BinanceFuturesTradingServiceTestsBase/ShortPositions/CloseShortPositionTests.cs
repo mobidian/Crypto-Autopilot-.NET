@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.ShortPositions;
 
-public class CloseShortPositionTests : BinanceCfdTradingServiceTestsBase
+public class CloseShortPositionTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task ClosePosition_ShouldCloseShortPosition_WhenShortPositionExists()

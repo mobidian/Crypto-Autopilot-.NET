@@ -58,7 +58,7 @@ public class DependencyRegistrationTests
         #endregion
 
         #region AddServiceFactories
-        (typeof(ICfdTradingServiceFactory), typeof(ICfdTradingServiceFactory), ServiceLifetime.Singleton),
+        (typeof(FuturesTradingServiceFactory), typeof(FuturesTradingServiceFactory), ServiceLifetime.Singleton),
         (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
 	    #endregion
         

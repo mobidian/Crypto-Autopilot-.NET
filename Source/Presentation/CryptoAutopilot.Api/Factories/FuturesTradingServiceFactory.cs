@@ -9,14 +9,14 @@ using Infrastructure.Services.Trading;
 
 namespace CryptoAutopilot.Api.Factories;
 
-public class ICfdTradingServiceFactory
+public class FuturesTradingServiceFactory
 {
-    public ICfdTradingService Create(CurrencyPair currencyPair, decimal leverage, IServiceProvider services)
-        => new BinanceCfdTradingService(
+    public IFuturesTradingService Create(CurrencyPair currencyPair, decimal leverage, IServiceProvider services)
+        => new BinanceFuturesTradingService(
             currencyPair,
             leverage,
             services.GetRequiredService<IBinanceClientUsdFuturesApiTrading>(),
             services.GetRequiredService<IBinanceFuturesAccountDataProvider>(),
-            services.GetRequiredService<ICfdMarketDataProvider>(),
+            services.GetRequiredService<IFuturesMarketDataProvider>(),
             services.GetRequiredService<IOrderStatusMonitor>());
 }

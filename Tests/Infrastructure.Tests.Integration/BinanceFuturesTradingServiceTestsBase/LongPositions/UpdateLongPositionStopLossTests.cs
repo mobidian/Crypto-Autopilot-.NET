@@ -6,7 +6,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.LongPositions;
 
-public class UpdateLongPositionStopLossTests : BinanceCfdTradingServiceTestsBase
+public class UpdateLongPositionStopLossTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task PlaceStopLossAsync_ShouldUpdateStopLoss_WhenPositionExistsAndInputIsCorrect([Random(0.99, 0.999, 1, Distinct = true)] decimal prc)

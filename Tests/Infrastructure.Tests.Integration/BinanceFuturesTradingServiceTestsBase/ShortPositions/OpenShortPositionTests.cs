@@ -6,7 +6,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.ShortPositions;
 
-public class OpenShortPositionTests : BinanceCfdTradingServiceTestsBase
+public class OpenShortPositionTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task OpenPosition_ShouldOpenShortPosition_WhenInputIsCorrect()

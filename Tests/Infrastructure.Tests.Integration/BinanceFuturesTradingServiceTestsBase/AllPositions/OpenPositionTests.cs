@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.AllPositions;
 
-public class OpenPositionTests : BinanceCfdTradingServiceTestsBase
+public class OpenPositionTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task OpenPosition_ShouldThrow_WhenPositionIsAlreadyOpen()

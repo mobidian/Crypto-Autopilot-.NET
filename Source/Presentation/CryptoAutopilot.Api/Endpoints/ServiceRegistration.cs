@@ -36,7 +36,7 @@ public static partial class ServicesEndpointsExtensions
         services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
 
 
-        services.AddSingleton<ICfdMarketDataProvider, BinanceCfdMarketDataProvider>();
+        services.AddSingleton<IFuturesMarketDataProvider, BinanceFuturesMarketDataProvider>();
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
 
         AddBinanceClientsAndServicesDerivedFromThem(services, configuration);
@@ -79,7 +79,7 @@ public static partial class ServicesEndpointsExtensions
     }
     private static void AddServiceFactories(IServiceCollection services)
     {
-        services.AddSingleton<ICfdTradingServiceFactory>();
+        services.AddSingleton<FuturesTradingServiceFactory>();
         services.AddSingleton<Func<IUpdateSubscriptionProxy>>(services => () => services.GetRequiredService<IUpdateSubscriptionProxy>());
     }
 }

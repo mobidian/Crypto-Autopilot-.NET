@@ -19,8 +19,8 @@ public abstract class StrategyEngine : IStrategyEngine
     public CurrencyPair CurrencyPair { get; }
     public KlineInterval KlineInterval { get; }
 
-    protected readonly ICfdTradingService FuturesTrader;
-    protected readonly ICfdMarketDataProvider FuturesDataProvider;
+    protected readonly IFuturesTradingService FuturesTrader;
+    protected readonly IFuturesMarketDataProvider FuturesDataProvider;
     protected readonly IFuturesCandlesticksMonitor CandlestickMonitor;
     protected readonly IMediator Mediator;
 
@@ -30,7 +30,7 @@ public abstract class StrategyEngine : IStrategyEngine
         this.CurrencyPair = currencyPair;
         this.KlineInterval = klineInterval;
     }
-    protected StrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, ICfdTradingService futuresTrader, ICfdMarketDataProvider futuresDataProvider, IFuturesCandlesticksMonitor candlestickMonitor, IMediator mediator)
+    protected StrategyEngine(CurrencyPair currencyPair, KlineInterval klineInterval, IFuturesTradingService futuresTrader, IFuturesMarketDataProvider futuresDataProvider, IFuturesCandlesticksMonitor candlestickMonitor, IMediator mediator)
     {
         const string exceptionMessage = $"Unable to initialize an object of type {nameof(StrategyEngine)} with a NULL parameter";
 

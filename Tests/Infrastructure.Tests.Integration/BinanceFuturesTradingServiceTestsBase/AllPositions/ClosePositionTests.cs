@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.AllPositions;
 
-public class ClosePositionTests : BinanceCfdTradingServiceTestsBase
+public class ClosePositionTests : BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task ClosePosition_ShouldReturnNull_WhenPositionDoesNotExist()

@@ -34,8 +34,8 @@ public class SimpleShortStrategyEndpoints : IStrategyEndpoints<SimpleShortStrate
                margin,
                stopLossParameter,
                takeProfitParameter,
-               services.GetRequiredService<ICfdTradingServiceFactory>().Create(currencyPair, leverage, services),
-               services.GetRequiredService<ICfdMarketDataProvider>(),
+               services.GetRequiredService<FuturesTradingServiceFactory>().Create(currencyPair, leverage, services),
+               services.GetRequiredService<IFuturesMarketDataProvider>(),
                services.GetRequiredService<IFuturesCandlesticksMonitor>(),
                services.GetRequiredService<IMediator>()));
     }
