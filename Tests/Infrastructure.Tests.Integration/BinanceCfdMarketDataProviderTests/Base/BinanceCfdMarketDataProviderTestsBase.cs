@@ -17,7 +17,7 @@ public abstract class BinanceCfdMarketDataProviderTestsBase
 
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
 
-    protected readonly BinanceCfdMarketDataProvider SUT;
+    protected readonly BinanceFuturesMarketDataProvider SUT;
     private readonly IBinanceClient BinanceClient;
     private readonly IBinanceClientUsdFuturesApi FuturesClient;
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
@@ -32,7 +32,7 @@ public abstract class BinanceCfdMarketDataProviderTestsBase
         this.TradingClient = this.FuturesClient.Trading;
         this.FuturesExchangeData = this.FuturesClient.ExchangeData;
         
-        this.SUT = new BinanceCfdMarketDataProvider(this.TradingClient, this.FuturesExchangeData);
+        this.SUT = new BinanceFuturesMarketDataProvider(this.TradingClient, this.FuturesExchangeData);
     }
 
 

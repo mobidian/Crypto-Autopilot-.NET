@@ -41,7 +41,7 @@ public class DependencyRegistrationTests
 
 
 
-        (typeof(ICfdMarketDataProvider), typeof(BinanceCfdMarketDataProvider), ServiceLifetime.Singleton),
+        (typeof(IFuturesMarketDataProvider), typeof(BinanceFuturesMarketDataProvider), ServiceLifetime.Singleton),
         (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
 
 

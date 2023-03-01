@@ -29,7 +29,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     protected const decimal precision = 1; // for assertions
     protected decimal testMargin = 5;
     
-    protected BinanceCfdTradingService SUT = default!;
+    protected BinanceFuturesTradingService SUT = default!;
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly decimal Leverage = 10m;
     protected readonly IBinanceClient BinanceClient;
@@ -37,7 +37,7 @@ public abstract class BinanceCfdTradingServiceTestsBase
     protected readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     protected readonly IBinanceClientUsdFuturesApiExchangeData FuturesExchangeData;
     protected readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
-    protected readonly ICfdMarketDataProvider MarketDataProvider;
+    protected readonly IFuturesMarketDataProvider MarketDataProvider;
     protected readonly IOrderStatusMonitor OrderStatusMonitor;
     
     public BinanceCfdTradingServiceTestsBase()
@@ -54,14 +54,14 @@ public abstract class BinanceCfdTradingServiceTestsBase
         this.FuturesClient = this.BinanceClient.UsdFuturesApi;
         this.TradingClient = this.FuturesClient.Trading;
         this.FuturesExchangeData = this.FuturesClient.ExchangeData;
-        this.MarketDataProvider = new BinanceCfdMarketDataProvider(this.TradingClient, this.FuturesExchangeData);
+        this.MarketDataProvider = new BinanceFuturesMarketDataProvider(this.TradingClient, this.FuturesExchangeData);
 
         var logger = new LoggerAdapter<OrderStatusMonitor>(new Logger<OrderStatusMonitor>(new LoggerFactory()));
         this.OrderStatusMonitor = new OrderStatusMonitor(this.FuturesClient.Account, binanceSocketClient.UsdFuturesStreams, new UpdateSubscriptionProxy(), logger);
         
         this.AccountDataProvider = new BinanceFuturesAccountDataProvider(this.FuturesClient.Account);
 
-        this.SUT = new BinanceCfdTradingService(this.CurrencyPair, 10, this.TradingClient, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
+        this.SUT = new BinanceFuturesTradingService(this.CurrencyPair, 10, this.TradingClient, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
     }
 
 

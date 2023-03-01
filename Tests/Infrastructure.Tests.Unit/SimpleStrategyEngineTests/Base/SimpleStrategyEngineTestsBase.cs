@@ -34,8 +34,8 @@ public abstract class SimpleStrategyEngineTestsBase
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly KlineInterval KlineInterval = KlineInterval.FifteenMinutes;
 
-    protected readonly ICfdTradingService FuturesTrader = Substitute.For<ICfdTradingService>();
-    protected readonly ICfdMarketDataProvider FuturesDataProvider = Substitute.For<ICfdMarketDataProvider>();
+    protected readonly IFuturesTradingService FuturesTrader = Substitute.For<IFuturesTradingService>();
+    protected readonly IFuturesMarketDataProvider FuturesDataProvider = Substitute.For<IFuturesMarketDataProvider>();
     protected readonly IFuturesCandlesticksMonitor CandlestickMonitor = Substitute.For<IFuturesCandlesticksMonitor>();
     protected readonly IMediator Mediator = Substitute.For<IMediator>();
 }

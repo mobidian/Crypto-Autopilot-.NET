@@ -15,7 +15,7 @@ public class CloseLongPositionTests : BinanceCfdTradingServiceTestsBase
 
         // Act
         await this.SUT.ClosePositionAsync();
-
+        
         // Assert
         this.SUT.IsInPosition().Should().BeFalse();
     }
