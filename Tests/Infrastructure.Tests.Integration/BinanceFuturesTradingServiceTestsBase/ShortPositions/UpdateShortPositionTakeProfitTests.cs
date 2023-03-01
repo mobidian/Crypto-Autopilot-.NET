@@ -2,11 +2,11 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
+using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.ShortPositions;
+namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.ShortPositions;
 
-public class UpdateShortPositionTakeProfitTests : BinanceFuturesTradingServiceTestsBase
+public class UpdateShortPositionTakeProfitTests : Base.BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task PlaceTakeProfitAsync_ShouldUpdateTakeProfit_WhenPositionExistsAndInputIsCorrect([Random(0.99, 0.999, 1, Distinct = true)] decimal prc)

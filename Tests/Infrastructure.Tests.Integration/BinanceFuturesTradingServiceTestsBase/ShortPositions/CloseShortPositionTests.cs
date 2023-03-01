@@ -1,10 +1,10 @@
 ﻿using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
+using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.ShortPositions;
+namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.ShortPositions;
 
-public class CloseShortPositionTests : BinanceFuturesTradingServiceTestsBase
+public class CloseShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task ClosePosition_ShouldCloseShortPosition_WhenShortPositionExists()

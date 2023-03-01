@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 
 using NUnit.Framework.Interfaces;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
+namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
 
 public abstract class BinanceFuturesTradingServiceTestsBase
 {

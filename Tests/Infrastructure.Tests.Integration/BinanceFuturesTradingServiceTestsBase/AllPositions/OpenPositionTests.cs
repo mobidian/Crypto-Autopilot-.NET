@@ -1,10 +1,10 @@
 ﻿using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
+using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.AllPositions;
+namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.AllPositions;
 
-public class OpenPositionTests : BinanceFuturesTradingServiceTestsBase
+public class OpenPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task OpenPosition_ShouldThrow_WhenPositionIsAlreadyOpen()

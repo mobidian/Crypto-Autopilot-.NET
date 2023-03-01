@@ -2,11 +2,11 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
+using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.ShortPositions;
+namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.ShortPositions;
 
-public class UpdateShortPositionStopLossTests : BinanceFuturesTradingServiceTestsBase
+public class UpdateShortPositionStopLossTests : Base.BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task PlaceStopLossAsync_ShouldUpdateStopLoss_WhenPositionExistsAndInputIsCorrect([Random(1.001, 1.01, 1, Distinct = true)] decimal prc)

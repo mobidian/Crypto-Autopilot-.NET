@@ -2,11 +2,11 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.Base;
+using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceCfdTradingServiceTests.LongPositions;
+namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.LongPositions;
 
-public class OpenLongPositionTests : BinanceFuturesTradingServiceTestsBase
+public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 {
     [Test]
     public async Task OpenPosition_ShouldOpenLongPosition_WhenInputIsCorrect()
