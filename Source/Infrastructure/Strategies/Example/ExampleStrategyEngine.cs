@@ -8,12 +8,12 @@ using Domain.Models;
 using Generated;
 
 using Infrastructure.Notifications;
-using Infrastructure.Services.Trading.Strategies.Abstract;
-using Infrastructure.Services.Trading.Strategies.Example.Enums;
+using Infrastructure.Strategies.Abstract;
+using Infrastructure.Strategies.Example.Enums;
 
 using MediatR;
 
-namespace Infrastructure.Services.Trading.Strategies.Example;
+namespace Infrastructure.Strategies.Example;
 
 /// <summary>
 /// An implementation of the <see cref="StrategyEngine"/> class that uses Relative Strength Index (RSI) divergence to determine and moving average exponential (EMA) market trend and open/close positions accordingly

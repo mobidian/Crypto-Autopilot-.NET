@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Services.Trading.Strategies.Example.Enums;
+﻿namespace Infrastructure.Strategies.Example.Enums;
 
 public enum RsiDivergence
 {

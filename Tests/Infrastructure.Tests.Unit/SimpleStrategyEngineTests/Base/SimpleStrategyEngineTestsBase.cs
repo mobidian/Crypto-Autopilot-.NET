@@ -5,7 +5,7 @@ using Binance.Net.Enums;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
+using Infrastructure.Strategies.SimpleStrategy;
 
 using MediatR;
 

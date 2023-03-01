@@ -6,11 +6,11 @@ using Binance.Net.Enums;
 using Domain.Models;
 
 using Infrastructure.Notifications;
-using Infrastructure.Services.Trading.Strategies.SimpleStrategy.Enums;
+using Infrastructure.Strategies.SimpleStrategy.Enums;
 
 using MediatR;
 
-namespace Infrastructure.Services.Trading.Strategies.SimpleStrategy;
+namespace Infrastructure.Strategies.SimpleStrategy;
 
 /// <summary>
 /// A simple strategy that opens a long position when <see cref="CFDMovingUp"/> is called and closes the position if it exists when <see cref="CFDMovingDown"/> is called

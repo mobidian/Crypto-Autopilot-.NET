@@ -1,4 +1,4 @@
-﻿using Infrastructure.Services.Trading.Strategies.Example.Enums;
+﻿using Infrastructure.Strategies.Example.Enums;
 using Infrastructure.Tests.Unit.ExampleStrategyEngineTests.Base;
 
 namespace Infrastructure.Tests.Unit.ExampleStrategyEngineTests;

@@ -21,7 +21,7 @@ using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
 using Infrastructure.Services.Trading.Monitors;
-using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
+using Infrastructure.Strategies.SimpleStrategy;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
