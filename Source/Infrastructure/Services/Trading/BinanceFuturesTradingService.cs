@@ -19,21 +19,21 @@ using Polly;
 
 namespace Infrastructure.Services.Trading;
 
-public class BinanceCfdTradingService : ICfdTradingService
+public class BinanceFuturesTradingService : IFuturesTradingService
 {
     public CurrencyPair CurrencyPair { get; }
     public decimal Leverage { get; }
 
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
-    private readonly ICfdMarketDataProvider MarketDataProvider;
+    private readonly IFuturesMarketDataProvider MarketDataProvider;
     private readonly IOrderStatusMonitor OrderStatusMonitor;
     
     public FuturesPosition? Position { get; private set; }
 
     private readonly int NrDecimals = 2;
     
-    public BinanceCfdTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, ICfdMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
+    public BinanceFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, IFuturesMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
@@ -182,7 +182,7 @@ public class BinanceCfdTradingService : ICfdTradingService
                 StopPrice = Math.Round(TakeProfit.Value, this.NrDecimals),
             });
         }
-        
+           
         return BatchOrders.ToArray();
     }
     private async Task<FuturesPosition> CreateFuturesPositionInstanceAsync(decimal QuoteMargin, BinanceFuturesPlacedOrder[] PlacedOrders)

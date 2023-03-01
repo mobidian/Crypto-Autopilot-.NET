@@ -7,7 +7,7 @@ using Domain.Models;
 
 namespace Application.Interfaces.Services.Trading;
 
-public interface ICfdTradingService : IDisposable
+public interface IFuturesTradingService : IDisposable
 {
     public CurrencyPair CurrencyPair { get; }
     public decimal Leverage { get; }

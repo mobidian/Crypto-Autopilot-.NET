@@ -8,7 +8,7 @@ namespace Application.Interfaces.Services.Trading;
 /// <summary>
 /// Interface for getting data from Binance USDⓈ-M Futures markets
 /// </summary>
-public interface ICfdMarketDataProvider : IDisposable
+public interface IFuturesMarketDataProvider : IDisposable
 {
     /// <summary>
     /// Gets the current price for the specified contract as an asynchronous operation
