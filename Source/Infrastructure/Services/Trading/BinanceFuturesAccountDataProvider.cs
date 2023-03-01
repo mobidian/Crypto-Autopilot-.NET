@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces.Services.Trading;
 
+using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
+using Binance.Net.Objects.Models.Futures;
 
 using Infrastructure.Extensions;
 
@@ -22,5 +24,21 @@ public class BinanceFuturesAccountDataProvider : IBinanceFuturesAccountDataProvi
         
         var asset = callResult.Data.Assets.Where(binanceAsset => currencyPair.EndsWith(binanceAsset.Asset)).Single();
         return asset.AvailableBalance;
+    }
+
+    public async Task<IEnumerable<BinancePositionDetailsUsdt>> GetPositionsAsync(string currencyPair)
+    {
+        var callResult = await this.BinanceFuturesAccount.GetPositionInformationAsync(currencyPair);
+        callResult.ThrowIfHasError(); 
+        
+        return callResult.Data.Where(x => x.Symbol == currencyPair.ToUpperInvariant() && x.IsolatedMargin != 0);
+    }
+    
+    public async Task<IEnumerable<BinancePositionDetailsUsdt>> GetPositionAsync(string currencyPair, PositionSide positionSide)
+    {
+        var callResult = await this.BinanceFuturesAccount.GetPositionInformationAsync(currencyPair);
+        callResult.ThrowIfHasError();
+        
+        return callResult.Data.Where(x => x.Symbol == currencyPair.ToUpperInvariant() && x.PositionSide == positionSide && x.IsolatedMargin != 0);
     }
 }
