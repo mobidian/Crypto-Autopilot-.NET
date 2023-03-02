@@ -27,7 +27,7 @@ public abstract class BinanceFuturesTradingServiceTestsBase
     private readonly SecretsManager SecretsManager = new SecretsManager();
 
     protected const decimal precision = 1; // for assertions
-    protected decimal testMargin = 5;
+    protected decimal Margin = 5;
     
     protected BinanceFuturesTradingService SUT = default!;
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
@@ -92,7 +92,7 @@ public abstract class BinanceFuturesTradingServiceTestsBase
 
     protected async Task<BinanceFuturesOrder> SUT_PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
-        var task = this.SUT.PlaceLimitOrderAsync(OrderSide, LimitPrice, this.testMargin, StopLoss, TakeProfit);
+        var task = this.SUT.PlaceLimitOrderAsync(OrderSide, LimitPrice, this.Margin, StopLoss, TakeProfit);
         
         var order = await task;
         this.LimitOrdersIDs.Add(order.Id);

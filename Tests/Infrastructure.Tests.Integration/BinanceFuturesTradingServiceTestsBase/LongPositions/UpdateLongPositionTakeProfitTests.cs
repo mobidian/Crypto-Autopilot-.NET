@@ -14,7 +14,7 @@ public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServi
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var new_take_profit_price = prc * current_price;
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price);
 
         // Act
         var newTakeProfitPlacedOrder = await this.SUT.PlaceTakeProfitAsync(new_take_profit_price);
@@ -34,7 +34,7 @@ public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServi
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var new_take_profit_price = current_price - 10;
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price);
         
         // Act
         var func = async () => await this.SUT.PlaceTakeProfitAsync(new_take_profit_price);

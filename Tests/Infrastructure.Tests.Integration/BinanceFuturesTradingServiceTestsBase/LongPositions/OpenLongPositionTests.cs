@@ -13,13 +13,13 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
         // Act
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price);
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
         this.SUT.Position!.CurrencyPair.Should().Be(this.CurrencyPair);
         this.SUT.Position!.Side.Should().Be(PositionSide.Long);
-        this.SUT.Position!.Margin.Should().Be(this.testMargin);
+        this.SUT.Position!.Margin.Should().Be(this.Margin);
         this.SUT.Position!.StopLossOrder.Should().NotBeNull();
         this.SUT.Position!.TakeProfitOrder.Should().NotBeNull();
 
@@ -31,7 +31,7 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         longPosition.Should().NotBeNull();
         longPosition.PositionSide.Should().Be(PositionSide.Long);
         longPosition.EntryPrice.Should().BeApproximately(current_price, precision);
-        longPosition.Quantity.Should().BeApproximately(this.testMargin * this.Leverage / current_price, precision);
+        longPosition.Quantity.Should().BeApproximately(this.Margin * this.Leverage / current_price, precision);
     }
 
     [Test]
@@ -42,7 +42,7 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
 
         // Act
-        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 1.01m * current_price, 0.99m * current_price);
+        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 1.01m * current_price, 0.99m * current_price);
 
 
         // Assert

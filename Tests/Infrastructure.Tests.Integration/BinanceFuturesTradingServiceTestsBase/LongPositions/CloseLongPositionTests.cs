@@ -9,7 +9,7 @@ public class CloseLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
     {
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
-        var orders = await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price);
+        var orders = await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price);
         
         var ordersArray = orders.ToArray();
         var entryOrder = ordersArray[0];

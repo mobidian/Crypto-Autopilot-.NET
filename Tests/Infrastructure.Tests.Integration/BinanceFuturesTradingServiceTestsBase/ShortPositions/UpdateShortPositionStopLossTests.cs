@@ -14,7 +14,7 @@ public class UpdateShortPositionStopLossTests : Base.BinanceFuturesTradingServic
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var new_stop_loss_price = prc * current_price;
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.Margin, 1.01m * current_price, 0.99m * current_price);
 
         // Act
         var newStopLossPlacedOrder = await this.SUT.PlaceStopLossAsync(new_stop_loss_price);
@@ -34,7 +34,7 @@ public class UpdateShortPositionStopLossTests : Base.BinanceFuturesTradingServic
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         var new_stop_loss_price = current_price - 10;
-        await this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price);
+        await this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.Margin, 1.01m * current_price, 0.99m * current_price);
         
         // Act
         var func = async () => await this.SUT.PlaceStopLossAsync(new_stop_loss_price);

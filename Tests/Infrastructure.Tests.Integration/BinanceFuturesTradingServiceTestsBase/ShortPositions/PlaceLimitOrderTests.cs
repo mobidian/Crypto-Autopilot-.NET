@@ -18,7 +18,7 @@ public class PlaceLimitOrderTests : Base.BinanceFuturesTradingServiceTestsBase
         var takeProfit = limitPrice - 25;
         
         // Act
-        var order = await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.testMargin, stopLoss, takeProfit);
+        var order = await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit);
         
         // Assert
         this.SUT.IsInPosition().Should().BeFalse();
@@ -35,7 +35,7 @@ public class PlaceLimitOrderTests : Base.BinanceFuturesTradingServiceTestsBase
         var takeProfit = limitPrice - 25;
 
         // Act
-        var func = async () => await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.testMargin, stopLoss, takeProfit);
+        var func = async () => await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>().WithMessage("The limit price for a sell order can't be less greater than the current price");
@@ -51,7 +51,7 @@ public class PlaceLimitOrderTests : Base.BinanceFuturesTradingServiceTestsBase
         var takeProfit = limitPrice - 25;
 
         // Act
-        var func = async () => await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.testMargin, stopLoss, takeProfit);
+        var func = async () => await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>();

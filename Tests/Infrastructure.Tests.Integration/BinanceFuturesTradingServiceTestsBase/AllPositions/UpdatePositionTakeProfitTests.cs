@@ -15,8 +15,8 @@ public class UpdatePositionTakeProfitTests : Base.BinanceFuturesTradingServiceTe
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
         await (Random.Shared.Next(2) switch
         {
-            0 => this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 0.99m * current_price, 1.01m * current_price),
-            1 => this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.testMargin, 1.01m * current_price, 0.99m * current_price),
+            0 => this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price),
+            1 => this.SUT.PlaceMarketOrderAsync(OrderSide.Sell, this.Margin, 1.01m * current_price, 0.99m * current_price),
             _ => throw new NotImplementedException()
         });
         var initial_take_profit_price = this.SUT.Position!.TakeProfitPrice!.Value;

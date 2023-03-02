@@ -10,10 +10,10 @@ public class OpenPositionTests : Base.BinanceFuturesTradingServiceTestsBase
     public async Task OpenPosition_ShouldThrow_WhenPositionIsAlreadyOpen()
     {
         // Arrange
-        await this.SUT.PlaceMarketOrderAsync((OrderSide)Random.Shared.Next(2), this.testMargin);
+        await this.SUT.PlaceMarketOrderAsync((OrderSide)Random.Shared.Next(2), this.Margin);
         
         // Act
-        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin);
+        var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("A position is open already");
