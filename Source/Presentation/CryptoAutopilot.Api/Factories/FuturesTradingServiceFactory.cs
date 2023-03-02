@@ -15,7 +15,6 @@ public class FuturesTradingServiceFactory
             currencyPair,
             leverage,
             services.GetRequiredService<IBinanceFuturesApiService>(),
-            services.GetRequiredService<IBinanceClientUsdFuturesApiTrading>(),
             services.GetRequiredService<IBinanceFuturesAccountDataProvider>(),
             services.GetRequiredService<IFuturesMarketDataProvider>());
 }

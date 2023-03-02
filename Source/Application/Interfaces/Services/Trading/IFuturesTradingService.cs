@@ -49,7 +49,7 @@ public interface IFuturesTradingService : IDisposable
     /// <returns>The order that has been placed as a <see cref="BinanceFuturesPlacedOrder"/></returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="InternalTradingServiceException"></exception>
-    public Task<BinanceFuturesPlacedOrder> PlaceStopLossAsync(decimal price);
+    public Task<BinanceFuturesOrder> PlaceStopLossAsync(decimal price);
     
     /// <summary>
     /// Places a take profit limit order if there is an open position and then updates this.Position.TakeProfitOrder
@@ -58,7 +58,7 @@ public interface IFuturesTradingService : IDisposable
     /// <returns>The order that has been placed as a <see cref="BinanceFuturesPlacedOrder"/></returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="InternalTradingServiceException"></exception>
-    public Task<BinanceFuturesPlacedOrder> PlaceTakeProfitAsync(decimal price);
+    public Task<BinanceFuturesOrder> PlaceTakeProfitAsync(decimal price);
 
     /// <summary>
     /// Closes the existing position
