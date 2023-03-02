@@ -26,13 +26,12 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient; // TODO replace with IBinanceFuturesApiService //
     private readonly IBinanceFuturesAccountDataProvider AccountDataProvider;
     private readonly IFuturesMarketDataProvider MarketDataProvider;
-    private readonly IOrderStatusMonitor OrderStatusMonitor;
     
     public FuturesPosition? Position { get; private set; }
 
     private readonly int NrDecimals = 2;
     
-    public BinanceFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceFuturesApiService futuresApiService, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, IFuturesMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
+    public BinanceFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceFuturesApiService futuresApiService, IBinanceClientUsdFuturesApiTrading tradingClient, IBinanceFuturesAccountDataProvider accountDataProvider, IFuturesMarketDataProvider marketDataProvider)
     {
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
@@ -41,7 +40,6 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         this.TradingClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
         this.AccountDataProvider = accountDataProvider ?? throw new ArgumentNullException(nameof(accountDataProvider));
         this.MarketDataProvider = marketDataProvider ?? throw new ArgumentNullException(nameof(marketDataProvider));
-        this.OrderStatusMonitor = orderStatusMonitor ?? throw new ArgumentNullException(nameof(orderStatusMonitor));
     }
 
     //// //// ////

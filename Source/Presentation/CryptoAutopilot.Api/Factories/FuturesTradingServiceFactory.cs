@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 
@@ -18,6 +17,5 @@ public class FuturesTradingServiceFactory
             services.GetRequiredService<IBinanceFuturesApiService>(),
             services.GetRequiredService<IBinanceClientUsdFuturesApiTrading>(),
             services.GetRequiredService<IBinanceFuturesAccountDataProvider>(),
-            services.GetRequiredService<IFuturesMarketDataProvider>(),
-            services.GetRequiredService<IOrderStatusMonitor>());
+            services.GetRequiredService<IFuturesMarketDataProvider>());
 }
