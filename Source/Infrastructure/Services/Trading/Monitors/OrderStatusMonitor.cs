@@ -6,6 +6,7 @@ using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 using Binance.Net.Objects.Models.Futures.Socket;
 
+using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Sockets;
 
 using Infrastructure.Extensions;
@@ -28,11 +29,11 @@ public class OrderStatusMonitor : IOrderStatusMonitor
     }
     internal OrderStatusMonitor(IBinanceClientUsdFuturesApiAccount account, IBinanceSocketClientUsdFuturesStreams futuresStreams, IUpdateSubscriptionProxy userDataUpdatesSubscription, ILoggerAdapter<OrderStatusMonitor> logger, IDictionary<long, OrderStatus?> orderStatuses) : this(account, futuresStreams, userDataUpdatesSubscription, logger)
     {
-        this.OrdersStatuses = orderStatuses;
+        this.Orders = orderStatuses;
     }
 
 
-    private readonly IDictionary<long, OrderStatus?> OrdersStatuses = new Dictionary<long, OrderStatus?>();
+    private readonly IDictionary<long, OrderStatus?> Orders = new Dictionary<long, OrderStatus?>();
     public bool Subscribed { get; private set; }
 
     public async Task SubscribeToOrderUpdatesAsync()
@@ -62,8 +63,8 @@ public class OrderStatusMonitor : IOrderStatusMonitor
     {
         var order = dataEvent.Data.UpdateData;
 
-        if (this.OrdersStatuses.ContainsKey(order.OrderId))
-            this.OrdersStatuses[order.OrderId] = order.Status;
+        if (this.Orders.ContainsKey(order.OrderId))
+            this.Orders[order.OrderId] = order.Status;
 
         // // TODO optimization possibly with CollectionsMarshal // //
     }
@@ -76,26 +77,41 @@ public class OrderStatusMonitor : IOrderStatusMonitor
 
     public async ValueTask<OrderStatus> GetStatusAsync(long OrderID)
     {
-        if (!this.OrdersStatuses.ContainsKey(OrderID))
+        if (!this.Orders.ContainsKey(OrderID))
             throw new KeyNotFoundException($"The given key '{OrderID}' was not present in the dictionary.");
 
-        while (this.OrdersStatuses[OrderID] is null)
+        while (this.Orders[OrderID] is null)
             await Task.Delay(20);
 
-        return await new ValueTask<OrderStatus>(this.OrdersStatuses[OrderID]!.Value);
+        return await new ValueTask<OrderStatus>(this.Orders[OrderID]!.Value);
 
         // // TODO optimization // //
     }
 
-    public async Task WaitForOrderStatusAsync(long OrderID, OrderStatus OrderStatus)
+    public async Task WaitForOrderToReachStatusAsync(long OrderID, OrderStatus OrderStatus)
     {
         if (!this.Subscribed)
             throw new Exception("Not subscribed to user data updates");
 
-        if (!this.OrdersStatuses.ContainsKey(OrderID))
-            this.OrdersStatuses[OrderID] = null;
+        if (!this.Orders.ContainsKey(OrderID))
+            this.Orders[OrderID] = null;
 
-        while (this.OrdersStatuses[OrderID] != OrderStatus)
+        while (this.Orders[OrderID] != OrderStatus)
+            await Task.Delay(50);
+
+        // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) // //
+    }
+
+    public async Task WaitForAnyOrderToReachStatusAsync(IEnumerable<long> OrderIDs, OrderStatus OrderStatus)
+    {
+        if (!this.Subscribed)
+            throw new Exception("Not subscribed to user data updates");
+        
+        foreach (var orderId in OrderIDs)
+            if (!this.Orders.ContainsKey(orderId))
+                this.Orders[orderId] = null;
+        
+        while (!this.Orders.Values.Any(x => x == OrderStatus))
             await Task.Delay(50);
 
         // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) // //
