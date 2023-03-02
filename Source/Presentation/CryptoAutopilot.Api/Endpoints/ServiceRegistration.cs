@@ -41,14 +41,16 @@ public static partial class ServicesEndpointsExtensions
 
         AddBinanceClientsAndServicesDerivedFromThem(services, configuration);
 
-        // factories are used here because theese services need to be created
-        // with respect to parameters such as currencyPair, timeframe, leverage and so on
-        AddServiceFactories(services);
-        
+        services.AddSingleton<IBinanceFuturesApiService, BinanceFuturesApiService>();
+
         services.AddSingleton<IOrderStatusMonitor, OrderStatusMonitor>();
         services.AddSingleton<IFuturesCandlesticksMonitor, FuturesCandlesticksMonitor>();
         
         services.AddSingleton<IBinanceFuturesAccountDataProvider, BinanceFuturesAccountDataProvider>(services => new BinanceFuturesAccountDataProvider(services.GetRequiredService<IBinanceClientUsdFuturesApiAccount>()));
+
+        // factories are used here because theese services need to be created
+        // with respect to parameters such as currencyPair, timeframe, leverage and so on
+        AddServiceFactories(services);
         
         services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
     }

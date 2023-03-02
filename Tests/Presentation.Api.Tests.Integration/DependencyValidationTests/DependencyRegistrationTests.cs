@@ -14,6 +14,8 @@ using Binance.Net.Objects;
 
 using CryptoAutopilot.Api;
 using CryptoAutopilot.Api.Factories;
+using CryptoAutopilot.Api.Services;
+using CryptoAutopilot.Api.Services.Interfaces;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
@@ -57,15 +59,17 @@ public class DependencyRegistrationTests
         (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Transient),
         #endregion
 
+        (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
+        (typeof(IFuturesCandlesticksMonitor), typeof(FuturesCandlesticksMonitor), ServiceLifetime.Singleton),
+        
+        (typeof(IBinanceFuturesAccountDataProvider), typeof(BinanceFuturesAccountDataProvider), ServiceLifetime.Singleton),
+
         #region AddServiceFactories
         (typeof(FuturesTradingServiceFactory), typeof(FuturesTradingServiceFactory), ServiceLifetime.Singleton),
         (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
 	    #endregion
         
-        (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
-        (typeof(IFuturesCandlesticksMonitor), typeof(FuturesCandlesticksMonitor), ServiceLifetime.Singleton),
-        
-        (typeof(IBinanceFuturesAccountDataProvider), typeof(BinanceFuturesAccountDataProvider), ServiceLifetime.Singleton),
+        (typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton),
         #endregion
 
 
