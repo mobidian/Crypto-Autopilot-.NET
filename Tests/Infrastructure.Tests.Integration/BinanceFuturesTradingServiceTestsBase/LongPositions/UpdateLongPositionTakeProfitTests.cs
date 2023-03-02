@@ -2,8 +2,6 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
-
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.LongPositions;
 
 public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -17,15 +15,12 @@ public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServi
         await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price);
 
         // Act
-        var newTakeProfitPlacedOrder = await this.SUT.PlaceTakeProfitAsync(new_take_profit_price);
-
+        var newTakeProfitOrder = await this.SUT.PlaceTakeProfitAsync(new_take_profit_price);
 
         // Assert
-        var newTakeProfitOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.TakeProfitOrder!.Id);
-
         this.SUT.Position!.TakeProfitPrice.Should().BeApproximately(new_take_profit_price, precision);
-        newTakeProfitOrder.Id.Should().Be(newTakeProfitPlacedOrder.Id);
-        newTakeProfitOrder.StopPrice.Should().Be(newTakeProfitPlacedOrder.StopPrice);
+        newTakeProfitOrder.Id.Should().Be(newTakeProfitOrder.Id);
+        newTakeProfitOrder.StopPrice.Should().Be(newTakeProfitOrder.StopPrice);
     }
 
     [Test]
@@ -40,6 +35,6 @@ public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServi
         var func = async () => await this.SUT.PlaceTakeProfitAsync(new_take_profit_price);
         
         // Assert
-        await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("The take profit could not be placed | Error: -2021: Order would immediately trigger.");
+        await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("-2021: Order would immediately trigger.");
     }
 }

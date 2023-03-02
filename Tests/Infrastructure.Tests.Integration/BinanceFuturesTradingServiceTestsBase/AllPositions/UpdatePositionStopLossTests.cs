@@ -2,8 +2,6 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
-
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.AllPositions;
 
 public class UpdatePositionStopLossTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -24,9 +22,9 @@ public class UpdatePositionStopLossTests : Base.BinanceFuturesTradingServiceTest
         // Act
         var func = async () => await this.SUT.PlaceStopLossAsync(-1);
         
-
+        
         // Assert
-        await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("The stop loss could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
+        await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("-1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
         this.SUT.Position!.StopLossPrice.Should().Be(initial_stop_loss_price);
 
         var stopLossPlacedOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.StopLossOrder!.Id);

@@ -2,8 +2,6 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
-
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.AllPositions;
 
 public class UpdatePositionTakeProfitTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -26,7 +24,7 @@ public class UpdatePositionTakeProfitTests : Base.BinanceFuturesTradingServiceTe
 
 
         // Assert
-        await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("The take profit could not be placed | Error: -1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
+        await func.Should().ThrowExactlyAsync<InternalTradingServiceException>().WithMessage("-1102: Mandatory parameter 'stopPrice' was not sent, was empty/null, or malformed.");
         this.SUT.Position!.TakeProfitPrice.Should().Be(initial_take_profit_price);
 
         var takeProfitPlacedOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, this.SUT.Position!.TakeProfitOrder!.Id);
