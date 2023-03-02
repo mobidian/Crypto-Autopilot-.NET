@@ -51,60 +51,42 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
         ValidateTpSl(orderSide, currentPrice, "current price", StopLoss, TakeProfit);
 
         
-        var batchOrders = CreateBatchOrders(currencyPair, orderSide, currentPrice, Margin, Leverage, StopLoss, TakeProfit);
-        var callResult = await this.TradingClient.PlaceMultipleOrdersAsync(batchOrders);
+        var Quantity = Math.Round(Margin * Leverage / currentPrice, 3);
+        var callResult = await this.TradingClient.PlaceOrderAsync(currencyPair, orderSide, FuturesOrderType.Market, Quantity, positionSide: orderSide.ToPositionSide());
         callResult.ThrowIfHasError();
-
-        var placedOrders = callResult.Data.Select(x => x.Data).ToArray();
-        return this.GetOrdersFromPlacedOrders(placedOrders);
+        
+        var placedStopLossTakeProfitOrders = await this.PlaceStopLossTakeProfitAsync(currencyPair, orderSide, StopLoss, TakeProfit);
+        
+        return this.GetOrdersFromPlacedOrders(placedStopLossTakeProfitOrders.Prepend(callResult.Data).ToArray());
     }
-    private static BinanceFuturesBatchOrder[] CreateBatchOrders(string currencyPair, OrderSide orderSide, decimal currentPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
+    private async Task<IEnumerable<BinanceFuturesPlacedOrder>> PlaceStopLossTakeProfitAsync(string currencyPair, OrderSide orderSide, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         var positionSide = orderSide.ToPositionSide();
         var inverseOrderSide = orderSide.Invert();
-        var Quantity = Math.Round(Margin * Leverage / currentPrice, 3);
         
-        var BatchOrders = new List<BinanceFuturesBatchOrder>()
+        var orders = new BinanceFuturesPlacedOrder?[] { null, null };
+        var placeStopLossAsync = async () =>
         {
-            new BinanceFuturesBatchOrder
+            if (StopLoss is not null)
             {
-                Symbol = currencyPair,
-                Side = orderSide,
-                Type = FuturesOrderType.Market,
-                PositionSide = positionSide,
-                Quantity = Quantity,
+                var callResult = await this.TradingClient.PlaceOrderAsync(currencyPair, inverseOrderSide, FuturesOrderType.StopMarket, 0, positionSide: positionSide, stopPrice: Math.Round(StopLoss.Value, 2), timeInForce: TimeInForce.GoodTillCanceled, closePosition: true);
+                callResult.ThrowIfHasError();
+                orders[0] = callResult.Data;
+            }
+        };
+        var placeTakeProfitAsync = async () =>
+        {
+            if (TakeProfit is not null)
+            {
+                var callResult = await this.TradingClient.PlaceOrderAsync(currencyPair, inverseOrderSide, FuturesOrderType.TakeProfitMarket, 0, positionSide: positionSide, stopPrice: Math.Round(TakeProfit.Value, 2), timeInForce: TimeInForce.GoodTillCanceled, closePosition: true);
+                callResult.ThrowIfHasError();
+                orders[1] = callResult.Data;
             }
         };
 
-        if (StopLoss.HasValue)
-        {
-            BatchOrders.Add(new BinanceFuturesBatchOrder
-            {
-                Symbol = currencyPair,
-                Side = inverseOrderSide,
-                Type = FuturesOrderType.StopMarket,
-                PositionSide = positionSide,
-                Quantity = Quantity,
-                StopPrice = Math.Round(StopLoss.Value, 2),
-                TimeInForce = TimeInForce.GoodTillCanceled
-            });
-        }
+        await Task.WhenAll(placeStopLossAsync.Invoke(), placeTakeProfitAsync.Invoke());
         
-        if (TakeProfit.HasValue)
-        {
-            BatchOrders.Add(new BinanceFuturesBatchOrder
-            {
-                Symbol = currencyPair,
-                Side = inverseOrderSide,
-                Type = FuturesOrderType.TakeProfitMarket,
-                PositionSide = positionSide,
-                Quantity = Quantity,
-                StopPrice = Math.Round(TakeProfit.Value, 2),
-                TimeInForce = TimeInForce.GoodTillCanceled
-            });
-        }
-
-        return BatchOrders.ToArray();
+        return orders.Where(x => x is not null)!;
     }
 
     public async Task<BinanceFuturesOrder> PlaceLimitOrderAsync(string currencyPair, OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
@@ -255,14 +237,14 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
     
     private BinanceFuturesOrder[] GetOrdersFromPlacedOrders(BinanceFuturesPlacedOrder[] placedOrders)
     {
-        var futuresOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToArray();
+        var futuresOrders = Enumerable.Range(0, placedOrders.Length).Select(_ => new BinanceFuturesOrder()).ToArray();
         
         Parallel.For(0, placedOrders.Length, i =>
         {
             var task = this.GetOrderFromPlacedOrderAndValidateAsync(placedOrders[i]);
             futuresOrders[i] = task.GetAwaiter().GetResult();
         });
-
+        
         //await Parallel.ForEachAsync(placedOrders, async (placedOrder, _) =>
         //{
         //    var index = Array.IndexOf(placedOrders, placedOrder);
