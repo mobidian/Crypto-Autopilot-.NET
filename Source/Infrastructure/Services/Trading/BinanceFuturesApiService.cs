@@ -112,8 +112,9 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
 
         var placedLimitOrder = callResult.Data;
         
-        _ = OtocoImplementationAsync(placedLimitOrder, StopLoss, TakeProfit, Quantity);
-        
+        if (StopLoss is not null || TakeProfit is not null)
+            _ = OtocoImplementationAsync(placedLimitOrder, StopLoss, TakeProfit, Quantity);
+
         return await this.GetOrderFromPlacedOrderAndValidateAsync(placedLimitOrder);
     }
     private static void ValidateLimitOrderInput(OrderSide orderSide, decimal LimitPrice, decimal? StopLoss, decimal? TakeProfit, decimal currentPrice)
