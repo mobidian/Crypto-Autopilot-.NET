@@ -1,6 +1,5 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
@@ -117,11 +116,11 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         var GetSLOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, SLPlacingCallResult!.Data.Id);
         if (this.Position.StopLossOrder is not null)
         {
-            await this.TradingClient.CancelOrderAsync(symbol: this.CurrencyPair.Name, this.Position.StopLossOrder.Id);
+            await this.FuturesApiService.CancelOrderAsync(this.CurrencyPair.Name, this.Position.StopLossOrder.Id);
         }
 
         this.Position.StopLossOrder = await GetSLOrderTask;
-
+        
         return SLPlacingCallResult.Data;
     }
 
@@ -143,7 +142,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         var GetTPOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, TPPlacingCallResult!.Data.Id);
         if (this.Position.TakeProfitOrder is not null)
         {
-            await this.TradingClient.CancelOrderAsync(symbol: this.CurrencyPair.Name, this.Position.TakeProfitOrder.Id);
+            await this.FuturesApiService.CancelOrderAsync(this.CurrencyPair.Name, this.Position.TakeProfitOrder.Id);
         }
 
         this.Position.TakeProfitOrder = await GetTPOrderTask;
@@ -163,10 +162,9 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         ClosingCallResult.ThrowIfHasError("The current position could not be closed");
         
         var GetFuturesClosingOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, ClosingCallResult.Data.Id);
-
+        
         // some orders may still be open so they must be closed
-        var CancellingCallResult = await this.TradingClient.CancelMultipleOrdersAsync(symbol: this.CurrencyPair.Name, this.Position.GetOpenOrdersIDs().ToList());
-        CancellingCallResult.ThrowIfHasError("The remaining orders could not be closed");
+        await this.FuturesApiService.CancelOrdersAsync(this.CurrencyPair.Name, this.Position.GetOpenOrdersIDs().ToList());
 
         this.Position = null;
         return await GetFuturesClosingOrderTask;
