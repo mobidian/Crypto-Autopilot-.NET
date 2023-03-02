@@ -4,11 +4,11 @@ using Application.Exceptions;
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceFuturesServiceTests.Base;
+using Infrastructure.Tests.Integration.BinanceFuturesApiServiceTestsBase.Base;
 
-namespace Infrastructure.Tests.Integration.BinanceFuturesServiceTests.LongPositions;
+namespace Infrastructure.Tests.Integration.BinanceFuturesApiServiceTestsBase.LongPositions;
 
-public class PlaceBuyLimitOrderTests : BinanceFuturesServiceTestsBase
+public class PlaceBuyLimitOrderTests : BinanceFuturesApiServiceTestsBaseClass
 {
     [Test]
     public async Task PlaceLimitOrderAsync_ShouldPlaceBuyLimitOrder_WhenLimitPriceAndTpSlAreCorrect()

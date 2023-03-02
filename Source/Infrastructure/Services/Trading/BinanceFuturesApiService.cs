@@ -16,13 +16,13 @@ using Polly;
 
 namespace Infrastructure.Services.Trading;
 
-public class BinanceFuturesService : IBinanceFuturesService
+public class BinanceFuturesApiService : IBinanceFuturesApiService
 {
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IFuturesMarketDataProvider MarketDataProvider;
     private readonly IOrderStatusMonitor OrderStatusMonitor;
 
-    public BinanceFuturesService(IBinanceClientUsdFuturesApiTrading tradingClient, IFuturesMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
+    public BinanceFuturesApiService(IBinanceClientUsdFuturesApiTrading tradingClient, IFuturesMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
         this.TradingClient = tradingClient;
         this.MarketDataProvider = marketDataProvider;

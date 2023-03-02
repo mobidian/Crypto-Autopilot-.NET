@@ -6,7 +6,7 @@ namespace Application.Interfaces.Services.Trading;
 /// <summary>
 /// Client for interacting with the Binance USDⓈ-M Futures markets
 /// </summary>
-public interface IBinanceFuturesService
+public interface IBinanceFuturesApiService
 {
     /// <summary>
     /// Opens a position at the current market price

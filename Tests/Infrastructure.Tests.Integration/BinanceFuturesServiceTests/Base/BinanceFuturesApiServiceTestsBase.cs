@@ -20,16 +20,16 @@ using Microsoft.Extensions.Logging;
 
 using NUnit.Framework.Interfaces;
 
-namespace Infrastructure.Tests.Integration.BinanceFuturesServiceTests.Base;
+namespace Infrastructure.Tests.Integration.BinanceFuturesApiServiceTestsBase.Base;
 
-public abstract class BinanceFuturesServiceTestsBase
+public abstract class BinanceFuturesApiServiceTestsBaseClass
 {
     private readonly SecretsManager SecretsManager = new SecretsManager();
 
     protected const decimal precision = 1; // for assertions
     protected decimal Margin = 5;
 
-    protected readonly BinanceFuturesService SUT;
+    protected readonly BinanceFuturesApiService SUT;
 
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly decimal Leverage = 10m;
@@ -38,7 +38,7 @@ public abstract class BinanceFuturesServiceTestsBase
     protected readonly IFuturesMarketDataProvider MarketDataProvider;
     private readonly IOrderStatusMonitor OrderStatusMonitor;
     
-    public BinanceFuturesServiceTestsBase()
+    public BinanceFuturesApiServiceTestsBaseClass()
     {
         var apiCredentials = new BinanceApiCredentials(this.SecretsManager.GetSecret("BinanceApiCredentials:key"), this.SecretsManager.GetSecret("BinanceApiCredentials:secret"));
 
@@ -53,7 +53,7 @@ public abstract class BinanceFuturesServiceTestsBase
         this.OrderStatusMonitor = new OrderStatusMonitor(binanceClient.UsdFuturesApi.Account, binanceSocketClient.UsdFuturesStreams, new UpdateSubscriptionProxy(), new LoggerAdapter<OrderStatusMonitor>(new Logger<OrderStatusMonitor>(new LoggerFactory())));
     
         
-        this.SUT = new BinanceFuturesService(this.TradingClient, this.MarketDataProvider, this.OrderStatusMonitor);
+        this.SUT = new BinanceFuturesApiService(this.TradingClient, this.MarketDataProvider, this.OrderStatusMonitor);
     }
 
 
