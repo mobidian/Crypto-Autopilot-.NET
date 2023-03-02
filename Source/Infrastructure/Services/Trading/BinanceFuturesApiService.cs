@@ -21,7 +21,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
     private readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     private readonly IFuturesMarketDataProvider MarketDataProvider;
     private readonly IOrderStatusMonitor OrderStatusMonitor;
-
+    
     public BinanceFuturesApiService(IBinanceClientUsdFuturesApiTrading tradingClient, IFuturesMarketDataProvider marketDataProvider, IOrderStatusMonitor orderStatusMonitor)
     {
         this.TradingClient = tradingClient;
@@ -35,6 +35,15 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
         Policy<BinanceFuturesOrder>
             .Handle<Exception>()
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
+
+    
+    public async Task<BinanceFuturesOrder> PlaceOrderAsync(string currencyPair, OrderSide side, FuturesOrderType type, decimal? quantity, decimal? price = null, PositionSide? positionSide = null, TimeInForce? timeInForce = null, bool? reduceOnly = null, string? newClientOrderId = null, decimal? stopPrice = null, decimal? activationPrice = null, decimal? callbackRate = null, WorkingType? workingType = null, bool? closePosition = null, OrderResponseType? orderResponseType = null, bool? priceProtect = null, int? receiveWindow = null)
+    {
+        var callResult = await this.TradingClient.PlaceOrderAsync(currencyPair, side, type, quantity, price, positionSide, timeInForce, reduceOnly, newClientOrderId, stopPrice, activationPrice, callbackRate, workingType, closePosition, orderResponseType, priceProtect, receiveWindow);
+        callResult.ThrowIfHasError();
+        
+        return await this.GetOrderFromPlacedOrderAndValidateAsync(callResult.Data);
+    }
 
     public async Task<IEnumerable<BinanceFuturesOrder>> PlaceMarketOrderAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
@@ -243,7 +252,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
             throw new InvalidOrderException(builder.Remove(builder.Length - 1, 1).ToString());
         #endregion
     }
-
+    
     private BinanceFuturesOrder[] GetOrdersFromPlacedOrders(BinanceFuturesPlacedOrder[] placedOrders)
     {
         var futuresOrders = Enumerable.Range(0, 3).Select(_ => new BinanceFuturesOrder()).ToArray();
