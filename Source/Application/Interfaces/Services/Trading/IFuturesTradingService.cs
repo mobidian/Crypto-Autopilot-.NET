@@ -14,9 +14,9 @@ public interface IFuturesTradingService : IDisposable
     public FuturesPosition? Position { get; }
 
     /////  /////  /////
-
+    
     /// <summary>
-    /// Places a new order at the currect market price
+    /// Places a new order at the currect market price opening a position and optionally places a stop loss and a take profit
     /// </summary>
     /// <param name="OrderSide">The side of the order to be placed</param>
     /// <param name="QuoteMargin">The margin for the order to be placed</param>
@@ -26,7 +26,7 @@ public interface IFuturesTradingService : IDisposable
     /// <exception cref="InvalidOrderException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="InternalTradingServiceException"></exception>
-    public Task<IEnumerable<BinanceFuturesPlacedOrder>> PlaceMarketOrderAsync(OrderSide OrderSide, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null);
+    public Task<IEnumerable<BinanceFuturesOrder>> PlaceMarketOrderAsync(OrderSide OrderSide, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null);
     
     /// <summary>
     /// Places a new limit order
@@ -40,8 +40,8 @@ public interface IFuturesTradingService : IDisposable
     /// <exception cref="InvalidOrderException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="InternalTradingServiceException"></exception>
-    public Task<BinanceFuturesPlacedOrder> PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null);
-
+    public Task<BinanceFuturesOrder> PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null);
+    
     /// <summary>
     /// Places a stop loss limit order if there is an open position and then updates this.Position.StopLossOrder
     /// </summary>

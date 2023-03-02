@@ -33,6 +33,7 @@ public abstract class BinanceFuturesTradingServiceTestsBase
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly decimal Leverage = 10m;
     protected readonly IBinanceClient BinanceClient;
+    protected readonly IBinanceFuturesApiService FuturesApiService;
     protected readonly IBinanceClientUsdFuturesApi FuturesClient;
     protected readonly IBinanceClientUsdFuturesApiTrading TradingClient;
     protected readonly IBinanceClientUsdFuturesApiExchangeData FuturesExchangeData;
@@ -58,10 +59,12 @@ public abstract class BinanceFuturesTradingServiceTestsBase
 
         var logger = new LoggerAdapter<OrderStatusMonitor>(new Logger<OrderStatusMonitor>(new LoggerFactory()));
         this.OrderStatusMonitor = new OrderStatusMonitor(this.FuturesClient.Account, binanceSocketClient.UsdFuturesStreams, new UpdateSubscriptionProxy(), logger);
-        
+
+        this.FuturesApiService = new BinanceFuturesApiService(this.TradingClient, this.MarketDataProvider, this.OrderStatusMonitor);
+
         this.AccountDataProvider = new BinanceFuturesAccountDataProvider(this.FuturesClient.Account);
 
-        this.SUT = new BinanceFuturesTradingService(this.CurrencyPair, 10, this.TradingClient, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
+        this.SUT = new BinanceFuturesTradingService(this.CurrencyPair, 10, this.FuturesApiService, this.TradingClient, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
     }
 
 
@@ -87,12 +90,12 @@ public abstract class BinanceFuturesTradingServiceTestsBase
     }
 
 
-    protected async Task<BinanceFuturesPlacedOrder> SUT_PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
+    protected async Task<BinanceFuturesOrder> SUT_PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         var task = this.SUT.PlaceLimitOrderAsync(OrderSide, LimitPrice, this.testMargin, StopLoss, TakeProfit);
         
-        var placedOrder = await task;
-        this.LimitOrdersIDs.Add(placedOrder.Id);
+        var order = await task;
+        this.LimitOrdersIDs.Add(order.Id);
          
         return task.Result;
     }

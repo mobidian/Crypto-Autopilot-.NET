@@ -83,7 +83,7 @@ public abstract class BinanceFuturesApiServiceTestsBaseClass
 
     protected async Task<IEnumerable<BinanceFuturesOrder>> SUT_OpenPositionAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
-        var orders = await this.SUT.OpenPositionAsync(currencyPair, orderSide, Margin, Leverage, StopLoss, TakeProfit);
+        var orders = await this.SUT.PlaceMarketOrderAsync(currencyPair, orderSide, Margin, Leverage, StopLoss, TakeProfit);
         var ordersArray = orders.ToArray();
         
         this.MarketOrders.Add(ordersArray[0]);

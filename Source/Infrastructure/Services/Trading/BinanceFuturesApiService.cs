@@ -35,9 +35,8 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
         Policy<BinanceFuturesOrder>
             .Handle<Exception>()
             .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(Math.Round(Math.Pow(1.6, retryCount), 2))); // 1.6 sec, 2.56 sec, 4.1 sec
-    
-    
-    public async Task<IEnumerable<BinanceFuturesOrder>> OpenPositionAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
+
+    public async Task<IEnumerable<BinanceFuturesOrder>> PlaceMarketOrderAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         var currentPrice = await this.MarketDataProvider.GetCurrentPriceAsync(currencyPair);
         ValidateTpSl(orderSide, currentPrice, "current price", StopLoss, TakeProfit);
@@ -98,7 +97,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
 
         return BatchOrders.ToArray();
     }
-    
+
     public async Task<BinanceFuturesOrder> PlaceLimitOrderAsync(string currencyPair, OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         var currentPrice = await this.MarketDataProvider.GetCurrentPriceAsync(currencyPair);

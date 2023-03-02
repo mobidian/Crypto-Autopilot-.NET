@@ -15,6 +15,7 @@ public class FuturesTradingServiceFactory
         => new BinanceFuturesTradingService(
             currencyPair,
             leverage,
+            services.GetRequiredService<IBinanceFuturesApiService>(),
             services.GetRequiredService<IBinanceClientUsdFuturesApiTrading>(),
             services.GetRequiredService<IBinanceFuturesAccountDataProvider>(),
             services.GetRequiredService<IFuturesMarketDataProvider>(),

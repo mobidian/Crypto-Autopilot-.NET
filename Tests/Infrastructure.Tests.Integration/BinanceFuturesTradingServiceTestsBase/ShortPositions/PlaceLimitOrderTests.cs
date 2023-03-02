@@ -16,13 +16,13 @@ public class PlaceLimitOrderTests : Base.BinanceFuturesTradingServiceTestsBase
         var limitPrice = current_price + 50;
         var stopLoss = limitPrice + 25;
         var takeProfit = limitPrice - 25;
-
+        
         // Act
-        var placedOrder = await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.testMargin, stopLoss, takeProfit);
+        var order = await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.testMargin, stopLoss, takeProfit);
         
         // Assert
         this.SUT.IsInPosition().Should().BeFalse();
-        placedOrder.Price.Should().Be(limitPrice);
+        order.Price.Should().Be(limitPrice);
     }
 
     [Test]
