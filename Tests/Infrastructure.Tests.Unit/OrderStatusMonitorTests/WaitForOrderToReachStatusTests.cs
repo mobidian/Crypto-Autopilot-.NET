@@ -9,7 +9,7 @@ namespace Infrastructure.Tests.Unit.OrderStatusMonitorTests;
 public class WaitForOrderToReachStatusTests : OrderStatusMonitorTestsBase
 {
     [Test]
-    public async Task WaitForOrderStatusAsync_ShouldWaitForOrderStatusUpdate_WhenSubscribed()
+    public async Task WaitForOrderToReachStatusAsync_ShouldWaitForOrderStatusToReachSpecifiedStatus_WhenSubscribed()
     {
         // Arrange
         var orderId = Random.Shared.Next();
