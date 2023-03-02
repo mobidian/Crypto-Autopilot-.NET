@@ -188,8 +188,24 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
 
         return BatchOrders.ToArray();
     }
+
+    public async Task<BinanceFuturesCancelOrder> CancelOrderAsync(string currencyPair, long OrderID)
+    {
+        var callResult = await this.TradingClient.CancelOrderAsync(currencyPair, OrderID);
+        callResult.ThrowIfHasError();
+        
+        return callResult.Data;
+    }
     
-    
+    public async Task<IEnumerable<BinanceFuturesCancelOrder>> CancelOrdersAsync(string currencyPair, List<long> OrderIDs)
+    {
+        var callResult = await this.TradingClient.CancelMultipleOrdersAsync(currencyPair, OrderIDs);
+        callResult.ThrowIfHasError();
+        
+        return callResult.Data.Select(x => x.Data);
+    }
+
+
     private static void ValidateTpSl(OrderSide orderSide, decimal price, string priceType, decimal? stopLoss, decimal? takeProfit)
     {
         var builder = new StringBuilder();

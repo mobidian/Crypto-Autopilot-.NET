@@ -32,4 +32,20 @@ public interface IBinanceFuturesApiService
     /// <param name="TakeProfit">The take profit price</param>
     /// <returns>The order that has been placed</returns>
     public Task<BinanceFuturesOrder> PlaceLimitOrderAsync(string currencyPair, OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null);
+
+    /// <summary>
+    /// Cancels a pending order
+    /// </summary>
+    /// <param name="currencyPair"></param>
+    /// <param name="OrderID"></param>
+    /// <returns>The order that has been cancelled</returns>
+    public Task<BinanceFuturesCancelOrder> CancelOrderAsync(string currencyPair, long OrderID);
+    
+    /// <summary>
+    /// Cancels multiple pending orders
+    /// </summary>
+    /// <param name="currencyPair"></param>
+    /// <param name="OrderIDs"></param>
+    /// <returns>The orders that have been cancelled</returns>
+    public Task<IEnumerable<BinanceFuturesCancelOrder>> CancelOrdersAsync(string currencyPair, List<long> OrderIDs);
 }
