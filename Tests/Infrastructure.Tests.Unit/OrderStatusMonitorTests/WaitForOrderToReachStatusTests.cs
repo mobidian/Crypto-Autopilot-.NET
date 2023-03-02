@@ -6,7 +6,7 @@ namespace Infrastructure.Tests.Unit.OrderStatusMonitorTests;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 [Parallelizable(ParallelScope.All)]
-public class WaitForOrderStatusTests : OrderStatusMonitorTestsBase
+public class WaitForOrderToReachStatusTests : OrderStatusMonitorTestsBase
 {
     [Test]
     public async Task WaitForOrderStatusAsync_ShouldWaitForOrderStatusUpdate_WhenSubscribed()
@@ -20,7 +20,7 @@ public class WaitForOrderStatusTests : OrderStatusMonitorTestsBase
         
 
         // Act
-        var task = this.SUT.WaitForOrderStatusAsync(orderId, finalStatus);
+        var task = this.SUT.WaitForOrderToReachStatusAsync(orderId, finalStatus);
         await Task.Delay(100);
         var taskCompletedBeforeFinalStatus = task.IsCompleted;
         
