@@ -50,7 +50,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
         var placedOrders = callResult.Data.Select(x => x.Data).ToArray();
         return this.GetOrdersFromPlacedOrders(placedOrders);
     }
-    public static BinanceFuturesBatchOrder[] CreateBatchOrders(string currencyPair, OrderSide orderSide, decimal currentPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
+    private static BinanceFuturesBatchOrder[] CreateBatchOrders(string currencyPair, OrderSide orderSide, decimal currentPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         var positionSide = orderSide.ToPositionSide();
         var inverseOrderSide = orderSide.Invert();
@@ -188,7 +188,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
 
         return BatchOrders.ToArray();
     }
-
+    
     
     private static void ValidateTpSl(OrderSide orderSide, decimal price, string priceType, decimal? stopLoss, decimal? takeProfit)
     {
@@ -246,7 +246,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
 
         return futuresOrders;
     }
-    public async Task<BinanceFuturesOrder> GetOrderFromPlacedOrderAndValidateAsync(BinanceFuturesPlacedOrder placedOrder)
+    private async Task<BinanceFuturesOrder> GetOrderFromPlacedOrderAndValidateAsync(BinanceFuturesPlacedOrder placedOrder)
         => await this.GetOrderRetryPolicy.ExecuteAsync(async () =>
         {
             var futuresOrder = await this.MarketDataProvider.GetOrderAsync(placedOrder.Symbol, placedOrder.Id);
