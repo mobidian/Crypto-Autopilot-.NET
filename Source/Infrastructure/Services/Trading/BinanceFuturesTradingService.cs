@@ -19,8 +19,6 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     
     public FuturesPosition? Position { get; private set; }
 
-    private readonly int NrDecimals = 2;
-    
     public BinanceFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBinanceFuturesApiService futuresApiService, IBinanceFuturesAccountDataProvider accountDataProvider, IFuturesMarketDataProvider marketDataProvider)
     {
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
@@ -78,7 +76,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         }
 
 
-        var placeSlTask = this.FuturesApiService.PlaceOrderAsync(currencyPair: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
+        var placeSlTask = this.FuturesApiService.PlaceOrderAsync(currencyPair: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.StopMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, 2), positionSide: this.Position.Side);
         
         if (this.Position.StopLossOrder is not null)
             await this.FuturesApiService.CancelOrderAsync(this.CurrencyPair.Name, this.Position.StopLossOrder.Id);
@@ -95,7 +93,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         }
 
         
-        var placeTpTask = this.FuturesApiService.PlaceOrderAsync(currencyPair: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.TakeProfitMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, this.NrDecimals), positionSide: this.Position.Side);
+        var placeTpTask = this.FuturesApiService.PlaceOrderAsync(currencyPair: this.CurrencyPair.Name, side: this.Position.EntryOrder.Side.Invert(), type: FuturesOrderType.TakeProfitMarket, quantity: this.Position.EntryOrder.Quantity, stopPrice: Math.Round(price, 2), positionSide: this.Position.Side);
 
         if (this.Position.TakeProfitOrder is not null)
             await this.FuturesApiService.CancelOrderAsync(this.CurrencyPair.Name, this.Position.TakeProfitOrder.Id);
