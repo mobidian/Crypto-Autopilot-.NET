@@ -34,11 +34,11 @@ public class BinanceFuturesAccountDataProvider : IBinanceFuturesAccountDataProvi
         return callResult.Data.Where(x => x.Symbol == currencyPair.ToUpperInvariant() && x.IsolatedMargin != 0);
     }
     
-    public async Task<IEnumerable<BinancePositionDetailsUsdt>> GetPositionAsync(string currencyPair, PositionSide positionSide)
+    public async Task<BinancePositionDetailsUsdt?> GetPositionAsync(string currencyPair, PositionSide positionSide)
     {
         var callResult = await this.BinanceFuturesAccount.GetPositionInformationAsync(currencyPair);
         callResult.ThrowIfHasError();
         
-        return callResult.Data.Where(x => x.Symbol == currencyPair.ToUpperInvariant() && x.PositionSide == positionSide && x.IsolatedMargin != 0);
+        return callResult.Data.Where(x => x.Symbol == currencyPair.ToUpperInvariant() && x.PositionSide == positionSide && x.IsolatedMargin != 0).SingleOrDefault(defaultValue: null);
     }
 }

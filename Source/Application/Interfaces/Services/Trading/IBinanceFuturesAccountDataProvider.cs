@@ -11,5 +11,5 @@ public interface IBinanceFuturesAccountDataProvider
     public Task<decimal> GetEquityAsync(string currencyPair);
     
     public Task<IEnumerable<BinancePositionDetailsUsdt>> GetPositionsAsync(string currencyPair);
-    public Task<IEnumerable<BinancePositionDetailsUsdt>> GetPositionAsync(string currencyPair, PositionSide positionSide);
+    public Task<BinancePositionDetailsUsdt> GetPositionAsync(string currencyPair, PositionSide positionSide);
 }
