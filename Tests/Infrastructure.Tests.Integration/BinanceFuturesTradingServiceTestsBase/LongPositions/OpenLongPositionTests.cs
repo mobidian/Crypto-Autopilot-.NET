@@ -2,8 +2,6 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
-
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.LongPositions;
 
 public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -19,6 +17,7 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
+        this.SUT.Position!.CurrencyPair.Should().Be(this.CurrencyPair);
         this.SUT.Position!.Side.Should().Be(PositionSide.Long);
         this.SUT.Position!.Margin.Should().Be(this.testMargin);
         this.SUT.Position!.StopLossOrder.Should().NotBeNull();
@@ -26,6 +25,13 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
         this.SUT.Position.StopLossPrice.Should().BeApproximately(0.99m * this.SUT.Position.EntryPrice, precision);
         this.SUT.Position.TakeProfitPrice.Should().BeApproximately(1.01m * this.SUT.Position.EntryPrice, precision);
+        
+        var longPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Long);
+        longPosition.Symbol.Should().Be(this.CurrencyPair.Name);
+        longPosition.Should().NotBeNull();
+        longPosition.PositionSide.Should().Be(PositionSide.Long);
+        longPosition.EntryPrice.Should().BeApproximately(current_price, precision);
+        longPosition.Quantity.Should().BeApproximately(this.testMargin * this.Leverage / current_price, precision);
     }
 
     [Test]
@@ -34,10 +40,15 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
+
         // Act
         var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.testMargin, 1.01m * current_price, 0.99m * current_price);
 
+
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>();
+
+        var longPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Long);
+        longPosition.Should().BeNull();
     }
 }
