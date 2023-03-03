@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Services.Trading.Internal.Enums;
 
-internal enum OcoTaskStatus
+internal enum OrderMonitoringTaskStatus
 {
     Unstarted,
     Running,

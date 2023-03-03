@@ -39,7 +39,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     
     private CancellationTokenSource OcoTaskCts = default!;
     internal StopLossTakeProfitIdPair? OcoIDs = null;
-    internal OcoTaskStatus OcoTaskStatus = OcoTaskStatus.Unstarted;
+    internal OrderMonitoringTaskStatus OcoTaskStatus = OrderMonitoringTaskStatus.Unstarted;
     
     public async Task<IEnumerable<BinanceFuturesOrder>> PlaceMarketOrderAsync(OrderSide OrderSide, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
@@ -72,7 +72,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     {
         this.OcoTaskCts = new CancellationTokenSource();
         this.OcoIDs = new StopLossTakeProfitIdPair();
-        this.OcoTaskStatus = OcoTaskStatus.Unstarted;
+        this.OcoTaskStatus = OrderMonitoringTaskStatus.Unstarted;
 
         if (this.Position!.StopLossOrder is not null)
             this.OcoIDs.StopLoss = this.Position!.StopLossOrder.Id;
@@ -121,7 +121,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         this.OcoIDs ??= new StopLossTakeProfitIdPair();
         
         this.OcoIDs.StopLoss = stopLossOrder.Id;
-        if (this.OcoIDs.HasBoth() && this.OcoTaskStatus == OcoTaskStatus.Unstarted)
+        if (this.OcoIDs.HasBoth() && this.OcoTaskStatus == OrderMonitoringTaskStatus.Unstarted)
             _ = this.OcoMonitoringTaskAsync();
     }
     
@@ -150,7 +150,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         this.OcoIDs ??= new StopLossTakeProfitIdPair();
         
         this.OcoIDs.TakeProfit = takeProfitOrder.Id;
-        if (this.OcoIDs.HasBoth() && this.OcoTaskStatus == OcoTaskStatus.Unstarted)
+        if (this.OcoIDs.HasBoth() && this.OcoTaskStatus == OrderMonitoringTaskStatus.Unstarted)
             _ = this.OcoMonitoringTaskAsync();
     }
 
@@ -172,12 +172,12 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     }
     private async Task CancelOcoTaskAndResetOcoTaskCts()
     {
-        if (this.OcoTaskStatus != OcoTaskStatus.Running)
+        if (this.OcoTaskStatus != OrderMonitoringTaskStatus.Running)
             return;
 
         this.OcoTaskCts.Cancel();
         
-        while (this.OcoTaskStatus == OcoTaskStatus.Running)
+        while (this.OcoTaskStatus == OrderMonitoringTaskStatus.Running)
             await Task.Delay(10);
         
         this.OcoIDs = null;
@@ -191,16 +191,16 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     {
         try
         {
-            this.OcoTaskStatus = OcoTaskStatus.Running;
+            this.OcoTaskStatus = OrderMonitoringTaskStatus.Running;
             
             await this.OrderStatusMonitor.SubscribeToOrderUpdatesAsync();
             var filledOrderId = await this.OrderStatusMonitor.WaitForAnyOrderToReachStatusAsync(this.OcoIDs!.Values, OrderStatus.Filled, this.OcoTaskCts.Token);
-
+            
             var orderToCancelID = this.OcoIDs.Values.Single(x => x != filledOrderId);
             await this.FuturesApiService.CancelOrderAsync(this.CurrencyPair.Name, orderToCancelID);
         }
-        catch (OperationCanceledException) { this.OcoTaskStatus = OcoTaskStatus.Cancelled; }
-        catch { this.OcoTaskStatus = OcoTaskStatus.Faulted; }
+        catch (OperationCanceledException) { this.OcoTaskStatus = OrderMonitoringTaskStatus.Cancelled; }
+        catch { this.OcoTaskStatus = OrderMonitoringTaskStatus.Faulted; }
     }
 
 

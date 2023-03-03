@@ -34,8 +34,8 @@ public class PlaceStopLossTakeProfitAfterEnteringPositionTests : Base.BinanceFut
         this.SUT.Position!.TakeProfitOrder!.Id.Should().Be(takeProfitOrder.Id);
         this.SUT.Position!.TakeProfitPrice.Should().BeApproximately(takeProfitOrder.StopPrice, precision);
         
-        statusAfterStopLoss.Should().Be(OcoTaskStatus.Unstarted);
-        statusAfterTakeProfit.Should().Be(OcoTaskStatus.Running);
+        statusAfterStopLoss.Should().Be(OrderMonitoringTaskStatus.Unstarted);
+        statusAfterTakeProfit.Should().Be(OrderMonitoringTaskStatus.Running);
 
         this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
         this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);

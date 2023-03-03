@@ -37,7 +37,7 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         longPosition.EntryPrice.Should().BeApproximately(current_price, precision);
         longPosition.Quantity.Should().BeApproximately(this.Margin * this.Leverage / current_price, precision);
         
-        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Running);
+        this.SUT.OcoTaskStatus.Should().Be(OrderMonitoringTaskStatus.Running);
         
         this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
         this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
@@ -60,7 +60,7 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         var longPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Long);
         longPosition.Should().BeNull();
 
-        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Unstarted);
+        this.SUT.OcoTaskStatus.Should().Be(OrderMonitoringTaskStatus.Unstarted);
         
         this.SUT.OcoIDs.Should().BeNull();
     }

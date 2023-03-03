@@ -24,7 +24,7 @@ public class UpdateShortPositionTakeProfitTests : Base.BinanceFuturesTradingServ
         this.SUT.Position!.TakeProfitOrder!.Id.Should().Be(newTakeProfitOrder.Id);
         this.SUT.Position!.TakeProfitOrder!.StopPrice.Should().Be(newTakeProfitOrder.StopPrice);
         
-        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Running);
+        this.SUT.OcoTaskStatus.Should().Be(OrderMonitoringTaskStatus.Running);
 
         this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
         this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);

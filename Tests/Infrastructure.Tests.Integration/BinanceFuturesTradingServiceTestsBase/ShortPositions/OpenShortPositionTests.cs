@@ -38,7 +38,7 @@ public class OpenShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
         this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
 
-        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Running);
+        this.SUT.OcoTaskStatus.Should().Be(OrderMonitoringTaskStatus.Running);
 
         this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
         this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
@@ -61,7 +61,7 @@ public class OpenShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         var shortPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Short);
         shortPosition.Should().BeNull();
         
-        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Unstarted);
+        this.SUT.OcoTaskStatus.Should().Be(OrderMonitoringTaskStatus.Unstarted);
 
         this.SUT.OcoIDs.Should().BeNull();
     }

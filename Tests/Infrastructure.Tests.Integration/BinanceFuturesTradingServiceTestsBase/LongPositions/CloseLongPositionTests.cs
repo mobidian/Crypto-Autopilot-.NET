@@ -36,7 +36,7 @@ public class CloseLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         stopLoss.Status.Should().Be(OrderStatus.Canceled);
         takeProfit.Status.Should().Be(OrderStatus.Canceled);
         
-        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Cancelled);
+        this.SUT.OcoTaskStatus.Should().Be(OrderMonitoringTaskStatus.Cancelled);
         
         this.SUT.OcoIDs.Should().BeNull();
     }
