@@ -25,13 +25,16 @@ public class OpenShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
         this.SUT.Position.StopLossPrice.Should().BeApproximately(1.01m * this.SUT.Position.EntryPrice, precision);
         this.SUT.Position.TakeProfitPrice.Should().BeApproximately(0.99m * this.SUT.Position.EntryPrice, precision);
-        
+
         var shortPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Short);
         shortPosition.Symbol.Should().Be(this.CurrencyPair.Name);
         shortPosition.Should().NotBeNull();
         shortPosition.PositionSide.Should().Be(PositionSide.Short);
         shortPosition.EntryPrice.Should().BeApproximately(current_price, precision);
         shortPosition.Quantity.Should().BeApproximately(this.Margin * this.Leverage / current_price * -1, precision);
+
+        this.SUT.OcoIDs.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
+        this.SUT.OcoIDs.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
     }
 
     [Test]

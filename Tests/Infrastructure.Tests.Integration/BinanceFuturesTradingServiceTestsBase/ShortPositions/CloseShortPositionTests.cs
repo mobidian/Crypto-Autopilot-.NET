@@ -14,7 +14,7 @@ public class CloseShortPositionTests : Base.BinanceFuturesTradingServiceTestsBas
         var ordersArray = orders.ToArray();
         var entryOrder = ordersArray[0];
         var stopLoss = ordersArray[1];
-        var takeProfit = ordersArray[1];
+        var takeProfit = ordersArray[2];
 
 
         // Act
@@ -28,10 +28,12 @@ public class CloseShortPositionTests : Base.BinanceFuturesTradingServiceTestsBas
         entryOrder = await this.MarketDataProvider.GetOrderAsync(entryOrder.Symbol, entryOrder.Id);
         stopLoss = await this.MarketDataProvider.GetOrderAsync(stopLoss.Symbol, stopLoss.Id);
         takeProfit = await this.MarketDataProvider.GetOrderAsync(takeProfit.Symbol, takeProfit.Id);
-        
+
         shortPosition.Should().BeNull();
         entryOrder.Status.Should().Be(OrderStatus.Filled);
         stopLoss.Status.Should().Be(OrderStatus.Canceled);
         takeProfit.Status.Should().Be(OrderStatus.Canceled);
+        
+        this.SUT.OcoIDs.Should().BeNull();
     }
 }

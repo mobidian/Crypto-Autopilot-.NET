@@ -32,6 +32,9 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         longPosition.PositionSide.Should().Be(PositionSide.Long);
         longPosition.EntryPrice.Should().BeApproximately(current_price, precision);
         longPosition.Quantity.Should().BeApproximately(this.Margin * this.Leverage / current_price, precision);
+
+        this.SUT.OcoIDs.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
+        this.SUT.OcoIDs.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
     }
 
     [Test]

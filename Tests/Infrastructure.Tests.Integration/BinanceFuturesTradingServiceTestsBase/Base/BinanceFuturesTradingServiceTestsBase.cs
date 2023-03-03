@@ -63,8 +63,8 @@ public abstract class BinanceFuturesTradingServiceTestsBase
         this.FuturesApiService = new BinanceFuturesApiService(this.TradingClient, this.MarketDataProvider, this.OrderStatusMonitor);
 
         this.AccountDataProvider = new BinanceFuturesAccountDataProvider(this.FuturesClient.Account);
-
-        this.SUT = new BinanceFuturesTradingService(this.CurrencyPair, 10, this.FuturesApiService, this.AccountDataProvider, this.MarketDataProvider);
+        
+        this.SUT = new BinanceFuturesTradingService(this.CurrencyPair, 10, this.FuturesApiService, this.AccountDataProvider, this.MarketDataProvider, this.OrderStatusMonitor);
     }
 
 
