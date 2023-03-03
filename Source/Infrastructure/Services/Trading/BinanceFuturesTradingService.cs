@@ -49,7 +49,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
 
         var orders = await this.FuturesApiService.PlaceMarketOrderAsync(this.CurrencyPair.Name, OrderSide, QuoteMargin, this.Leverage, StopLoss, TakeProfit);
         var ordersArray = orders.ToArray();
-
+        
         this.Position = new FuturesPosition
         {
             CurrencyPair = this.CurrencyPair,
@@ -58,8 +58,8 @@ public class BinanceFuturesTradingService : IFuturesTradingService
             Margin = QuoteMargin,
 
             EntryOrder = ordersArray[0],
-            StopLossOrder = ordersArray[1].Id != 0 ? ordersArray[1] : null,
-            TakeProfitOrder = ordersArray[2].Id != 0 ? ordersArray[2] : null
+            StopLossOrder = ordersArray.Length > 1 ? (ordersArray[1].Id != 0 ? ordersArray[1] : null) : null,
+            TakeProfitOrder = ordersArray.Length > 2 ? (ordersArray[2].Id != 0 ? ordersArray[2] : null) : null
         };
         
         this.FireAndForgetOcoTaskIfSlTpArePlaced();
