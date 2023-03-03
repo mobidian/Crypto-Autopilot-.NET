@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Logging;
+﻿using Application.Exceptions;
+using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Trading.Monitors;
 
@@ -88,32 +89,32 @@ public class OrderStatusMonitor : IOrderStatusMonitor
         // // TODO optimization // //
     }
 
-    public async Task WaitForOrderToReachStatusAsync(long OrderID, OrderStatus OrderStatus)
+    public async Task WaitForOrderToReachStatusAsync(long OrderID, OrderStatus OrderStatus, CancellationToken token = default)
     {
         if (!this.Subscribed)
-            throw new Exception("Not subscribed to user data updates");
+            throw new NotSubscribedException("Not subscribed to user data updates");
 
         if (!this.Orders.ContainsKey(OrderID))
             this.Orders[OrderID] = null;
-
+        
+        // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) async context alternative // //
         while (this.Orders[OrderID] != OrderStatus)
-            await Task.Delay(50);
-
-        // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) // //
+            await Task.Delay(50, token);
     }
-
-    public async Task WaitForAnyOrderToReachStatusAsync(IEnumerable<long> OrderIDs, OrderStatus OrderStatus)
+    
+    public async Task<long> WaitForAnyOrderToReachStatusAsync(IEnumerable<long> OrderIDs, OrderStatus OrderStatus, CancellationToken token = default)
     {
         if (!this.Subscribed)
-            throw new Exception("Not subscribed to user data updates");
-        
+            throw new NotSubscribedException("Not subscribed to user data updates");
+
         foreach (var orderId in OrderIDs)
             if (!this.Orders.ContainsKey(orderId))
                 this.Orders[orderId] = null;
         
+        // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) async context alternative // //
         while (!this.Orders.Values.Any(x => x == OrderStatus))
-            await Task.Delay(50);
+            await Task.Delay(50, token);
 
-        // // TODO optimization (ex: CollectionsMarshal.GetValueRefOrNullRef(...)) // //
+        return this.Orders.First(x => x.Value == OrderStatus).Key;
     }
 }
