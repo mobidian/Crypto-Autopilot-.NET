@@ -122,7 +122,7 @@ public class BinanceFuturesApiService : IBinanceFuturesApiService
         try
         {
             await this.OrderStatusMonitor.SubscribeToOrderUpdatesAsync();
-            await this.OrderStatusMonitor.WaitForOrderStatusAsync(placedLimitOrder.Id, OrderStatus.Filled);
+            await this.OrderStatusMonitor.WaitForOrderToReachStatusAsync(placedLimitOrder.Id, OrderStatus.Filled);
             
             var slTpBatchOrders = CreateTpSlBatchOrders(placedLimitOrder, StopLoss, TakeProfit, Quantity);
             var callResult = await this.TradingClient.PlaceMultipleOrdersAsync(slTpBatchOrders);
