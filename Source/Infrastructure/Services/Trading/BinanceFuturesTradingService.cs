@@ -198,6 +198,8 @@ public class BinanceFuturesTradingService : IFuturesTradingService
             
             var orderToCancelID = this.OcoIDs.Values.Single(x => x != filledOrderId);
             await this.FuturesApiService.CancelOrderAsync(this.CurrencyPair.Name, orderToCancelID);
+
+            this.OcoTaskStatus = OrderMonitoringTaskStatus.Completed;
         }
         catch (OperationCanceledException) { this.OcoTaskStatus = OrderMonitoringTaskStatus.Cancelled; }
         catch { this.OcoTaskStatus = OrderMonitoringTaskStatus.Faulted; }
