@@ -26,6 +26,8 @@ public abstract class BinanceFuturesTradingServiceTestsBase
 {
     private readonly SecretsManager SecretsManager = new SecretsManager();
 
+    protected readonly Faker faker = new Faker();
+
     protected const decimal precision = 1; // for assertions
     protected decimal Margin = 5;
     

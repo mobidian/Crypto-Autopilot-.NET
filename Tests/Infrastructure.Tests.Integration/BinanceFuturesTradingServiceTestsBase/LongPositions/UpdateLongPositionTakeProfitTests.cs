@@ -2,6 +2,8 @@
 
 using Binance.Net.Enums;
 
+using Infrastructure.Services.Trading.Internal.Enums;
+
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.LongPositions;
 
 public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -19,8 +21,13 @@ public class UpdateLongPositionTakeProfitTests : Base.BinanceFuturesTradingServi
 
         // Assert
         this.SUT.Position!.TakeProfitPrice.Should().BeApproximately(new_take_profit_price, precision);
-        newTakeProfitOrder.Id.Should().Be(newTakeProfitOrder.Id);
-        newTakeProfitOrder.StopPrice.Should().Be(newTakeProfitOrder.StopPrice);
+        this.SUT.Position!.TakeProfitOrder!.Id.Should().Be(newTakeProfitOrder.Id);
+        this.SUT.Position!.TakeProfitOrder!.StopPrice.Should().Be(newTakeProfitOrder.StopPrice);
+
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Running);
+
+        this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
+        this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
     }
 
     [Test]

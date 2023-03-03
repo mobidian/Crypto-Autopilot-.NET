@@ -2,6 +2,8 @@
 
 using Binance.Net.Enums;
 
+using Infrastructure.Services.Trading.Internal.Enums;
+
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.LongPositions;
 
 public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -12,8 +14,10 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
+
         // Act
         await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 0.99m * current_price, 1.01m * current_price);
+        
 
         // Assert
         this.SUT.IsInPosition().Should().BeTrue();
@@ -32,18 +36,20 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         longPosition.PositionSide.Should().Be(PositionSide.Long);
         longPosition.EntryPrice.Should().BeApproximately(current_price, precision);
         longPosition.Quantity.Should().BeApproximately(this.Margin * this.Leverage / current_price, precision);
-
-        this.SUT.OcoIDs.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
-        this.SUT.OcoIDs.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
+        
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Running);
+        
+        this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
+        this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
     }
-
+    
     [Test]
     public async Task OpenPosition_ShouldNotOpenLongPosition_WhenInputIsIncorrect()
     {
         // Arrange
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
-
+        
         // Act
         var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, 1.01m * current_price, 0.99m * current_price);
 
@@ -53,5 +59,9 @@ public class OpenLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
         var longPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Long);
         longPosition.Should().BeNull();
+
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Unstarted);
+        
+        this.SUT.OcoIDs.Should().BeNull();
     }
 }

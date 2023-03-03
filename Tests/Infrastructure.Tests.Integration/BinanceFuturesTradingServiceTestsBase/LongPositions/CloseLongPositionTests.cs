@@ -1,5 +1,7 @@
 ﻿using Binance.Net.Enums;
 
+using Infrastructure.Services.Trading.Internal.Enums;
+
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.LongPositions;
 
 public class CloseLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -19,7 +21,7 @@ public class CloseLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
         // Act
         await this.SUT.ClosePositionAsync();
-
+        
 
         // Assert
         this.SUT.IsInPosition().Should().BeFalse();
@@ -33,7 +35,9 @@ public class CloseLongPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         entryOrder.Status.Should().Be(OrderStatus.Filled);
         stopLoss.Status.Should().Be(OrderStatus.Canceled);
         takeProfit.Status.Should().Be(OrderStatus.Canceled);
-           
+        
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Cancelled);
+        
         this.SUT.OcoIDs.Should().BeNull();
     }
 }

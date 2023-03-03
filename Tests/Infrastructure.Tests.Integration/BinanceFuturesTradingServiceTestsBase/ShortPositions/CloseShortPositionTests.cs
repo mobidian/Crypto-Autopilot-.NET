@@ -1,5 +1,7 @@
 ﻿using Binance.Net.Enums;
 
+using Infrastructure.Services.Trading.Internal.Enums;
+
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.ShortPositions;
 
 public class CloseShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -33,6 +35,8 @@ public class CloseShortPositionTests : Base.BinanceFuturesTradingServiceTestsBas
         entryOrder.Status.Should().Be(OrderStatus.Filled);
         stopLoss.Status.Should().Be(OrderStatus.Canceled);
         takeProfit.Status.Should().Be(OrderStatus.Canceled);
+
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Cancelled);
         
         this.SUT.OcoIDs.Should().BeNull();
     }

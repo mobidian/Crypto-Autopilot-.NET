@@ -2,6 +2,8 @@
 
 using Binance.Net.Enums;
 
+using Infrastructure.Services.Trading.Internal.Enums;
+
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.ShortPositions;
 
 public class OpenShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -33,8 +35,13 @@ public class OpenShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         shortPosition.EntryPrice.Should().BeApproximately(current_price, precision);
         shortPosition.Quantity.Should().BeApproximately(this.Margin * this.Leverage / current_price * -1, precision);
 
-        this.SUT.OcoIDs.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
-        this.SUT.OcoIDs.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
+        this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
+        this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
+
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Running);
+
+        this.SUT.OcoIDs!.StopLoss.Should().Be(this.SUT.Position.StopLossOrder!.Id);
+        this.SUT.OcoIDs!.TakeProfit.Should().Be(this.SUT.Position.TakeProfitOrder!.Id);
     }
 
     [Test]
@@ -53,5 +60,9 @@ public class OpenShortPositionTests : Base.BinanceFuturesTradingServiceTestsBase
 
         var shortPosition = await this.AccountDataProvider.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Short);
         shortPosition.Should().BeNull();
+        
+        this.SUT.OcoTaskStatus.Should().Be(OcoTaskStatus.Unstarted);
+
+        this.SUT.OcoIDs.Should().BeNull();
     }
 }
