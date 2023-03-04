@@ -1,9 +1,9 @@
-﻿using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Monitors;
+﻿using Application.Interfaces.Services.Trading.Binance;
+using Application.Interfaces.Services.Trading.Binance.Monitors;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading;
+using Infrastructure.Services.Trading.Binance;
 
 namespace CryptoAutopilot.Api.Factories;
 

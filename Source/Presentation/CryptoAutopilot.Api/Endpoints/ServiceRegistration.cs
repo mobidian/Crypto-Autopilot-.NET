@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
-using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Monitors;
+using Application.Interfaces.Services.Trading.Binance;
+using Application.Interfaces.Services.Trading.Binance.Monitors;
 
 using Binance.Net.Clients;
 using Binance.Net.Interfaces.Clients;
@@ -18,8 +18,8 @@ using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
 using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
-using Infrastructure.Services.Trading;
-using Infrastructure.Services.Trading.Monitors;
+using Infrastructure.Services.Trading.Binance;
+using Infrastructure.Services.Trading.Binance.Monitors;
 
 namespace CryptoAutopilot.Api.Endpoints;
 

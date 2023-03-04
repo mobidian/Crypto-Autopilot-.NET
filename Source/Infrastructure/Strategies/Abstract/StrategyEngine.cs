@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Monitors;
+using Application.Interfaces.Services.Trading.Binance;
+using Application.Interfaces.Services.Trading.Binance.Monitors;
 
 using Binance.Net.Enums;
 
