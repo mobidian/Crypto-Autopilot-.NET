@@ -38,7 +38,7 @@ public class UpdatePositionTakeProfitTests : Base.BinanceFuturesTradingServiceTe
         var func = async () => await this.SUT.PlaceTakeProfitAsync(-1);
 
         // Assert
-        await func.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("No position is open thus a take profit can't be placed");
+        await func.Should().ThrowExactlyAsync<InvalidOrderException>().WithMessage("No position is open thus a take profit can't be placed");
         this.SUT.Position!.Should().BeNull();
     }
 }

@@ -2,8 +2,6 @@
 
 using Binance.Net.Enums;
 
-using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
-
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.ShortPositions;
 
 public class PlaceLimitOrderTests : Base.BinanceFuturesTradingServiceTestsBase
@@ -21,8 +19,11 @@ public class PlaceLimitOrderTests : Base.BinanceFuturesTradingServiceTestsBase
         var order = await this.SUT_PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit);
         
         // Assert
-        this.SUT.IsInPosition().Should().BeFalse();
         order.Price.Should().Be(limitPrice);
+        this.SUT.IsInPosition().Should().BeFalse();
+        this.SUT.LimitOrder!.Price.Should().Be(limitPrice);
+        this.SUT.LimitOrder!.Side.Should().Be(OrderSide.Sell);
+        this.SUT.LimitOrder!.PositionSide.Should().Be(PositionSide.Short);
     }
 
     [Test]

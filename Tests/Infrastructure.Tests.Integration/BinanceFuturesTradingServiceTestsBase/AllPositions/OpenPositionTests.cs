@@ -1,6 +1,6 @@
-﻿using Binance.Net.Enums;
+﻿using Application.Exceptions;
 
-using Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.Base;
+using Binance.Net.Enums;
 
 namespace Infrastructure.Tests.Integration.BinanceFuturesTradingServiceTestsBase.AllPositions;
 
@@ -16,6 +16,6 @@ public class OpenPositionTests : Base.BinanceFuturesTradingServiceTestsBase
         var func = async () => await this.SUT.PlaceMarketOrderAsync(OrderSide.Buy, this.Margin);
 
         // Assert
-        await func.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("A position is open already");
+        await func.Should().ThrowExactlyAsync<InvalidOrderException>().WithMessage("A position is open already");
     }
 }

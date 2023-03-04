@@ -86,6 +86,9 @@ public abstract class BinanceFuturesTradingServiceTestsBase
         
         if (this.SUT.IsInPosition())
             await this.SUT.ClosePositionAsync();
+        
+        if (this.SUT.LimitOrder is not null)
+            await this.SUT.CancelLimitOrderAsync();
 
         await this.TradingClient.CancelMultipleOrdersAsync(this.CurrencyPair.Name, this.LimitOrdersIDs);
         this.LimitOrdersIDs.Clear();

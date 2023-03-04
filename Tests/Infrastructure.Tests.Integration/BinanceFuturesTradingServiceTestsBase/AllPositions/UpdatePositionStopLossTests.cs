@@ -38,7 +38,7 @@ public class UpdatePositionStopLossTests : Base.BinanceFuturesTradingServiceTest
         var func = async () => await this.SUT.PlaceStopLossAsync(-1);
 
         // Assert
-        await func.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("No position is open thus a stop loss can't be placed");
+        await func.Should().ThrowExactlyAsync<InvalidOrderException>().WithMessage("No position is open thus a stop loss can't be placed");
         this.SUT.Position!.Should().BeNull();
     }
 }
