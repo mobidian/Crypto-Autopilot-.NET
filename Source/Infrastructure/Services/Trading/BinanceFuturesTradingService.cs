@@ -1,4 +1,7 @@
-﻿using Application.Interfaces.Services.Trading;
+﻿using System.Text;
+
+using Application.Exceptions;
+using Application.Interfaces.Services.Trading;
 using Application.Interfaces.Services.Trading.Monitors;
 
 using Binance.Net.Enums;
@@ -41,6 +44,12 @@ public class BinanceFuturesTradingService : IFuturesTradingService
     internal StopLossTakeProfitIdPair? OcoIDs = null;
     internal OrderMonitoringTaskStatus OcoTaskStatus = OrderMonitoringTaskStatus.Unstarted;
     
+    private CancellationTokenSource OtoTaskCts = default!;
+    internal OrderMonitoringTaskStatus OtoTaskStatus = OrderMonitoringTaskStatus.Unstarted;
+    
+    private CancellationTokenSource OtocoTaskCts = default!;
+    internal OrderMonitoringTaskStatus OtocoTaskStatus = OrderMonitoringTaskStatus.Unstarted;
+
     public async Task<IEnumerable<BinanceFuturesOrder>> PlaceMarketOrderAsync(OrderSide OrderSide, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         if (this.IsInPosition())
@@ -90,9 +99,106 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         {
             throw new InvalidOperationException("A position is open already");
         }
+
         
+        var currentPrice = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
+        var Quantity = Math.Round(QuoteMargin * this.Leverage / currentPrice, 3);
+        var limitOrder = await this.FuturesApiService.PlaceOrderAsync(this.CurrencyPair.Name, OrderSide, FuturesOrderType.Limit, Quantity, LimitPrice, OrderSide.ToPositionSide(), TimeInForce.GoodTillCanceled);
+
+        if (StopLoss is not null && TakeProfit is not null)
+            _ = this.OtocoTaskAsync(limitOrder, StopLoss.Value, TakeProfit.Value, QuoteMargin);
+
+        var orderType = StopLoss is not null ? FuturesOrderType.StopMarket : FuturesOrderType.TakeProfitMarket;
+        _ = this.OtoTaskAsync(limitOrder, orderType, LimitPrice, QuoteMargin);
         
-        return await this.FuturesApiService.PlaceLimitOrderAsync(this.CurrencyPair.Name, OrderSide, LimitPrice, QuoteMargin, this.Leverage, StopLoss, TakeProfit);
+        return limitOrder;
+    }
+    public async Task OtoTaskAsync(BinanceFuturesOrder limitOrder, FuturesOrderType orderType, decimal limitPrice, decimal Margin) 
+    {
+        try
+        {
+            this.OtoTaskStatus = OrderMonitoringTaskStatus.Running;
+             
+            await this.OrderStatusMonitor.SubscribeToOrderUpdatesAsync();
+            await this.OrderStatusMonitor.WaitForOrderToReachStatusAsync(limitOrder.Id, OrderStatus.Filled, this.OtoTaskCts.Token);
+
+            
+            var task = this.FuturesApiService.PlaceOrderAsync(this.CurrencyPair.Name, limitOrder.Side.Invert(), orderType, 0, limitPrice, limitOrder.PositionSide, TimeInForce.GoodTillCanceled, closePosition: true);
+            
+            var entryOrder = await this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, limitOrder.Id);
+            var newLimitOrder = await task;
+            
+            this.Position = new FuturesPosition
+            {
+                CurrencyPair = this.CurrencyPair,
+
+                Leverage = this.Leverage,
+                Margin = Margin,
+                
+                EntryOrder = entryOrder,
+                StopLossOrder = newLimitOrder.Type == FuturesOrderType.StopMarket ? newLimitOrder : null,
+                TakeProfitOrder = newLimitOrder.Type == FuturesOrderType.TakeProfitMarket ? newLimitOrder : null,
+            };
+
+            this.OtoTaskStatus = OrderMonitoringTaskStatus.Completed;
+        }
+        catch (OperationCanceledException) { this.OtoTaskStatus = OrderMonitoringTaskStatus.Cancelled; }
+        catch { this.OtoTaskStatus = OrderMonitoringTaskStatus.Faulted; }
+    }
+    public async Task OtocoTaskAsync(BinanceFuturesOrder limitOrder, decimal StopLoss, decimal TakeProfit, decimal Margin)
+    {
+        try
+        {
+            this.OtocoTaskStatus = OrderMonitoringTaskStatus.Running;
+
+            await this.OrderStatusMonitor.SubscribeToOrderUpdatesAsync();
+            await this.OrderStatusMonitor.WaitForOrderToReachStatusAsync(limitOrder.Id, OrderStatus.Filled, this.OtocoTaskCts.Token);
+
+            // limitOrder was filled ==> OTOCO turned into OCO
+
+            var positionSide = limitOrder.PositionSide;
+            var inverseOrderSide = limitOrder.Side;
+
+            var getEntryOrderTask = this.MarketDataProvider.GetOrderAsync(this.CurrencyPair.Name, limitOrder.Id);
+            var placeStopLossTask = this.FuturesApiService.PlaceOrderAsync(this.CurrencyPair.Name, inverseOrderSide, FuturesOrderType.StopMarket, 0, StopLoss, positionSide, TimeInForce.GoodTillCanceled, closePosition: true);
+            var placeTakeProfitTask = this.FuturesApiService.PlaceOrderAsync(this.CurrencyPair.Name, inverseOrderSide, FuturesOrderType.TakeProfitMarket, 0, TakeProfit, positionSide, TimeInForce.GoodTillCanceled, closePosition: true);
+
+            var entryOrder = await getEntryOrderTask;
+            var stopLossOrder = await placeStopLossTask;
+            var takeProfitOrder = await placeTakeProfitTask;
+            
+            this.Position = new FuturesPosition
+            {
+                CurrencyPair = this.CurrencyPair,
+
+                Leverage = this.Leverage,
+                Margin = Margin,
+
+                EntryOrder = entryOrder,
+                StopLossOrder = stopLossOrder,
+                TakeProfitOrder = takeProfitOrder,
+            };
+
+            this.OtocoTaskStatus = OrderMonitoringTaskStatus.Completed;
+        }
+        catch (OperationCanceledException) { this.OtocoTaskStatus = OrderMonitoringTaskStatus.Cancelled; }
+        catch { this.OtocoTaskStatus = OrderMonitoringTaskStatus.Faulted; }
+
+        
+        if (this.OtocoTaskStatus is OrderMonitoringTaskStatus.Cancelled or OrderMonitoringTaskStatus.Faulted)
+            return;
+        
+        // this.Position is not null ==> safe to use OCO with this.OcoTaskCts and this.OcoIDs
+        // OcoTaskCts.Cancel() will be called if the position is closed
+
+        this.OcoTaskCts = new CancellationTokenSource();
+        this.OcoIDs = new StopLossTakeProfitIdPair();
+        this.OcoTaskStatus = OrderMonitoringTaskStatus.Unstarted;
+
+        this.OcoIDs.StopLoss = this.Position!.StopLossOrder!.Id;
+        this.OcoIDs.TakeProfit = this.Position!.TakeProfitOrder!.Id;
+
+        _ = this.OcoMonitoringTaskAsync();
     }
     
     public async Task<BinanceFuturesOrder> PlaceStopLossAsync(decimal price)
@@ -153,7 +259,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         if (this.OcoIDs.HasBoth() && this.OcoTaskStatus == OrderMonitoringTaskStatus.Unstarted)
             _ = this.OcoMonitoringTaskAsync();
     }
-
+    
     public async Task<BinanceFuturesOrder> ClosePositionAsync()
     {
         if (this.Position is null)
@@ -207,7 +313,7 @@ public class BinanceFuturesTradingService : IFuturesTradingService
 
 
     //// //// ////
-    
+
 
     private bool Disposed = false;
     
