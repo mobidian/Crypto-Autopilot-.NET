@@ -42,19 +42,6 @@ public interface IBinanceFuturesApiService
     /// <param name="TakeProfit">The take profit price</param>
     /// <returns>The orders that have been placed</returns>
     public Task<IEnumerable<BinanceFuturesOrder>> PlaceMarketOrderAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null);
-    
-    /// <summary>
-    /// Places a limit order and the position will open when the limit order is filled
-    /// </summary>
-    /// <param name="currencyPair">The name of the cryptocurrency contract to trade</param>
-    /// <param name="orderSide">The side of the order</param>
-    /// <param name="LimitPrice">The limit price for the order</param>
-    /// <param name="Margin">The margin for the position</param>
-    /// <param name="Leverage">The leverage to use for the position</param>
-    /// <param name="StopLoss">The stop loss price</param>
-    /// <param name="TakeProfit">The take profit price</param>
-    /// <returns>The order that has been placed</returns>
-    public Task<BinanceFuturesOrder> PlaceLimitOrderAsync(string currencyPair, OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null);
 
     /// <summary>
     /// Cancels a pending order

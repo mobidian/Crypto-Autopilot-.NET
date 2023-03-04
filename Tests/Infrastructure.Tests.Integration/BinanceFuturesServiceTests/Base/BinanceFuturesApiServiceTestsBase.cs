@@ -81,7 +81,7 @@ public abstract class BinanceFuturesApiServiceTestsBaseClass
     }
 
 
-    protected async Task<IEnumerable<BinanceFuturesOrder>> SUT_OpenPositionAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
+    protected async Task<IEnumerable<BinanceFuturesOrder>> SUT_PlaceMarketOrderAsync(string currencyPair, OrderSide orderSide, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
     {
         var orders = await this.SUT.PlaceMarketOrderAsync(currencyPair, orderSide, Margin, Leverage, StopLoss, TakeProfit);
         var ordersArray = orders.ToArray();
@@ -95,14 +95,5 @@ public abstract class BinanceFuturesApiServiceTestsBaseClass
             this.LimitOrdersIDs.Add(ordersArray[2].Id);
 
         return orders;
-    }
-    protected async Task<BinanceFuturesOrder> SUT_PlaceLimitOrderAsync(string currencyPair, OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal Leverage, decimal? StopLoss = null, decimal? TakeProfit = null)
-    {
-        var task = this.SUT.PlaceLimitOrderAsync(currencyPair, orderSide, LimitPrice, Margin, Leverage, StopLoss, TakeProfit);
-        
-        var order = await task;
-        this.LimitOrdersIDs.Add(order.Id);
-
-        return task.Result;
     }
 }

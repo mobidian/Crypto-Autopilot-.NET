@@ -15,7 +15,7 @@ public class OpenShortPositionTests : BinanceFuturesApiServiceTestsBaseClass
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
         // Act
-        var orders = await this.SUT_OpenPositionAsync(this.CurrencyPair.Name, OrderSide.Sell, this.Margin, this.Leverage, 1.01m * current_price, 0.99m * current_price);
+        var orders = await this.SUT_PlaceMarketOrderAsync(this.CurrencyPair.Name, OrderSide.Sell, this.Margin, this.Leverage, 1.01m * current_price, 0.99m * current_price);
 
         // Assert
         var ordersArray = orders.ToArray();
@@ -38,7 +38,7 @@ public class OpenShortPositionTests : BinanceFuturesApiServiceTestsBaseClass
         var current_price = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
 
         // Act
-        var func = async () => await this.SUT_OpenPositionAsync(this.CurrencyPair.Name, OrderSide.Sell, this.Margin, this.Leverage, 0.99m * current_price, 1.01m * current_price);
+        var func = async () => await this.SUT_PlaceMarketOrderAsync(this.CurrencyPair.Name, OrderSide.Sell, this.Margin, this.Leverage, 0.99m * current_price, 1.01m * current_price);
 
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>();
