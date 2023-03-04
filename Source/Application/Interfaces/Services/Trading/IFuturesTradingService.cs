@@ -11,10 +11,12 @@ public interface IFuturesTradingService : IDisposable
 {
     public CurrencyPair CurrencyPair { get; }
     public decimal Leverage { get; }
+    
     public FuturesPosition? Position { get; }
+    public BinanceFuturesOrder? LimitOrder { get; }
 
     /////  /////  /////
-    
+
     /// <summary>
     /// Places a new order at the currect market price opening a position and optionally places a stop loss and a take profit
     /// </summary>
@@ -41,7 +43,9 @@ public interface IFuturesTradingService : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="InternalTradingServiceException"></exception>
     public Task<BinanceFuturesOrder> PlaceLimitOrderAsync(OrderSide OrderSide, decimal LimitPrice, decimal QuoteMargin = decimal.MaxValue, decimal? StopLoss = null, decimal? TakeProfit = null);
-    
+
+    public Task<BinanceFuturesCancelOrder> CancelLimitOrderAsync();
+
     /// <summary>
     /// Places a stop loss limit order if there is an open position and then updates this.Position.StopLossOrder
     /// </summary>
