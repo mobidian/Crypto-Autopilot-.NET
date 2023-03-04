@@ -102,6 +102,9 @@ public class BinanceFuturesTradingService : IFuturesTradingService
 
         
         var currentPrice = await this.MarketDataProvider.GetCurrentPriceAsync(this.CurrencyPair.Name);
+        ValidateLimitOrderInput(OrderSide, LimitPrice, currentPrice, StopLoss, TakeProfit);
+
+
         var Quantity = Math.Round(QuoteMargin * this.Leverage / currentPrice, 3);
         var limitOrder = await this.FuturesApiService.PlaceOrderAsync(this.CurrencyPair.Name, OrderSide, FuturesOrderType.Limit, Quantity, LimitPrice, OrderSide.ToPositionSide(), TimeInForce.GoodTillCanceled);
 
@@ -112,6 +115,53 @@ public class BinanceFuturesTradingService : IFuturesTradingService
         _ = this.OtoTaskAsync(limitOrder, orderType, LimitPrice, QuoteMargin);
         
         return limitOrder;
+    }
+    private static void ValidateLimitOrderInput(OrderSide orderSide, decimal LimitPrice, decimal currentPrice, decimal? StopLoss = null, decimal? TakeProfit = null)
+    {
+        if (orderSide == OrderSide.Buy && LimitPrice > currentPrice)
+            throw new InvalidOrderException("The limit price for a buy order can't be greater than the current price");
+        
+        if (orderSide == OrderSide.Sell && LimitPrice < currentPrice)
+            throw new InvalidOrderException("The limit price for a sell order can't be less greater than the current price");
+        
+        ValidateTpSl(orderSide, LimitPrice, "limit price", StopLoss, TakeProfit);
+    }
+    private static void ValidateTpSl(OrderSide orderSide, decimal price, string priceType, decimal? stopLoss = null, decimal? takeProfit = null)
+    {
+        var builder = new StringBuilder();
+
+        #region SL/TP validate positive
+        if (stopLoss <= 0)
+            builder.AppendLine($"Specified {nameof(stopLoss)} was negative");
+
+        if (takeProfit <= 0)
+            builder.AppendLine($"Specified {nameof(takeProfit)} was negative");
+
+        if (builder.Length != 0)
+            throw new InvalidOrderException(builder.Remove(builder.Length - 1, 1).ToString());
+        #endregion
+
+        #region SL/TP validate against the price
+        if (orderSide == OrderSide.Buy)
+        {
+            if (stopLoss >= price)
+                builder.AppendLine($"The stop loss can't be greater than or equal to the {priceType} for a {orderSide.ToString().ToLower()} order, {priceType} was {price} and stop loss was {stopLoss}");
+
+            if (takeProfit <= price)
+                builder.AppendLine($"The take profit can't be less greater than or equal to the {priceType} for a {orderSide.ToString().ToLower()} order, {priceType} was {price} and take profit was {takeProfit}");
+        }
+        else
+        {
+            if (stopLoss <= price)
+                builder.AppendLine($"The stop loss can't be less greater than or equal to the {priceType} for a {orderSide.ToString().ToLower()} order, {priceType} was {price} and stop loss was {stopLoss}");
+
+            if (takeProfit >= price)
+                builder.AppendLine($"The take profit can't be greater than or equal to the {priceType} for a {orderSide.ToString().ToLower()} order, {priceType} was {price} and take profit was {takeProfit}");
+        }
+        
+        if (builder.Length != 0)
+            throw new InvalidOrderException(builder.Remove(builder.Length - 1, 1).ToString());
+        #endregion
     }
     public async Task OtoTaskAsync(BinanceFuturesOrder limitOrder, FuturesOrderType orderType, decimal limitPrice, decimal Margin) 
     {
