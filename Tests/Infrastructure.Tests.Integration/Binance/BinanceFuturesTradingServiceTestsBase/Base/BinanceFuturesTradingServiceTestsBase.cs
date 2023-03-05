@@ -30,7 +30,7 @@ public abstract class BinanceFuturesTradingServiceTestsBase
 
     protected const decimal precision = 1; // for assertions
     protected decimal Margin = 5;
-
+    
     protected BinanceFuturesTradingService SUT = default!;
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("ETH", "BUSD");
     protected readonly decimal Leverage = 10m;
