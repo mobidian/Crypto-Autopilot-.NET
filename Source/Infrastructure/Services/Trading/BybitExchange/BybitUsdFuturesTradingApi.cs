@@ -5,6 +5,7 @@ using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 using Bybit.Net.Objects.Models;
 
 using Domain.Extensions;
+using Domain.Extensions.Bybit;
 
 using Infrastructure.Extensions;
 
