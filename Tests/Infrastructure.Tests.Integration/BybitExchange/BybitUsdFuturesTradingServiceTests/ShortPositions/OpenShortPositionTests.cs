@@ -12,7 +12,7 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
     public async Task OpenPosition_OpensLongPosition_WhenShortPositionDoesNotExist()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = lastPrice + 300;
         var takeProfit = lastPrice - 300;
         var tradingStopTriggerType = TriggerType.LastPrice;
@@ -33,7 +33,7 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
     public async Task OpenPosition_ShouldThrow_WhenTradingStopParametersAreIncorrect()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = lastPrice - 300;
         var takeProfit = lastPrice + 300;
         var tradingStopTriggerType = TriggerType.LastPrice;
@@ -49,7 +49,7 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
     public async Task OpenPosition_ShouldThrow_WhenShortPositionIsOpenAlready()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = lastPrice + 300;
         var takeProfit = lastPrice - 300;
         var tradingStopTriggerType = TriggerType.LastPrice;

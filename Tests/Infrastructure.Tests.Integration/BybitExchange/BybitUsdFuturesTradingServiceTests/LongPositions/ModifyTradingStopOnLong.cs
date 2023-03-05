@@ -12,7 +12,7 @@ public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
     public async Task ModifyTradingStop_ShouldModifyTradingStop_WhenLongPositionExists()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = lastPrice - 300;
         var takeProfit = lastPrice + 300;
         var tradingStopTriggerType = TriggerType.LastPrice;
@@ -37,7 +37,7 @@ public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
     public async Task ModifyTradingStop_ShouldThrow_WhenLongPositionDoesNotExist()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = lastPrice - 300;
         var takeProfit = lastPrice + 300;
         var tradingStopTriggerType = TriggerType.LastPrice;

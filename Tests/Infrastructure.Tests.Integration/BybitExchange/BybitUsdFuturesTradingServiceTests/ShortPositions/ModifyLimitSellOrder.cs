@@ -12,7 +12,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
     public async Task ModifyLimitOrder_ShouldModifySellOrder_WhenSellOrderExists()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var limitPrice = lastPrice + 1000;
         var stopLoss = limitPrice + 400;
         var takeProfit = limitPrice - 400;
@@ -46,7 +46,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
     public async Task ModifyLimitOrder_ShouldThrow_WhenNewLimitPriceIsIncorrect()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var limitPrice = lastPrice + 1000;
         var stopLoss = limitPrice + 400;
         var takeProfit = limitPrice - 400;
@@ -73,7 +73,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
     public async Task ModifyLimitOrder_ShouldThrow_WhenNewTradingStopParametersAreIncorrect()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var limitPrice = lastPrice + 1000;
         var stopLoss = limitPrice + 400;
         var takeProfit = limitPrice - 400;
@@ -100,7 +100,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
     public async Task ModifyLimitOrder_ShouldThrow_WhenLimitSellOrderDoesNotExist()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var limitPrice = lastPrice + 1000;
         var stopLoss = limitPrice + 400;
         var takeProfit = limitPrice - 400;

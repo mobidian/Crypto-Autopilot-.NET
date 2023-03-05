@@ -3,7 +3,7 @@ using Bybit.Net.Objects.Models;
 
 namespace Application.Interfaces.Services.Trading.BybitExchange;
 
-public interface IBybitUsdFuturesDataProvider
+public interface IBybitUsdFuturesMarketDataProvider
 {
     public Task<decimal> GetLastPriceAsync(string symbol);
     public Task<decimal?> GetMarketPriceAsync(string symbol);

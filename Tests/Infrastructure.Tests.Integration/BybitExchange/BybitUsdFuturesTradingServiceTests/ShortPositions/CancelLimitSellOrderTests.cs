@@ -12,7 +12,7 @@ public class CancelLimitSellOrderTests : BybitUsdFuturesTradingServiceTestsBase
     public async Task CancelLimitOrder_ShouldCancelLimitSellOrder_WhenLimitSellOrderExists()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var limitPrice = lastPrice + 500;
         var stopLoss = limitPrice + 300;
         var takeProfit = limitPrice - 300;

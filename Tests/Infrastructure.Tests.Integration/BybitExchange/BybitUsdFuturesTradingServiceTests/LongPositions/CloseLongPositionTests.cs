@@ -12,7 +12,7 @@ public class CloseLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
     public async Task ClosePosition_ShouldCloseLongPosition_WhenLongPositionExists()
     {
         // Arrange
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = lastPrice - 300;
         var takeProfit = lastPrice + 300;
         var tradingStopTriggerType = TriggerType.LastPrice;

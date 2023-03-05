@@ -24,8 +24,8 @@ public abstract class BybitFuturesAccountDataProviderTestsBase
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("BTC", "USDT");
 
     protected readonly IBybitFuturesAccountDataProvider SUT;
-    protected readonly IBybitUsdFuturesTradingApi TradingClient;
-    protected readonly IBybitUsdFuturesDataProvider FuturesDataProvider;
+    protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
+    protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
     
     public BybitFuturesAccountDataProviderTestsBase()
     {
@@ -38,9 +38,9 @@ public abstract class BybitFuturesAccountDataProviderTestsBase
             }
         });
 
-        this.TradingClient = new BybitUsdFuturesTradingApi(bybitClient.UsdPerpetualApi.Trading);
+        this.TradingClient = new BybitUsdFuturesTradingApiClient(bybitClient.UsdPerpetualApi.Trading);
         this.SUT = new BybitFuturesAccountDataProvider(bybitClient.UsdPerpetualApi.Account);
-        this.FuturesDataProvider = new BybitUsdFuturesDataProvider(new DateTimeProvider(), bybitClient.UsdPerpetualApi.ExchangeData);
+        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), bybitClient.UsdPerpetualApi.ExchangeData);
     }
 
 

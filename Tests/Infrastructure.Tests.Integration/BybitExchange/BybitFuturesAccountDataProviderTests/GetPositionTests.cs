@@ -17,7 +17,7 @@ public class GetPositionTests : BybitFuturesAccountDataProviderTestsBase
         // Arrange
         var quantity = 0.005m;
 
-        var currentPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var currentPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var stopLoss = entryOrderSide == OrderSide.Buy ? currentPrice - 100 : currentPrice + 100;
         var takeProfit = entryOrderSide == OrderSide.Buy ? currentPrice + 100 : currentPrice - 100;
         

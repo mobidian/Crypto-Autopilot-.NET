@@ -9,12 +9,12 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Trading.BybitExchange;
 
-public class BybitUsdFuturesDataProvider : IBybitUsdFuturesDataProvider
+public class BybitUsdFuturesMarketDataProvider : IBybitUsdFuturesMarketDataProvider
 {
     private readonly IDateTimeProvider DateTime;
     private readonly IBybitClientUsdPerpetualApiExchangeData FuturesExchangeData;
     
-    public BybitUsdFuturesDataProvider(IDateTimeProvider dateTime, IBybitClientUsdPerpetualApiExchangeData futuresExchangeData)
+    public BybitUsdFuturesMarketDataProvider(IDateTimeProvider dateTime, IBybitClientUsdPerpetualApiExchangeData futuresExchangeData)
     {
         this.DateTime = dateTime ?? throw new ArgumentNullException(nameof(dateTime));
         this.FuturesExchangeData = futuresExchangeData ?? throw new ArgumentNullException(nameof(futuresExchangeData));

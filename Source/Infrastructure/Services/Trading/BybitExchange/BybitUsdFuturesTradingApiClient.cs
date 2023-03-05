@@ -11,11 +11,11 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Trading.BybitExchange;
 
-public class BybitUsdFuturesTradingApi : IBybitUsdFuturesTradingApi
+public class BybitUsdFuturesTradingApiClient : IBybitUsdFuturesTradingApiClient
 {
     private readonly IBybitClientUsdPerpetualApiTrading FuturesClient;
 
-    public BybitUsdFuturesTradingApi(IBybitClientUsdPerpetualApiTrading tradingClient)
+    public BybitUsdFuturesTradingApiClient(IBybitClientUsdPerpetualApiTrading tradingClient)
     {
         this.FuturesClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
     }

@@ -26,8 +26,8 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase
     protected decimal Margin = 100;
     protected readonly decimal Leverage = 10m;
     protected readonly IBybitFuturesAccountDataProvider FuturesAccount;
-    protected readonly IBybitUsdFuturesDataProvider FuturesDataProvider;
-    protected readonly IBybitUsdFuturesTradingApi TradingClient;
+    protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
+    protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
 
     public BybitUsdFuturesTradingServiceTestsBase()
     {
@@ -41,10 +41,10 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase
         });
 
         this.FuturesAccount = new BybitFuturesAccountDataProvider(bybitClient.UsdPerpetualApi.Account);
-        this.TradingClient = new BybitUsdFuturesTradingApi(bybitClient.UsdPerpetualApi.Trading);
-        this.FuturesDataProvider = new BybitUsdFuturesDataProvider(new DateTimeProvider(), bybitClient.UsdPerpetualApi.ExchangeData);
+        this.TradingClient = new BybitUsdFuturesTradingApiClient(bybitClient.UsdPerpetualApi.Trading);
+        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), bybitClient.UsdPerpetualApi.ExchangeData);
         
-        this.SUT = new BybitUsdFuturesTradingService(this.CurrencyPair, this.Leverage, this.FuturesAccount, this.FuturesDataProvider, this.TradingClient);
+        this.SUT = new BybitUsdFuturesTradingService(this.CurrencyPair, this.Leverage, this.FuturesAccount, this.MarketDataProvider, this.TradingClient);
     }
 
     

@@ -3,7 +3,7 @@ using Bybit.Net.Objects.Models;
 
 namespace Application.Interfaces.Services.Trading.BybitExchange;
 
-public interface IBybitUsdFuturesTradingApi
+public interface IBybitUsdFuturesTradingApiClient
 {
     public Task<BybitUsdPerpetualOrder> GetOrderAsync(string symbol, string OrderID);
 

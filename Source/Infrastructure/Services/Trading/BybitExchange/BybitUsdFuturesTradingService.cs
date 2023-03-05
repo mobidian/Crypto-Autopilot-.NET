@@ -15,10 +15,10 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     public decimal Leverage { get; }
 
     private readonly IBybitFuturesAccountDataProvider FuturesAccount;
-    private readonly IBybitUsdFuturesDataProvider FuturesDataProvider;
-    private readonly IBybitUsdFuturesTradingApi TradingClient;
+    private readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
+    private readonly IBybitUsdFuturesTradingApiClient TradingClient;
 
-    public BybitUsdFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesDataProvider futuresDataProvider, IBybitUsdFuturesTradingApi tradingClient)
+    public BybitUsdFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdFuturesTradingApiClient tradingClient)
     {
         if (leverage is <= 0 or > 100)
             throw new ArgumentException("The leverage has to be between 0 and 100 inclusive", nameof(leverage));
@@ -26,7 +26,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
         this.FuturesAccount = futuresAccount ?? throw new ArgumentNullException(nameof(futuresAccount));
-        this.FuturesDataProvider = futuresDataProvider ?? throw new ArgumentNullException(nameof(futuresDataProvider));
+        this.MarketDataProvider = marketDataProvider ?? throw new ArgumentNullException(nameof(marketDataProvider));
         this.TradingClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
     }
 
@@ -58,7 +58,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
             throw new InvalidOrderException($"There is a {positionSide} position open already");
 
 
-        var lastPrice = await this.FuturesDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var quantity = Math.Round(Margin * this.Leverage / lastPrice, 2);
 
         await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
