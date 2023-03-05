@@ -1,4 +1,4 @@
-﻿using Infrastructure.Strategies.SimpleStrategy;
+﻿using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 using Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
 
 namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.LongStrategy;

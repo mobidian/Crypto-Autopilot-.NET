@@ -8,7 +8,7 @@ using CryptoAutopilot.Api.Factories;
 
 using Domain.Models;
 
-using Infrastructure.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 using MediatR;
 

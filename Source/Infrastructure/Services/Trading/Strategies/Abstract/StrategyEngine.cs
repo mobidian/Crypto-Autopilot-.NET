@@ -8,7 +8,7 @@ using Domain.Models;
 
 using MediatR;
 
-namespace Infrastructure.Strategies.Abstract;
+namespace Infrastructure.Services.Trading.Strategies.Abstract;
 
 /// <summary>
 /// The abstract base class for a cryptocurrency trading strategy engine

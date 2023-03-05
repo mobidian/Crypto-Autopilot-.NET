@@ -23,7 +23,7 @@ using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading.Binance;
 using Infrastructure.Services.Trading.Binance.Monitors;
-using Infrastructure.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

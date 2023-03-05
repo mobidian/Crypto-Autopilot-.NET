@@ -8,8 +8,8 @@ using CryptoAutopilot.Api.Factories;
 
 using Domain.Models;
 
-using Infrastructure.Strategies.Example;
-using Infrastructure.Strategies.Example.Enums;
+using Infrastructure.Services.Trading.Strategies.Example;
+using Infrastructure.Services.Trading.Strategies.Example.Enums;
 
 using MediatR;
 
