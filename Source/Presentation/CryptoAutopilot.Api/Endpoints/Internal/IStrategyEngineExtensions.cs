@@ -39,7 +39,6 @@ internal static class IStrategyEngineExtensions
     {
         _ = Task.Run(engine.StopTradingAsync);
 
-        timeout += TimeSpan.FromSeconds((int)engine.KlineInterval);
         if (await engine.AwaitShutdownAsync(timeout) == false)
             return Results.Problem(detail: $"The operation of stopping the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
 
