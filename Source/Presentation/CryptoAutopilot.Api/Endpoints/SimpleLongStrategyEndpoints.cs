@@ -8,7 +8,7 @@ using CryptoAutopilot.Api.Factories;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Binance.Strategies.SimpleStrategy;
 
 using MediatR;
 
@@ -34,7 +34,7 @@ public class SimpleLongStrategyEndpoints : IStrategyEndpoints<SimpleLongStrategy
                margin,
                stopLossParameter,
                takeProfitParameter,
-               services.GetRequiredService<FuturesTradingServiceFactory>().Create(currencyPair, leverage, services),
+               services.GetRequiredService<BinanceFuturesTradingServiceFactory>().Create(currencyPair, leverage, services),
                services.GetRequiredService<IFuturesMarketDataProvider>(),
                services.GetRequiredService<IFuturesCandlesticksMonitor>(),
                services.GetRequiredService<IMediator>()));

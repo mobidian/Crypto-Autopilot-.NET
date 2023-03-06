@@ -7,7 +7,7 @@ using Infrastructure.Services.Trading.Binance;
 
 namespace CryptoAutopilot.Api.Factories;
 
-public class FuturesTradingServiceFactory
+public class BinanceFuturesTradingServiceFactory
 {
     public IFuturesTradingService Create(CurrencyPair currencyPair, decimal leverage, IServiceProvider services)
         => new BinanceFuturesTradingService(

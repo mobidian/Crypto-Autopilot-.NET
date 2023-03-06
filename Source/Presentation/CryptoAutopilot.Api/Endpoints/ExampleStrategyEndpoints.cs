@@ -8,8 +8,8 @@ using CryptoAutopilot.Api.Factories;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading.Strategies.Example;
-using Infrastructure.Services.Trading.Strategies.Example.Enums;
+using Infrastructure.Services.Trading.Binance.Strategies.Example;
+using Infrastructure.Services.Trading.Binance.Strategies.Example.Enums;
 
 using MediatR;
 
@@ -35,7 +35,7 @@ public class ExampleStrategyEndpoints : IStrategyEndpoints<ExampleStrategyEngine
                emaLength,
                margin,
                riskRewardRatio,
-               services.GetRequiredService<FuturesTradingServiceFactory>().Create(currencyPair, leverage, services),
+               services.GetRequiredService<BinanceFuturesTradingServiceFactory>().Create(currencyPair, leverage, services),
                services.GetRequiredService<IFuturesMarketDataProvider>(),
                services.GetRequiredService<IFuturesCandlesticksMonitor>(),
                services.GetRequiredService<IMediator>()));
