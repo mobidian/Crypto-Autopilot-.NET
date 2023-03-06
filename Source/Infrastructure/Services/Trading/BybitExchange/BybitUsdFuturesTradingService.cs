@@ -4,8 +4,9 @@ using Application.Interfaces.Services.Trading.BybitExchange;
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 
-using Domain.Extensions.Bybit;
 using Domain.Models;
+
+using Infrastructure.Extensions.Bybit;
 
 namespace Infrastructure.Services.Trading.BybitExchange;
 

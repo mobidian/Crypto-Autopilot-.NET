@@ -4,10 +4,8 @@ using Bybit.Net.Enums;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 using Bybit.Net.Objects.Models;
 
-using Domain.Extensions;
-using Domain.Extensions.Bybit;
-
 using Infrastructure.Extensions;
+using Infrastructure.Extensions.Bybit;
 
 namespace Infrastructure.Services.Trading.BybitExchange;
 
