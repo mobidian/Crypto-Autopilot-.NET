@@ -1,7 +1,7 @@
-﻿using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
-using Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
+﻿using Infrastructure.Services.Trading.Binance.Strategies.SimpleStrategy;
+using Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.Base;
 
-namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.LongStrategy;
+namespace Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.LongStrategy;
 
 public abstract class LongStrategyEngineTestsBase : SimpleStrategyEngineTestsBase
 {
@@ -10,7 +10,7 @@ public abstract class LongStrategyEngineTestsBase : SimpleStrategyEngineTestsBas
         this.Margin = this.Random.Next(100, 1000);
         this.StopLossParameter = Convert.ToDecimal(this.Random.NextDouble());
         this.TakeProfitParameter = Convert.ToDecimal(this.Random.Next(1, 10) + this.Random.NextDouble());
-        
+
         this.SUT = new SimpleLongStrategyEngine(
             this.CurrencyPair,
             this.KlineInterval,
@@ -21,7 +21,7 @@ public abstract class LongStrategyEngineTestsBase : SimpleStrategyEngineTestsBas
             this.FuturesDataProvider,
             this.CandlestickMonitor,
             this.Mediator);
-        
+
         this.Candlesticks = this.CandlestickGenerator.Generate(100);
     }
 }

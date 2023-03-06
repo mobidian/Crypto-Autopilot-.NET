@@ -2,14 +2,14 @@
 
 using Infrastructure.Notifications;
 
-namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.ShortStrategy;
+namespace Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.LongStrategy;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 [Parallelizable(ParallelScope.All)]
-public class CFDMovingDownTests : ShortStrategyEngineTestsBase
+public class CFDMovingUpTests : LongStrategyEngineTestsBase
 {
     [Test]
-    public async Task CFDMovingDown_ShouldTriggerPositionOpening_WhenTraderIsNotInPosition()
+    public async Task CFDMovingUp_ShouldTriggerPositionOpening_WhenTraderIsNotInPosition()
     {
         // Arrange
         decimal currentPrice = this.Random.Next(1000, 3000);
@@ -18,20 +18,20 @@ public class CFDMovingDownTests : ShortStrategyEngineTestsBase
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
 
         // Act
-        this.SUT.CFDMovingDown();
+        this.SUT.CFDMovingUp();
         await this.SUT.MakeMoveAsync();
 
         // Assert
-        await this.FuturesTrader.Received(1).PlaceMarketOrderAsync(OrderSide.Sell, this.Margin, this.StopLossParameter * currentPrice, this.TakeProfitParameter * currentPrice);
+        await this.FuturesTrader.Received(1).PlaceMarketOrderAsync(OrderSide.Buy, this.Margin, this.StopLossParameter * currentPrice, this.TakeProfitParameter * currentPrice);
         await this.Mediator.Received().Publish(Arg.Any<PositionOpenedNotification>());
         this.SUT.Signal.Should().BeNull();
     }
-    
+
     [Test]
-    public async Task CFDMovingDown_ShouldNotTriggerPositionOpening_WhenTraderIsAlreadyInPosition()
+    public async Task CFDMovingUp_ShouldNotTriggerPositionOpening_WhenTraderIsAlreadyInPosition()
     {
         // Arrange
-        await CFDMovingDown_ShouldTriggerPositionOpening_WhenTraderIsNotInPosition();
+        await CFDMovingUp_ShouldTriggerPositionOpening_WhenTraderIsNotInPosition();
 
         // assume one more candlestick was created
         var candlestick = this.CandlestickGenerator.Generate();
@@ -42,7 +42,7 @@ public class CFDMovingDownTests : ShortStrategyEngineTestsBase
 
 
         // Act
-        this.SUT.CFDMovingDown();
+        this.SUT.CFDMovingUp();
         await this.SUT.MakeMoveAsync();
 
 
@@ -53,13 +53,13 @@ public class CFDMovingDownTests : ShortStrategyEngineTestsBase
     }
 
     [Test]
-    public async Task CFDMovingDown_ShouldNotTriggerPositionOpening_WhenTraderIsInPosition()
+    public async Task CFDMovingUp_ShouldNotTriggerPositionOpening_WhenTraderIsInPosition()
     {
         // Arrange
         this.FuturesTrader.IsInPosition().Returns(true);
-        
+
         // Act
-        this.SUT.CFDMovingDown();
+        this.SUT.CFDMovingUp();
         await this.SUT.MakeMoveAsync();
 
         // Assert

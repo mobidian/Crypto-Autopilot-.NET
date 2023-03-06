@@ -2,7 +2,7 @@
 
 using Infrastructure.Notifications;
 
-namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.ShortStrategy;
+namespace Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.ShortStrategy;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 [Parallelizable(ParallelScope.All)]
@@ -16,7 +16,7 @@ public class CFDMovingUpTests : ShortStrategyEngineTestsBase
         this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(true);
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(Arg.Any<string>(), Arg.Any<KlineInterval>()).Returns(this.Candlesticks);
-        
+
         // Act
         this.SUT.CFDMovingUp();
         await this.SUT.MakeMoveAsync();
@@ -26,7 +26,7 @@ public class CFDMovingUpTests : ShortStrategyEngineTestsBase
         await this.Mediator.Received().Publish(Arg.Any<PositionClosedNotification>());
         this.SUT.Signal.Should().BeNull();
     }
-    
+
 
     [Test]
     public async Task CFDMovingUp_ShouldNotTriggerPositionClosing_WhenTraderIsInNotPosition()

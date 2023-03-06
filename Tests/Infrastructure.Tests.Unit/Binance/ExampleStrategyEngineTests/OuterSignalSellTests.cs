@@ -1,8 +1,8 @@
 ﻿using Infrastructure.Notifications;
-using Infrastructure.Services.Trading.Strategies.Example.Enums;
-using Infrastructure.Tests.Unit.ExampleStrategyEngineTests.Base;
+using Infrastructure.Services.Trading.Binance.Strategies.Example.Enums;
+using Infrastructure.Tests.Unit.Binance.ExampleStrategyEngineTests.Base;
 
-namespace Infrastructure.Tests.Unit.ExampleStrategyEngineTests;
+namespace Infrastructure.Tests.Unit.Binance.ExampleStrategyEngineTests;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 [Parallelizable(ParallelScope.All)]
@@ -22,7 +22,7 @@ public class OuterSignalSellTests : ExampleStrategyEngineTestsBase
         await this.FuturesTrader.Received(1).ClosePositionAsync();
         await this.Mediator.Received(1).Publish(Arg.Any<PositionClosedNotification>());
     }
-    
+
     [Test]
     public async Task OuterSignalSell_ShouldNotTriggerPositionClosing_WhenTraderIsInNotPosition()
     {

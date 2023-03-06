@@ -1,7 +1,7 @@
-﻿using Infrastructure.Services.Trading.Strategies.Example.Enums;
-using Infrastructure.Tests.Unit.ExampleStrategyEngineTests.Base;
+﻿using Infrastructure.Services.Trading.Binance.Strategies.Example.Enums;
+using Infrastructure.Tests.Unit.Binance.ExampleStrategyEngineTests.Base;
 
-namespace Infrastructure.Tests.Unit.ExampleStrategyEngineTests;
+namespace Infrastructure.Tests.Unit.Binance.ExampleStrategyEngineTests;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 [Parallelizable(ParallelScope.All)]
@@ -29,7 +29,7 @@ public class SignalConsumptionTests : ExampleStrategyEngineTestsBase
 
         // Act
         this.SUT.FlagDivergence(RsiDivergence.Bullish);
-        
+
         // simulates 100 candlesticks going by with no action beeing takes using the BUY alert
         var booleans = Enumerable.Range(0, 100).Select(i =>
         {
@@ -61,7 +61,7 @@ public class SignalConsumptionTests : ExampleStrategyEngineTestsBase
     {
         // Arrange
         this.ArrangeFor_OuterSignalSell_ShouldNotTriggerPositionClosing_WhenTraderIsInNotPosition();
-        
+
         // Act
         this.SUT.FlagDivergence(RsiDivergence.Bearish);
         await this.SUT.MakeMoveAsync();

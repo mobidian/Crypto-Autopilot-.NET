@@ -5,6 +5,8 @@ using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading.Binance;
 using Application.Interfaces.Services.Trading.Binance.Monitors;
+using Application.Interfaces.Services.Trading.BybitExchange;
+using Application.Interfaces.Services.Trading.BybitExchange.Monitors;
 
 using Binance.Net.Clients;
 using Binance.Net.Clients.UsdFuturesApi;
@@ -12,10 +14,17 @@ using Binance.Net.Interfaces.Clients;
 using Binance.Net.Interfaces.Clients.UsdFuturesApi;
 using Binance.Net.Objects;
 
+using Bybit.Net.Clients;
+using Bybit.Net.Clients.UsdPerpetualApi;
+using Bybit.Net.Interfaces.Clients;
+using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
+
 using CryptoAutopilot.Api;
 using CryptoAutopilot.Api.Factories;
 using CryptoAutopilot.Api.Services;
 using CryptoAutopilot.Api.Services.Interfaces;
+
+using CryptoExchange.Net.Authentication;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
@@ -23,7 +32,9 @@ using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading.Binance;
 using Infrastructure.Services.Trading.Binance.Monitors;
-using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Binance.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.BybitExchange;
+using Infrastructure.Services.Trading.BybitExchange.Monitors;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,34 +52,61 @@ public class DependencyRegistrationTests
         (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Transient),
         (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Transient),
 
-
-
-        (typeof(IFuturesMarketDataProvider), typeof(BinanceFuturesMarketDataProvider), ServiceLifetime.Singleton),
         (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
 
 
-        #region AddBinanceClientsAndServicesDerivedFromThem
+        #region AddBinanceServices
         (typeof(BinanceApiCredentials), typeof(BinanceApiCredentials), ServiceLifetime.Transient),
 
         (typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
         (typeof(IBinanceClientUsdFuturesApi), typeof(BinanceClientUsdFuturesApi), ServiceLifetime.Transient),
         (typeof(IBinanceClientUsdFuturesApiTrading), typeof(BinanceClientUsdFuturesApiTrading), ServiceLifetime.Transient),
         (typeof(IBinanceClientUsdFuturesApiExchangeData), typeof(BinanceClientUsdFuturesApiExchangeData), ServiceLifetime.Transient),
+        (typeof(IBinanceClientUsdFuturesApiAccount), typeof(BinanceClientUsdFuturesApiAccount), ServiceLifetime.Transient),
 
         (typeof(IBinanceSocketClient), typeof(BinanceSocketClient), ServiceLifetime.Transient),
         (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Transient),
-        #endregion
+
+        
+        (typeof(IFuturesMarketDataProvider), typeof(BinanceFuturesMarketDataProvider), ServiceLifetime.Singleton),
+
+        (typeof(IBinanceFuturesApiService), typeof(BinanceFuturesApiService), ServiceLifetime.Singleton),
 
         (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
         (typeof(IFuturesCandlesticksMonitor), typeof(FuturesCandlesticksMonitor), ServiceLifetime.Singleton),
-        
-        (typeof(IBinanceFuturesAccountDataProvider), typeof(BinanceFuturesAccountDataProvider), ServiceLifetime.Singleton),
 
-        #region AddServiceFactories
-        (typeof(FuturesTradingServiceFactory), typeof(FuturesTradingServiceFactory), ServiceLifetime.Singleton),
+        (typeof(IBinanceFuturesAccountDataProvider), typeof(BinanceFuturesAccountDataProvider), ServiceLifetime.Singleton),
+        #endregion
+
+        #region AddBinanceServiceFactories
+        (typeof(BinanceFuturesTradingServiceFactory), typeof(BinanceFuturesTradingServiceFactory), ServiceLifetime.Singleton),
         (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
-	    #endregion
+        #endregion
         
+
+        #region AddBybitServices
+        (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton),
+
+        (typeof(IBybitClient), typeof(BybitClient), ServiceLifetime.Singleton),
+        (typeof(IBybitClientUsdPerpetualApi), typeof(BybitClientUsdPerpetualApi), ServiceLifetime.Singleton),
+        (typeof(IBybitClientUsdPerpetualApiTrading), typeof(BybitClientUsdPerpetualApiTrading), ServiceLifetime.Singleton),
+        (typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton),
+        (typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton),
+        
+        (typeof(IBybitSocketClient), typeof(BybitSocketClient), ServiceLifetime.Singleton),
+        (typeof(IBybitSocketClientUsdPerpetualStreams), typeof(BybitSocketClientUsdPerpetualStreams), ServiceLifetime.Singleton),
+        
+        (typeof(IBybitFuturesAccountDataProvider), typeof(BybitFuturesAccountDataProvider), ServiceLifetime.Singleton),
+        (typeof(IBybitUsdFuturesMarketDataProvider), typeof(BybitUsdFuturesMarketDataProvider), ServiceLifetime.Singleton),
+        (typeof(IBybitUsdFuturesTradingApiClient), typeof(BybitUsdFuturesTradingApiClient), ServiceLifetime.Singleton),
+        (typeof(IBybitUsdPerpetualKlinesMonitor), typeof(BybitUsdPerpetualKlinesMonitor), ServiceLifetime.Singleton),
+        #endregion
+        
+        #region AddBybitServiceFactories
+        (typeof(BybitUsdFuturesTradingServiceFactory), typeof(BybitUsdFuturesTradingServiceFactory), ServiceLifetime.Singleton),
+        #endregion
+
+
         (typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton),
         #endregion
 

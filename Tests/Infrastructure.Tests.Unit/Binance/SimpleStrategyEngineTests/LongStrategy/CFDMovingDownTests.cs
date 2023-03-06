@@ -2,7 +2,7 @@
 
 using Infrastructure.Notifications;
 
-namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.LongStrategy;
+namespace Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.LongStrategy;
 
 [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 [Parallelizable(ParallelScope.All)]

@@ -1,7 +1,7 @@
-﻿using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
-using Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
+﻿using Infrastructure.Services.Trading.Binance.Strategies.SimpleStrategy;
+using Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.Base;
 
-namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.ShortStrategy;
+namespace Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.ShortStrategy;
 
 public class ShortStrategyEngineTestsBase : SimpleStrategyEngineTestsBase
 {

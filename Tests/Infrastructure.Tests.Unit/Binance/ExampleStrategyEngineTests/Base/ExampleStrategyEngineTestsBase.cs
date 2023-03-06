@@ -7,13 +7,13 @@ using Domain.Models;
 
 using Generated;
 
-using Infrastructure.Services.Trading.Strategies.Example;
+using Infrastructure.Services.Trading.Binance.Strategies.Example;
 
 using MediatR;
 
 using Skender.Stock.Indicators;
 
-namespace Infrastructure.Tests.Unit.ExampleStrategyEngineTests.Base;
+namespace Infrastructure.Tests.Unit.Binance.ExampleStrategyEngineTests.Base;
 
 public class ExampleStrategyEngineTestsBase
 {
@@ -29,7 +29,7 @@ public class ExampleStrategyEngineTestsBase
         .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
 
     protected IReadOnlyList<Candlestick> RandomCandlesticks = default!;
-    
+
     protected ExampleStrategyEngine SUT = default!;
     protected readonly int EMALength;
     protected readonly decimal Margin;
@@ -59,11 +59,11 @@ public class ExampleStrategyEngineTestsBase
         this.RandomCandlesticks = this.CandlestickGenerator.Generate(100);
     }
 
-    
+
     //// //// ARRANGES //// ////
-    
+
     // The arranges are kept here because each arrange is needed in multiple tests
-    
+
     protected void ArrangeFor_OuterSignalBuy_ShouldTriggerPositionOpening_WhenPriceIsAboveEmaAndTraderIsNotInPosition(out decimal currentPrice, out decimal emaPrice)
     {
         currentPrice = this.Random.Next(1000, 3000);
@@ -88,13 +88,13 @@ public class ExampleStrategyEngineTestsBase
     {
         currentPrice = this.Random.Next(1000, 3000);
         emaPrice = currentPrice + this.Random.Next(0, 50); // EMA < PRICE
-        
+
         this.FuturesDataProvider.GetCurrentPriceAsync(Arg.Is(this.CurrencyPair.Name)).Returns(currentPrice);
         this.FuturesTrader.IsInPosition().Returns(false, true); // trader not in position
         this.FuturesDataProvider.GetCompletedCandlesticksAsync(this.CurrencyPair.Name, this.KlineInterval).Returns(this.RandomCandlesticks);
         this.IndicatorsAdapter.GetEma(this.EMALength).Returns(new EmaResult[] { new EmaResult(DateTime.MinValue) { Ema = Convert.ToDouble(emaPrice) } });
     }
-    
+
     protected void ArrangeFor_OuterSignalSell_ShouldTriggerPositionClosing_WhenTraderIsInPosition(out decimal currentPrice)
     {
         currentPrice = this.Random.Next(1000, 3000);

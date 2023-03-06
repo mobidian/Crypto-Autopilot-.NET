@@ -5,11 +5,11 @@ using Binance.Net.Enums;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading.Binance.Strategies.SimpleStrategy;
 
 using MediatR;
 
-namespace Infrastructure.Tests.Unit.SimpleStrategyEngineTests.Base;
+namespace Infrastructure.Tests.Unit.Binance.SimpleStrategyEngineTests.Base;
 
 public abstract class SimpleStrategyEngineTestsBase
 {
@@ -25,7 +25,7 @@ public abstract class SimpleStrategyEngineTestsBase
         .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
 
     protected IReadOnlyList<Candlestick> Candlesticks = default!;
-    
+
     protected SimpleStrategyEngine SUT = default!;
     protected decimal Margin;
     protected decimal StopLossParameter;
