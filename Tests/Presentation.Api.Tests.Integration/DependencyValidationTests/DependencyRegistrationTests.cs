@@ -4,15 +4,8 @@ using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading.Binance;
-using Application.Interfaces.Services.Trading.Binance.Monitors;
 using Application.Interfaces.Services.Trading.BybitExchange;
 using Application.Interfaces.Services.Trading.BybitExchange.Monitors;
-
-using Binance.Net.Clients;
-using Binance.Net.Clients.UsdFuturesApi;
-using Binance.Net.Interfaces.Clients;
-using Binance.Net.Interfaces.Clients.UsdFuturesApi;
-using Binance.Net.Objects;
 
 using Bybit.Net.Clients;
 using Bybit.Net.Clients.UsdPerpetualApi;
@@ -30,9 +23,7 @@ using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
 using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
-using Infrastructure.Services.Trading.Binance;
-using Infrastructure.Services.Trading.Binance.Monitors;
-using Infrastructure.Services.Trading.Binance.Strategies.SimpleStrategy;
+using Infrastructure.Services.Trading;
 using Infrastructure.Services.Trading.BybitExchange;
 using Infrastructure.Services.Trading.BybitExchange.Monitors;
 
@@ -51,39 +42,11 @@ public class DependencyRegistrationTests
 
         (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Transient),
         (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Transient),
-
+        
         (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
-
-
-        #region AddBinanceServices
-        (typeof(BinanceApiCredentials), typeof(BinanceApiCredentials), ServiceLifetime.Transient),
-
-        (typeof(IBinanceClient), typeof(BinanceClient), ServiceLifetime.Transient),
-        (typeof(IBinanceClientUsdFuturesApi), typeof(BinanceClientUsdFuturesApi), ServiceLifetime.Transient),
-        (typeof(IBinanceClientUsdFuturesApiTrading), typeof(BinanceClientUsdFuturesApiTrading), ServiceLifetime.Transient),
-        (typeof(IBinanceClientUsdFuturesApiExchangeData), typeof(BinanceClientUsdFuturesApiExchangeData), ServiceLifetime.Transient),
-        (typeof(IBinanceClientUsdFuturesApiAccount), typeof(BinanceClientUsdFuturesApiAccount), ServiceLifetime.Transient),
-
-        (typeof(IBinanceSocketClient), typeof(BinanceSocketClient), ServiceLifetime.Transient),
-        (typeof(IBinanceSocketClientUsdFuturesStreams), typeof(BinanceSocketClientUsdFuturesStreams), ServiceLifetime.Transient),
-
-        
-        (typeof(IFuturesMarketDataProvider), typeof(BinanceFuturesMarketDataProvider), ServiceLifetime.Singleton),
-
-        (typeof(IBinanceFuturesApiService), typeof(BinanceFuturesApiService), ServiceLifetime.Singleton),
-
-        (typeof(IOrderStatusMonitor), typeof(OrderStatusMonitor), ServiceLifetime.Singleton),
-        (typeof(IFuturesCandlesticksMonitor), typeof(FuturesCandlesticksMonitor), ServiceLifetime.Singleton),
-
-        (typeof(IBinanceFuturesAccountDataProvider), typeof(BinanceFuturesAccountDataProvider), ServiceLifetime.Singleton),
-        #endregion
-
-        #region AddBinanceServiceFactories
-        (typeof(BinanceFuturesTradingServiceFactory), typeof(BinanceFuturesTradingServiceFactory), ServiceLifetime.Singleton),
         (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
-        #endregion
-        
 
+        
         #region AddBybitServices
         (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton),
 
@@ -109,10 +72,6 @@ public class DependencyRegistrationTests
 
         (typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton),
         #endregion
-
-
-        (typeof(SimpleLongStrategyEngine), typeof(SimpleLongStrategyEngine), ServiceLifetime.Singleton),
-        (typeof(SimpleShortStrategyEngine), typeof(SimpleShortStrategyEngine), ServiceLifetime.Singleton),
     };
 
 
