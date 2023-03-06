@@ -27,11 +27,20 @@ public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
         this.DataDictionary = new Dictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?>();
         this.SubscriptionsDictionary = new Dictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy>();
     }
-
-    //// //// ////
+    internal BybitUsdPerpetualKlinesMonitor(IBybitSocketClientUsdPerpetualStreams futuresStreams, IDateTimeProvider dateTimeProvider, Func<IUpdateSubscriptionProxy> subscriptionFactory, IDictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?> dataDictionary, IDictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy> subscriptionsDictionary)
+    {
+        this.FuturesStreams = futuresStreams ?? throw new ArgumentNullException(nameof(futuresStreams));
+        this.DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+        this.SubscriptionFactory = subscriptionFactory ?? throw new ArgumentNullException(nameof(subscriptionFactory));
+        
+        this.DataDictionary = dataDictionary ?? throw new ArgumentNullException(nameof(dataDictionary));
+        this.SubscriptionsDictionary = subscriptionsDictionary ?? throw new ArgumentNullException(nameof(subscriptionsDictionary));
+    }
     
-    internal readonly IDictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?> DataDictionary;
-    internal readonly IDictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy> SubscriptionsDictionary;
+    //// //// ////
+
+    private readonly IDictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?> DataDictionary;
+    private readonly IDictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy> SubscriptionsDictionary;
 
     public async Task SubscribeToKlineUpdatesAsync(string currencyPair, KlineInterval timeframe)
     {
@@ -48,7 +57,7 @@ public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
         subscription.SetSubscription(callResult.Data);
         this.SubscriptionsDictionary[contractIdentifier] = subscription;
     }
-    private void HandleKlineUpdate(DataEvent<IEnumerable<BybitKlineUpdate>> dataEvent)
+    internal void HandleKlineUpdate(DataEvent<IEnumerable<BybitKlineUpdate>> dataEvent)
     {
         var strings = dataEvent.Topic!.Split('.');
         var currencyPair = strings.Last();
@@ -64,9 +73,11 @@ public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
     {
         var contractIdentifier = (currencyPair, timeframe);
 
-        var subscription = this.SubscriptionsDictionary[contractIdentifier];
-        await this.FuturesStreams.UnsubscribeAsync(subscription.Id);
+        if (!this.SubscriptionsDictionary.TryGetValue(contractIdentifier, out var subscription))
+            throw new KeyNotFoundException($"The given contract identifier (currencyPair = {contractIdentifier.currencyPair}, timeframe = {contractIdentifier.timeframe}) was not present in the subscriptions dictionary.");
         
+        await this.FuturesStreams.UnsubscribeAsync(subscription!.Id);
+
         this.SubscriptionsDictionary.Remove(contractIdentifier);
     }
 
