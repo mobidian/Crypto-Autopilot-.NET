@@ -18,7 +18,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var uniqueID = futuresOrders[Random.Shared.Next(futuresOrders.Count)].UniqueID;
         var newFuturesOrderValue = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, candlestick.CurrencyPair).Generate();
         await this.SUT.UpdateFuturesOrderAsync(uniqueID, newFuturesOrderValue);
-        
+
         // Assert
         (await this.SUT.GetAllFuturesOrdersAsync()).Should().ContainEquivalentOf(newFuturesOrderValue);
     }
