@@ -23,8 +23,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
 
         var CandlestickEntity = Candlestick.ToDbEntity();
-
-        using var transaction = this.BeginTransaction();
+        
+        using var transaction = await this.BeginTransactionAsync();
         await this.AddCandlestickToDbAsync(CandlestickEntity);
     }
     public async Task AddFuturesOrdersAsync(Candlestick Candlestick, params FuturesOrder[] FuturesOrders)
@@ -34,7 +34,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         var CandlestickEntity = this.GetCandlestickEntityFromDb(Candlestick) ?? Candlestick.ToDbEntity();
 
 
-        using var transaction = this.BeginTransaction();
+        using var transaction = await this.BeginTransactionAsync();
 
         if (CandlestickEntity.Id == 0)
             await this.AddCandlestickToDbAsync(CandlestickEntity);
@@ -78,7 +78,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         await this.DbContext.SaveChangesAsync();
     }
 
-
+    
     public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync()
     {
         return await this.DbContext.Candlesticks
@@ -117,10 +117,34 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .ToListAsync();
     }
 
+    
+    public async Task UpdateFuturesOrderAsync(Guid uniqueID, FuturesOrder newFuturesOrderValue)
+    {
+        _ = newFuturesOrderValue ?? throw new ArgumentNullException(nameof(newFuturesOrderValue));
+
+
+        using var transaction = await this.BeginTransactionAsync();
+        
+        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.UniqueID == uniqueID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {uniqueID}");
+        dbEntity.UniqueID = newFuturesOrderValue.UniqueID;
+        dbEntity.CreateTime = newFuturesOrderValue.CreateTime;
+        dbEntity.UpdateTime = newFuturesOrderValue.UpdateTime;
+        dbEntity.Side = newFuturesOrderValue.Side;
+        dbEntity.PositionSide = newFuturesOrderValue.PositionSide;
+        dbEntity.Type = newFuturesOrderValue.Type;
+        dbEntity.Price = newFuturesOrderValue.Price;
+        dbEntity.Quantity = newFuturesOrderValue.Quantity;
+        dbEntity.StopLoss = newFuturesOrderValue.StopLoss;
+        dbEntity.TakeProfit = newFuturesOrderValue.TakeProfit;
+        dbEntity.TimeInForce = newFuturesOrderValue.TimeInForce;
+        dbEntity.Status = newFuturesOrderValue.Status;
+
+        await this.DbContext.SaveChangesAsync();
+    }
 
     /// <summary>
     /// Begins a new transaction and returns a <see cref="TransactionalOperation"/> object which wraps the transaction
     /// </summary>
     /// <returns></returns>
-    private TransactionalOperation BeginTransaction() => new TransactionalOperation(this.DbContext.Database.BeginTransaction());
+    private async Task<TransactionalOperation> BeginTransactionAsync() => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
 }

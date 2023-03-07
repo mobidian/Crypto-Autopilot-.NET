@@ -1,6 +1,4 @@
-﻿using Application.Data.Entities.Common;
-using Application.Data.Mapping;
-using Application.Interfaces.Services.General;
+﻿using Application.Data.Mapping;
 
 using Bybit.Net.Enums;
 
