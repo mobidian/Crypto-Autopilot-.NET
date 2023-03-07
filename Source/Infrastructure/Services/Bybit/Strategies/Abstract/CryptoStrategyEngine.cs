@@ -1,5 +1,5 @@
-﻿using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Bybit;
+﻿using Application.Interfaces.Services;
+using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 
@@ -7,7 +7,7 @@ using Domain.Models;
 
 using MediatR;
 
-namespace Infrastructure.Services.Trading.Bybit.Strategies.Abstract;
+namespace Infrastructure.Services.Bybit.Strategies.Abstract;
 
 public abstract class CryptoStrategyEngine : IStrategyEngine
 {

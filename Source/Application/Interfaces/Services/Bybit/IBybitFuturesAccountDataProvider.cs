@@ -2,7 +2,7 @@
 
 using Bybit.Net.Objects.Models;
 
-namespace Application.Interfaces.Services.Trading.Bybit;
+namespace Application.Interfaces.Services.Bybit;
 
 public interface IBybitFuturesAccountDataProvider
 {

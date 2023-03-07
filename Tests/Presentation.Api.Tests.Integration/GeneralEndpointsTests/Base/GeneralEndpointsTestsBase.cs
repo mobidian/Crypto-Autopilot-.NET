@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services;
 
 using Bybit.Net.Enums;
 
@@ -10,7 +10,7 @@ using Domain.Models;
 
 using Infrastructure;
 using Infrastructure.Database.Contexts;
-using Infrastructure.Services.Trading;
+using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

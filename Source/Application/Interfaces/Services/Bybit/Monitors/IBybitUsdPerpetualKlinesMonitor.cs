@@ -1,7 +1,7 @@
 ﻿using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models.Socket;
 
-namespace Application.Interfaces.Services.Trading.Bybit.Monitors;
+namespace Application.Interfaces.Services.Bybit.Monitors;
 
 public interface IBybitUsdPerpetualKlinesMonitor
 {

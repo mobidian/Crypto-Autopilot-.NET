@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.Trading.Bybit;
+﻿using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Clients;
 using Bybit.Net.Enums;
@@ -11,8 +11,8 @@ using CryptoExchange.Net.Objects;
 
 using Domain.Models;
 
+using Infrastructure.Services.Bybit;
 using Infrastructure.Services.General;
-using Infrastructure.Services.Trading.Bybit;
 using Infrastructure.Tests.Integration.Common;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests.AbstractBase;

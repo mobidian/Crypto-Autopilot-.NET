@@ -8,7 +8,7 @@ using Bybit.Net.Objects.Models.Socket;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 
-using Infrastructure.Services.Trading.Bybit.Monitors;
+using Infrastructure.Services.Bybit.Monitors;
 
 namespace Infrastructure.Tests.Unit.Bybit.ByBitUsdPerpetualOrderMonitorTests.AbstractBase;
 

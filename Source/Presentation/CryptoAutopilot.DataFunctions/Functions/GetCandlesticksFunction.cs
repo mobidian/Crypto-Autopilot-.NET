@@ -1,7 +1,7 @@
 ﻿using System.Net;
 
 using Application.Interfaces.Logging;
-using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services;
 
 using CryptoAutopilot.Api.Contracts.Responses.Data;
 using CryptoAutopilot.DataFunctions.Extensions;

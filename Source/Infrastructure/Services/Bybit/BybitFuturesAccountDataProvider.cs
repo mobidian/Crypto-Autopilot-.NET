@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.Trading.Bybit;
+﻿using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
@@ -6,7 +6,7 @@ using Bybit.Net.Objects.Models;
 
 using Infrastructure.Extensions;
 
-namespace Infrastructure.Services.Trading.Bybit;
+namespace Infrastructure.Services.Bybit;
 
 public class BybitFuturesAccountDataProvider : IBybitFuturesAccountDataProvider
 {

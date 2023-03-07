@@ -1,6 +1,6 @@
 ﻿using Application.Data.Entities;
 using Application.Data.Mapping;
-using Application.Interfaces.Services.Trading;
+using Application.Interfaces.Services;
 
 using Domain.Models;
 
@@ -9,7 +9,7 @@ using Infrastructure.Database.Internal;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.Trading;
+namespace Infrastructure.Services;
 
 public class FuturesTradesDBService : IFuturesTradesDBService
 {
@@ -23,7 +23,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
 
         var CandlestickEntity = Candlestick.ToDbEntity();
-        
+
         using var transaction = await this.BeginTransactionAsync();
         await this.AddCandlestickToDbAsync(CandlestickEntity);
     }
@@ -78,7 +78,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         await this.DbContext.SaveChangesAsync();
     }
 
-    
+
     public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync()
     {
         return await this.DbContext.Candlesticks
@@ -117,14 +117,14 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .ToListAsync();
     }
 
-    
+
     public async Task UpdateFuturesOrderAsync(Guid uniqueID, FuturesOrder newFuturesOrderValue)
     {
         _ = newFuturesOrderValue ?? throw new ArgumentNullException(nameof(newFuturesOrderValue));
 
 
         using var transaction = await this.BeginTransactionAsync();
-        
+
         var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.UniqueID == uniqueID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {uniqueID}");
         dbEntity.UniqueID = newFuturesOrderValue.UniqueID;
         dbEntity.CreateTime = newFuturesOrderValue.CreateTime;

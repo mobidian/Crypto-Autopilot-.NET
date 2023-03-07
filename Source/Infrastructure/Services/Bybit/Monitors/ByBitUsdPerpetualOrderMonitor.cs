@@ -1,7 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
-using Application.Interfaces.Services.Trading.Bybit.Monitors;
+using Application.Interfaces.Services.Bybit.Monitors;
 
 using Bybit.Net.Clients.UsdPerpetualApi;
 using Bybit.Net.Enums;
@@ -12,7 +12,7 @@ using CryptoExchange.Net.Sockets;
 
 using Infrastructure.Extensions;
 
-namespace Infrastructure.Services.Trading.Bybit.Monitors;
+namespace Infrastructure.Services.Bybit.Monitors;
 
 public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
 {
@@ -28,9 +28,9 @@ public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.Orders = orders ?? throw new ArgumentNullException(nameof(orders));
     }
-    
 
-    
+
+
     private readonly IDictionary<Guid, OrderStatus?> Orders;
     public bool Subscribed { get; private set; }
 
@@ -42,7 +42,7 @@ public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
 
         var callResult = await this.UsdPerpetualStreams.SubscribeToOrderUpdatesAsync(this.HandleUsdPerpetualOrderUpdate);
         callResult.ThrowIfHasError("Could not subscribe to user USD Perpetual order updates");
-        
+
         this.UsdPerpetualUpdatesSubscription.SetSubscription(callResult.Data);
         this.Subscribed = true;
     }
@@ -51,7 +51,7 @@ public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
         var perpetualOrder = dataEvent.Data.Last();
         this.Orders[Guid.Parse(perpetualOrder.Id)] = perpetualOrder.Status;
     }
-    
+
     public async Task UnsubscribeFromOrderUpdatesAsync()
     {
         if (!this.Subscribed)
@@ -67,10 +67,10 @@ public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
             throw new NotSubscribedException("Not subscribed to perpetual order updates");
 
         this.Orders.TryAdd(orderID, null);
-        
+
         while (this.Orders[orderID] != orderStatus && this.Subscribed)
             await Task.Delay(50, token);
-        
+
         this.ThrowIfConsumerUnsubscribed(orderStatus);
     }
     public async Task<Guid> WaitForAnyOrderToReachStatusAsync(IEnumerable<Guid> orderIDs, OrderStatus orderStatus, CancellationToken token = default)
@@ -83,7 +83,7 @@ public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
 
         while (!this.Orders.Values.Any(x => x == orderStatus) && this.Subscribed)
             await Task.Delay(50, token);
-        
+
         this.ThrowIfConsumerUnsubscribed(orderStatus);
 
         return this.Orders.First(x => x.Value == orderStatus).Key;
@@ -93,7 +93,7 @@ public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
     {
         if (this.Subscribed)
             return;
-        
+
         var exceptionMessage = $"The operation of waiting for any of the orders with the specified IDs to reach {orderStatus} has been cancelled as a consequence of the consumer unsubscribing from order updates";
         throw new TaskCanceledException(exceptionMessage, new NotSubscribedException("Not subscribed to perpetual order updates"));
     }

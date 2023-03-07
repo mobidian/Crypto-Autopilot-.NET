@@ -1,4 +1,4 @@
-﻿namespace Application.Interfaces.Services.Trading;
+﻿namespace Application.Interfaces.Services;
 
 public interface IStrategyEngine : IDisposable, IAsyncDisposable
 {

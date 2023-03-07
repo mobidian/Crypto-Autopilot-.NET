@@ -5,7 +5,7 @@ using Bybit.Net.Enums;
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
-using Infrastructure.Services.Trading;
+using Infrastructure.Services;
 using Infrastructure.Tests.Integration.Common;
 
 using Microsoft.EntityFrameworkCore;

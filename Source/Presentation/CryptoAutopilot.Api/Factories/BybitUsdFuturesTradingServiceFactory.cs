@@ -1,8 +1,8 @@
-﻿using Application.Interfaces.Services.Trading.Bybit;
+﻿using Application.Interfaces.Services.Bybit;
 
 using Domain.Models;
 
-using Infrastructure.Services.Trading.Bybit;
+using Infrastructure.Services.Bybit;
 
 namespace CryptoAutopilot.Api.Factories;
 

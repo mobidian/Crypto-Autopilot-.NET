@@ -2,7 +2,7 @@
 
 using Bybit.Net.Enums;
 
-namespace Application.Interfaces.Services.Trading.Bybit.Monitors;
+namespace Application.Interfaces.Services.Bybit.Monitors;
 
 /// <summary>
 /// Defines an interface for monitoring the status of ByBit USD perpetual orders
@@ -14,7 +14,7 @@ public interface IByBitUsdPerpetualOrderMonitor
     /// </summary>
     public bool Subscribed { get; }
 
-    
+
     /// <summary>
     /// Subscribes to order updates asynchronously
     /// </summary>
@@ -40,7 +40,7 @@ public interface IByBitUsdPerpetualOrderMonitor
     /// <exception cref="NotSubscribedException"></exception>
     /// <exception cref="TaskCanceledException"></exception>
     public Task WaitForOrderToReachStatusAsync(Guid orderID, OrderStatus orderStatus, CancellationToken token = default);
-    
+
     /// <summary>
     /// <para>Waits for any of the specified orders to reach the specified status and returns the ID of the first order that reaches the specified status</para>
     /// <para>If none of the specified orders reach the specified status, the task will complete when cancellation is requested or the consumer unsubscribes from order updates</para>

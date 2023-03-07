@@ -2,10 +2,10 @@
 
 using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
+using Application.Interfaces.Services;
+using Application.Interfaces.Services.Bybit;
+using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
-using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.Bybit;
-using Application.Interfaces.Services.Trading.Bybit.Monitors;
 
 using Bybit.Net.Clients;
 using Bybit.Net.Clients.UsdPerpetualApi;
@@ -21,11 +21,11 @@ using CryptoExchange.Net.Authentication;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
+using Infrastructure.Services;
+using Infrastructure.Services.Bybit;
+using Infrastructure.Services.Bybit.Monitors;
 using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
-using Infrastructure.Services.Trading;
-using Infrastructure.Services.Trading.Bybit;
-using Infrastructure.Services.Trading.Bybit.Monitors;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

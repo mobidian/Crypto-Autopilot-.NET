@@ -1,5 +1,5 @@
 ﻿using Application.Exceptions;
-using Application.Interfaces.Services.Trading.Bybit;
+using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
@@ -8,7 +8,7 @@ using Domain.Models;
 
 using Infrastructure.Extensions.Bybit;
 
-namespace Infrastructure.Services.Trading.Bybit;
+namespace Infrastructure.Services.Bybit;
 
 public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 {

@@ -1,6 +1,6 @@
 ﻿using Domain.Models;
 
-namespace Application.Interfaces.Services.Trading;
+namespace Application.Interfaces.Services;
 
 public interface IFuturesTradesDBService
 {

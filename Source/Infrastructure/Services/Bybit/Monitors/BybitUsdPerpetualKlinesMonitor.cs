@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Proxies;
+using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
-using Application.Interfaces.Services.Trading.Bybit.Monitors;
 
 using Bybit.Net.Enums;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
@@ -10,7 +10,7 @@ using CryptoExchange.Net.Sockets;
 
 using Infrastructure.Extensions;
 
-namespace Infrastructure.Services.Trading.Bybit.Monitors;
+namespace Infrastructure.Services.Bybit.Monitors;
 
 public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
 {
