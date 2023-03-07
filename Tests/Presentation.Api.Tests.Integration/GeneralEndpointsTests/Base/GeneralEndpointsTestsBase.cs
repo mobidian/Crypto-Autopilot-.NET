@@ -10,8 +10,10 @@ using Domain.Models;
 
 using Infrastructure;
 using Infrastructure.Database.Contexts;
+using Infrastructure.Services.Trading;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Presentation.Api.Tests.Integration.Common;
@@ -66,17 +68,19 @@ public abstract class GeneralEndpointsTestsBase
     protected readonly ApiFactory ApiFactory;
     protected readonly HttpClient HttpClient;
 
-    protected readonly IFuturesTradesDBService FuturesTradesDBService;
     private FuturesTradingDbContext DbContext;
+    protected readonly IFuturesTradesDBService FuturesTradesDBService;
     protected readonly IStrategiesTracker StrategiesTracker;
-
+    
     public GeneralEndpointsTestsBase()
     {
         this.ApiFactory = new ApiFactory();
         this.HttpClient = this.ApiFactory.CreateClient();
 
-        this.FuturesTradesDBService = this.ApiFactory.Services.GetRequiredService<IFuturesTradesDBService>();
-        this.DbContext = this.ApiFactory.Services.GetRequiredService<FuturesTradingDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder();
+        optionsBuilder.UseSqlServer(this.ApiFactory.Services.GetRequiredService<IConfiguration>().GetConnectionString("OrderHistoryDB"));
+        this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
+        this.FuturesTradesDBService = new FuturesTradesDBService(this.DbContext);
 
         this.StrategiesTracker = this.ApiFactory.Services.GetRequiredService<IStrategiesTracker>();
     }
