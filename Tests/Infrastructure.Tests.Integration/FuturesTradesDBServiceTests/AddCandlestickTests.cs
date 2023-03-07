@@ -20,7 +20,6 @@ public class AddCandlestickTests : FuturesTradesDBServiceTestsBase
 
         // Assert
         var addedEntity = this.DbContext.Candlesticks.Single();
-        AssertAgainstAddedEntitiesAuditRecords(new[] { addedEntity });
         addedEntity.ToDomainObject().Should().BeEquivalentTo(candlestick);
     }
 

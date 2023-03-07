@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Contexts;
 
-public class FuturesTradingDbContext : AuditableDbContext
+public class FuturesTradingDbContext : DbContext
 {
     private readonly string ConnectionString;
 
-    public FuturesTradingDbContext(string connectionString, IDateTimeProvider dateTimeProvider) : base(dateTimeProvider)
+    public FuturesTradingDbContext(string connectionString)
     {
         this.ConnectionString = connectionString;
     }

@@ -21,7 +21,6 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 
         // Assert
         var addedEntities = this.DbContext.FuturesOrders.ToList();
-        AssertAgainstAddedEntitiesAuditRecords(addedEntities);
         addedEntities.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(futuresorder);
     }
 
@@ -40,7 +39,6 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 
         // Assert
         var addedEntities = this.DbContext.FuturesOrders.ToList();
-        AssertAgainstAddedEntitiesAuditRecords(addedEntities);
         addedEntities.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(futuresorder);
     }
 

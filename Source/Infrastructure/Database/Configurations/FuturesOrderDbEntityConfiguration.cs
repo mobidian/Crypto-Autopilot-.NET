@@ -11,10 +11,6 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
 {
     public void Configure(EntityTypeBuilder<FuturesOrderDbEntity> builder)
     {
-        builder.Property(x => x.RecordCreatedDate).HasMaxLength(50).HasColumnName("Record Created Date");
-        builder.Property(x => x.RecordModifiedDate).HasMaxLength(50).HasColumnName("Record Modified Date");
-        
-
         builder.Property(x => x.CandlestickId).HasColumnName("Candlestick Id");
         builder.Property(x => x.UniqueID).HasColumnName("Unique ID");
 
@@ -37,7 +33,7 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
         builder.Property(x => x.Quantity).HasPrecision(18, 4);
         builder.Property(x => x.StopLoss).HasPrecision(18, 4);
         builder.Property(x => x.TakeProfit).HasPrecision(18, 4);
-        
+           
         builder.Property(x => x.TimeInForce)
                .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<TimeInForce>(@string))
                .HasMaxLength(32)

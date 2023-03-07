@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Database.Contexts;
-using Infrastructure.Services.General;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -16,6 +15,6 @@ public class DesignTimeFuturesTradingDbContextDbContextFactory : IDesignTimeDbCo
             .AddUserSecrets<Program>()
             .Build();
 
-        return new FuturesTradingDbContext(configuration.GetConnectionString("OrderHistoryDB")!, new DateTimeProvider());
+        return new FuturesTradingDbContext(configuration.GetConnectionString("OrderHistoryDB")!);
     }
 }

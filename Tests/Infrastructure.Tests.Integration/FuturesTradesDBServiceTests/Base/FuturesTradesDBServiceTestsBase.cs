@@ -20,7 +20,6 @@ public abstract class FuturesTradesDBServiceTestsBase
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;
-    protected IDateTimeProvider DateTimeProvider = Substitute.For<IDateTimeProvider>();
 
 
     protected readonly Random Random = new Random();
@@ -60,20 +59,13 @@ public abstract class FuturesTradesDBServiceTestsBase
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        this.MockIDateTimeProvider();
-
-        this.DbContext = new FuturesTradingDbContext(this.ConnectionString, this.DateTimeProvider);
+        this.DbContext = new FuturesTradingDbContext(this.ConnectionString);
         await this.DbContext.Database.EnsureCreatedAsync();
 
         this.SUT = new FuturesTradesDBService(this.DbContext);
 
         this.DbRespawner = await Respawner.CreateAsync(this.ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
         await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
-    }
-    private void MockIDateTimeProvider()
-    {
-        this.DateTimeProvider.Now.Returns(new DateTime(2023, 01, 01, 04, 20, 0));
-        this.DateTimeProvider.UtcNow.Returns(new DateTime(2023, 01, 01, 02, 20, 0));
     }
 
     [OneTimeTearDown]
@@ -115,14 +107,5 @@ public abstract class FuturesTradesDBServiceTestsBase
         await this.DbContext.SaveChangesAsync();
 
         await transaction.CommitAsync();
-    }
-
-    protected void AssertAgainstAddedEntitiesAuditRecords(IEnumerable<BaseEntity> addedEntities)
-    {
-        foreach (var addedEntity in addedEntities)
-        {
-            addedEntity.RecordCreatedDate.Should().Be(this.DateTimeProvider.Now);
-            addedEntity.RecordModifiedDate.Should().Be(DateTime.MinValue);
-        }
     }
 }
