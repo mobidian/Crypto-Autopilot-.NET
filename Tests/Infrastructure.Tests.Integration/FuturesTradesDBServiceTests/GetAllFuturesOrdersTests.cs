@@ -1,4 +1,4 @@
-﻿using Binance.Net.Objects.Models.Futures;
+﻿using Domain.Models;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
@@ -10,11 +10,11 @@ public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders_WhenFuturesOrdersExist()
     {
         // Arrange
-        var orders = new List<BinanceFuturesOrder>();
+        var orders = new List<FuturesOrder>();
         for (var i = 0; i < 10; i++)
         {
             var candlestick = this.CandlestickGenerator.Generate();
-            var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).GenerateBetween(1, 5);
+            var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, candlestick.CurrencyPair).GenerateBetween(1, 5);
             await this.InsertOneCandlestickAndMultipleFuturesOrdersAsync(candlestick, futuresOrders);
 
             orders.AddRange(futuresOrders);

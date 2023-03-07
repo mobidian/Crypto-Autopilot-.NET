@@ -1,9 +1,8 @@
 ﻿using Application.Data.Entities.Common;
+using Application.Data.Mapping;
 using Application.Interfaces.Services.General;
-using Application.Mapping;
 
-using Binance.Net.Enums;
-using Binance.Net.Objects.Models.Futures;
+using Bybit.Net.Enums;
 
 using Domain.Models;
 
@@ -17,7 +16,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
-    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("OrderHistoryDB");
+    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("OrderHistoryDB-TestDatabase");
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;
@@ -37,24 +36,22 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleFor(c => c.Low, (f, c) => f.Random.Decimal(c.Open - 100, c.Open))
         .RuleFor(c => c.Close, (f, c) => f.Random.Decimal(1000, 1500))
         .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
-
-    protected readonly Faker<BinanceFuturesOrder> FuturesOrderGenerator = new Faker<BinanceFuturesOrder>()
-        .RuleFor(o => o.Id, f => f.Random.Long(1000000))
+    
+    protected readonly Faker<FuturesOrder> FuturesOrderGenerator = new Faker<FuturesOrder>()
+        .RuleFor(o => o.UniqueID, f => Guid.NewGuid())
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.UpdateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())
         .RuleFor(o => o.PositionSide, f => f.Random.Enum<PositionSide>())
-        .RuleFor(o => o.Type, f => f.Random.Enum<FuturesOrderType>())
-        .RuleFor(o => o.WorkingType, f => f.Random.Enum<WorkingType>())
+        .RuleFor(o => o.Type, f => f.Random.Enum<OrderType>())
         .RuleFor(o => o.Price, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.AvgPrice, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.StopPrice, f => f.Random.Decimal(0, 1000))
         .RuleFor(o => o.Quantity, f => f.Random.Decimal(0, 10))
-        .RuleFor(o => o.PriceProtect, f => f.PickRandom(true, false))
+        .RuleFor(o => o.StopLoss, f => f.Random.Decimal(0, 1000))
+        .RuleFor(o => o.TakeProfit, f => f.Random.Decimal(0, 1000))
         .RuleFor(o => o.TimeInForce, f => f.Random.Enum<TimeInForce>())
         .RuleFor(o => o.Status, f => f.Random.Enum<OrderStatus>());
-
-
+    
+    
     private Respawner DbRespawner;
     protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
 
@@ -102,7 +99,7 @@ public abstract class FuturesTradesDBServiceTestsBase
 
         return newCurrencyPair;
     }
-    protected async Task InsertOneCandlestickAndMultipleFuturesOrdersAsync(Candlestick candlestick, List<BinanceFuturesOrder> futuresOrders)
+    protected async Task InsertOneCandlestickAndMultipleFuturesOrdersAsync(Candlestick candlestick, List<FuturesOrder> futuresOrders)
     {
         using var transaction = await this.DbContext.Database.BeginTransactionAsync();
 
@@ -111,7 +108,7 @@ public abstract class FuturesTradesDBServiceTestsBase
 
         await this.DbContext.Candlesticks.AddAsync(candlesticksEntity);
         await this.DbContext.SaveChangesAsync();
-
+        
         futuresOrdersEntities.ForEach(x => x.CandlestickId = candlesticksEntity.Id);
 
         this.DbContext.FuturesOrders.AddRange(futuresOrdersEntities);

@@ -1,4 +1,4 @@
-﻿using Application.Mapping;
+﻿using Application.Data.Mapping;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 

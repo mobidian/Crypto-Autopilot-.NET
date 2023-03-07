@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.Logging;
-using Application.Interfaces.Services.Trading.Binance;
+using Application.Interfaces.Services.Trading;
 
 namespace CryptoAutopilot.DataFunctions.Functions;
 

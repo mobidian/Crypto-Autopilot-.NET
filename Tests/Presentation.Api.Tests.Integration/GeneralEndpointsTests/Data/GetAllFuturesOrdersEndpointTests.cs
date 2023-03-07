@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Json;
 
-using Binance.Net.Objects.Models.Futures;
-
 using CryptoAutopilot.Api.Contracts.Responses.Data;
+
+using Domain.Models;
 
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
@@ -16,7 +16,7 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(x => x.Symbol, candlestick.CurrencyPair.Name).GenerateBetween(10, 20);
+        var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(x => x.CurrencyPair, candlestick.CurrencyPair).GenerateBetween(10, 20);
 
         foreach (var order in futuresOrders)
             await this.FuturesTradesDBService.AddFuturesOrdersAsync(candlestick, order);
@@ -28,7 +28,7 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
         response!.FuturesOrders.Should().BeEquivalentTo(futuresOrders);
     }
-
+    
     [Test]
     public async Task GetAllFuturesOrdersEndpoint_ShouldReturnEmptyEnumerable_WhenNoFurutresOrdersAreInTheDatabase()
     {
@@ -37,6 +37,6 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
 
         // Assert
         var response = await candlesticksResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
-        response!.FuturesOrders.Should().BeEquivalentTo(Enumerable.Empty<BinanceFuturesOrder>());
+        response!.FuturesOrders.Should().BeEquivalentTo(Enumerable.Empty<FuturesOrder>());
     }
 }

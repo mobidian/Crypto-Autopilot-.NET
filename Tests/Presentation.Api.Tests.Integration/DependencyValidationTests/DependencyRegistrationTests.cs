@@ -3,7 +3,7 @@
 using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
-using Application.Interfaces.Services.Trading.Binance;
+using Application.Interfaces.Services.Trading;
 using Application.Interfaces.Services.Trading.BybitExchange;
 using Application.Interfaces.Services.Trading.BybitExchange.Monitors;
 

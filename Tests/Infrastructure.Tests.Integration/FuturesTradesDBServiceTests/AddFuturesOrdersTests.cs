@@ -1,4 +1,4 @@
-﻿using Application.Mapping;
+﻿using Application.Data.Mapping;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
@@ -14,7 +14,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate(this.Random.Next(1, 10));
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, candlestick.CurrencyPair).Generate(this.Random.Next(1, 10));
 
         // Act
         await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder.ToArray());
@@ -30,7 +30,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate(this.Random.Next(1, 10));
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, candlestick.CurrencyPair).Generate(this.Random.Next(1, 10));
 
         await this.SUT.AddCandlestickAsync(candlestick);
 
@@ -49,7 +49,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, candlestick.CurrencyPair.Name).Generate();
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, candlestick.CurrencyPair).Generate();
 
         // Act
         await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder);
@@ -59,7 +59,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         (await func.Should().ThrowExactlyAsync<DbUpdateException>())
             .WithMessage("An error occurred while saving the entity changes. See the inner exception for details.")
             .WithInnerExceptionExactly<SqlException>()
-            .WithMessage($"Cannot insert duplicate key row in object 'dbo.FuturesOrders' with unique index 'IX_FuturesOrders_Binance ID'. The duplicate key value is ({futuresorder.Id}).");
+            .WithMessage($"Cannot insert duplicate key row in object 'dbo.FuturesOrders' with unique index 'IX_FuturesOrders_Unique ID'. The duplicate key value is ({futuresorder.UniqueID}).");
     }
 
     [Test, Order(4)]
@@ -67,7 +67,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var candlestick = this.CandlestickGenerator.Generate();
-        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.Symbol, f => GetRandomCurrencyPairExcept(f, candlestick.CurrencyPair).Name).Generate();
+        var futuresorder = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, f => GetRandomCurrencyPairExcept(f, candlestick.CurrencyPair)).Generate();
 
         // Act
         var func = async () => await this.SUT.AddFuturesOrdersAsync(candlestick, futuresorder);
@@ -76,7 +76,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         (await func.Should().ThrowExactlyAsync<DbUpdateException>())
             .WithMessage("An error occurred while saving the entity changes. See the inner exception for details.")
             .WithInnerExceptionExactly<ArgumentException>()
-            .WithMessage($"Cannot insert the specified candlestick and futures order since the FuturesOrder.Symbol ({futuresorder.Symbol}) does not match the Candlestick.CurrencyPair ({candlestick.CurrencyPair}). (Parameter 'Symbol')");
+            .WithMessage($"Cannot insert the specified candlestick and futures order since the FuturesOrder.Symbol ({futuresorder.CurrencyPair}) does not match the Candlestick.CurrencyPair ({candlestick.CurrencyPair}). (Parameter 'CurrencyPair')");
     }
 
 

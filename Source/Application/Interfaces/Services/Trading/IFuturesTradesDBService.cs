@@ -1,18 +1,16 @@
-﻿using Binance.Net.Objects.Models.Futures;
+﻿using Domain.Models;
 
-using Domain.Models;
-
-namespace Application.Interfaces.Services.Trading.Binance;
+namespace Application.Interfaces.Services.Trading;
 
 public interface IFuturesTradesDBService
 {
     public Task AddCandlestickAsync(Candlestick Candlestick);
 
-    public Task AddFuturesOrdersAsync(Candlestick Candlestick, params BinanceFuturesOrder[] FuturesOrders);
+    public Task AddFuturesOrdersAsync(Candlestick Candlestick, params FuturesOrder[] FuturesOrders);
 
     public Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync();
     public Task<IEnumerable<Candlestick>> GetCandlesticksByCurrencyPairAsync(string currencyPair);
 
-    public Task<IEnumerable<BinanceFuturesOrder>> GetAllFuturesOrdersAsync();
-    public Task<IEnumerable<BinanceFuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair);
+    public Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync();
+    public Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair);
 }
