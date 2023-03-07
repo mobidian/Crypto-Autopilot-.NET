@@ -15,7 +15,7 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
         builder.Property(x => x.UniqueID).HasColumnName("Unique ID");
 
         builder.Property(x => x.Side)
-               .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<OrderSide>(@string))
+               .HasConversion(@enum => @enum == OrderSide.Buy ? "Buy" : "Sell", @string => @string == "Buy" ? OrderSide.Buy : OrderSide.Sell)
                .HasMaxLength(8)
                .HasColumnName("Order Side");
         
@@ -23,7 +23,7 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
                .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<PositionSide>(@string))
                .HasMaxLength(8)
                .HasColumnName("Position Side");
-
+        
         builder.Property(x => x.Type)
                .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<OrderType>(@string))
                .HasMaxLength(32)
@@ -33,7 +33,7 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
         builder.Property(x => x.Quantity).HasPrecision(18, 4);
         builder.Property(x => x.StopLoss).HasPrecision(18, 4);
         builder.Property(x => x.TakeProfit).HasPrecision(18, 4);
-           
+        
         builder.Property(x => x.TimeInForce)
                .HasConversion(@enum => @enum.ToString(), @string => Enum.Parse<TimeInForce>(@string))
                .HasMaxLength(32)
@@ -46,5 +46,8 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
 
 
         builder.HasIndex(x => x.UniqueID).IsUnique();
+
+        
+        builder.ToTable("FuturesOrders", tableBuilder => tableBuilder.IsTemporal());
     }
 }

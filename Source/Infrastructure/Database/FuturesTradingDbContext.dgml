@@ -7,8 +7,14 @@ RelationshipDiscoveryConvention:InverseNavigationCandidates: System.Collections.
 SqlServer:ValueGenerationStrategy: IdentityColumn" Category="Model" Group="Expanded" />
 <Node Id = "CandlestickDbEntity" Label="CandlestickDbEntity" Name="CandlestickDbEntity" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="Relational:TableName: Candlesticks
 RelationshipDiscoveryConvention:NavigationCandidates: System.Collections.Immutable.ImmutableSortedDictionary`2[System.Reflection.PropertyInfo,System.ValueTuple`2[System.Type,System.Nullable`1[System.Boolean]]]" Category="EntityType" Group="Expanded" />
-<Node Id = "FuturesOrderDbEntity" Label="FuturesOrderDbEntity" Name="FuturesOrderDbEntity" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="Relational:TableName: FuturesOrders
-RelationshipDiscoveryConvention:NavigationCandidates: System.Collections.Immutable.ImmutableSortedDictionary`2[System.Reflection.PropertyInfo,System.ValueTuple`2[System.Type,System.Nullable`1[System.Boolean]]]" Category="EntityType" Group="Expanded" />
+<Node Id = "FuturesOrderDbEntity" Label="FuturesOrderDbEntity" Name="FuturesOrderDbEntity" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="Relational:Schema:
+Relational:TableName: FuturesOrders
+RelationshipDiscoveryConvention:NavigationCandidates: System.Collections.Immutable.ImmutableSortedDictionary`2[System.Reflection.PropertyInfo,System.ValueTuple`2[System.Type,System.Nullable`1[System.Boolean]]]
+SqlServer:IsTemporal: True
+SqlServer:TemporalHistoryTableName: FuturesOrdersHistory
+SqlServer:TemporalHistoryTableSchema:
+SqlServer:TemporalPeriodEndPropertyName: PeriodEnd
+SqlServer:TemporalPeriodStartPropertyName: PeriodStart" Category="EntityType" Group="Expanded" />
 <Node Id = "CandlestickDbEntity.Id" Label="Id (int)" Name="Id" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="SqlServer:ValueGenerationStrategy: IdentityColumn" IsPrimaryKey="True" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAdd" />
 <Node Id = "CandlestickDbEntity.FuturesOrders" Label="FuturesOrders (*)" Name="FuturesOrders" Category="Navigation Collection" Type="IEnumerable&lt;FuturesOrderDbEntity&gt;"  Field="" Dependent="FuturesOrderDbEntity" Principal="" Inverse="Candlestick" PropertyAccessMode="PropertyAccessMode.Default" />
 <Node Id = "CandlestickDbEntity.Close" Label="Close (decimal)" Name="Close" Category="Property Required" Type="decimal" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Precision: 18
@@ -22,10 +28,6 @@ Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed=
 Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "CandlestickDbEntity.Open" Label="Open (decimal)" Name="Open" Category="Property Required" Type="decimal" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Precision: 18
 Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
-<Node Id = "CandlestickDbEntity.RecordCreatedDate" Label="RecordCreatedDate (DateTime)" Name="RecordCreatedDate" Category="Property Required" Type="DateTime" MaxLength="(50)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 50
-Relational:ColumnName: Record Created Date" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
-<Node Id = "CandlestickDbEntity.RecordModifiedDate" Label="RecordModifiedDate (DateTime)" Name="RecordModifiedDate" Category="Property Required" Type="DateTime" MaxLength="(50)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 50
-Relational:ColumnName: Record Modified Date" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "CandlestickDbEntity.Volume" Label="Volume (decimal)" Name="Volume" Category="Property Required" Type="decimal" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Precision: 18
 Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "FuturesOrderDbEntity" Label="FuturesOrderDbEntity" Name="FuturesOrderDbEntity" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="" Category="EntityType" Group="Expanded" />
@@ -33,6 +35,8 @@ Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed=
 <Node Id = "FuturesOrderDbEntity.Candlestick" Label="Candlestick (1)" Name="Candlestick" Category="Navigation Property" Type="CandlestickDbEntity"  Field="" Dependent="" Principal="CandlestickDbEntity" Inverse="FuturesOrders" PropertyAccessMode="PropertyAccessMode.Default" />
 <Node Id = "FuturesOrderDbEntity.CandlestickId" Label="CandlestickId (int)" Name="CandlestickId" Category="Property Foreign" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Relational:ColumnName: Candlestick Id" IsPrimaryKey="False" IsForeignKey="True" IsRequired="True" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "FuturesOrderDbEntity.CreateTime" Label="CreateTime (DateTime)" Name="CreateTime" Category="Property Required" Type="DateTime" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "FuturesOrderDbEntity.PeriodEnd" Label="PeriodEnd (DateTime)" Name="PeriodEnd" Category="Property Required" Type="DateTime" MaxLength="None" Field="nofield" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Relational:ColumnName: PeriodEnd" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="True" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAddOrUpdate" />
+<Node Id = "FuturesOrderDbEntity.PeriodStart" Label="PeriodStart (DateTime)" Name="PeriodStart" Category="Property Required" Type="DateTime" MaxLength="None" Field="nofield" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Relational:ColumnName: PeriodStart" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="True" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAddOrUpdate" />
 <Node Id = "FuturesOrderDbEntity.PositionSide" Label="PositionSide (PositionSide)" Name="PositionSide" Category="Property Required" Type="PositionSide" MaxLength="(8)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 8
 Relational:ColumnName: Position Side
 ValueConverter: Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter`2[Bybit.Net.Enums.PositionSide,System.String]" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
@@ -40,10 +44,6 @@ ValueConverter: Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConve
 Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "FuturesOrderDbEntity.Quantity" Label="Quantity (decimal)" Name="Quantity" Category="Property Required" Type="decimal" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Precision: 18
 Scale: 4" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
-<Node Id = "FuturesOrderDbEntity.RecordCreatedDate" Label="RecordCreatedDate (DateTime)" Name="RecordCreatedDate" Category="Property Required" Type="DateTime" MaxLength="(50)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 50
-Relational:ColumnName: Record Created Date" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
-<Node Id = "FuturesOrderDbEntity.RecordModifiedDate" Label="RecordModifiedDate (DateTime)" Name="RecordModifiedDate" Category="Property Required" Type="DateTime" MaxLength="(50)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 50
-Relational:ColumnName: Record Modified Date" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "FuturesOrderDbEntity.Side" Label="Side (OrderSide)" Name="Side" Category="Property Required" Type="OrderSide" MaxLength="(8)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 8
 Relational:ColumnName: Order Side
 ValueConverter: Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter`2[Bybit.Net.Enums.OrderSide,System.String]" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
@@ -74,8 +74,6 @@ ValueConverter: Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConve
 <Link Source = "CandlestickDbEntity" Target="CandlestickDbEntity.High" Category="Contains" />
 <Link Source = "CandlestickDbEntity" Target="CandlestickDbEntity.Low" Category="Contains" />
 <Link Source = "CandlestickDbEntity" Target="CandlestickDbEntity.Open" Category="Contains" />
-<Link Source = "CandlestickDbEntity" Target="CandlestickDbEntity.RecordCreatedDate" Category="Contains" />
-<Link Source = "CandlestickDbEntity" Target="CandlestickDbEntity.RecordModifiedDate" Category="Contains" />
 <Link Source = "CandlestickDbEntity" Target="CandlestickDbEntity.Volume" Category="Contains" />
 <Link Source = "IModel" Target="FuturesOrderDbEntity" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.Candlestick" Category="Contains" />
@@ -83,11 +81,11 @@ ValueConverter: Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConve
 <Link Source="FuturesOrderDbEntity" Target="CandlestickDbEntity" From="FuturesOrderDbEntity.CandlestickId" To="CandlestickDbEntity.Id" Name="FuturesOrderDbEntity -> CandlestickDbEntity" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.CandlestickId" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.CreateTime" Category="Contains" />
+<Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.PeriodEnd" Category="Contains" />
+<Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.PeriodStart" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.PositionSide" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.Price" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.Quantity" Category="Contains" />
-<Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.RecordCreatedDate" Category="Contains" />
-<Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.RecordModifiedDate" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.Side" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.Status" Category="Contains" />
 <Link Source = "FuturesOrderDbEntity" Target="FuturesOrderDbEntity.StopLoss" Category="Contains" />
