@@ -1,5 +1,4 @@
 ﻿using Application.Data.Entities;
-using Application.Interfaces.Services.General;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -7,19 +6,9 @@ namespace Infrastructure.Database.Contexts;
 
 public class FuturesTradingDbContext : DbContext
 {
-    private readonly string ConnectionString;
-
-    public FuturesTradingDbContext(string connectionString)
-    {
-        this.ConnectionString = connectionString;
-    }
+    public FuturesTradingDbContext(DbContextOptions options) : base(options) { }
     
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(this.ConnectionString);
-    }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(FuturesTradingDbContext).Assembly, type => !type.IsInterface && !type.IsAbstract);

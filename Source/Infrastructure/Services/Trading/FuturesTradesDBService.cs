@@ -142,6 +142,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         await this.DbContext.SaveChangesAsync();
     }
 
+
+
     /// <summary>
     /// Begins a new transaction and returns a <see cref="TransactionalOperation"/> object which wraps the transaction
     /// </summary>

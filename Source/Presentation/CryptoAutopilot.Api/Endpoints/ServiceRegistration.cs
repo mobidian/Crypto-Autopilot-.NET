@@ -24,6 +24,8 @@ using Infrastructure.Services.Trading;
 using Infrastructure.Services.Trading.Bybit;
 using Infrastructure.Services.Trading.Bybit.Monitors;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CryptoAutopilot.Api.Endpoints;
 
 public static partial class ServicesEndpointsExtensions
@@ -34,9 +36,9 @@ public static partial class ServicesEndpointsExtensions
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
-
-        services.AddTransient(services => new FuturesTradingDbContext(configuration.GetConnectionString("OrderHistoryDB")!));
-        services.AddTransient<IFuturesTradesDBService, FuturesTradesDBService>();
+        
+        services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("OrderHistoryDB")!));
+        services.AddScoped<IFuturesTradesDBService, FuturesTradesDBService>();
         
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
         services.AddSingleton<Func<IUpdateSubscriptionProxy>>(services => () => services.GetRequiredService<IUpdateSubscriptionProxy>());

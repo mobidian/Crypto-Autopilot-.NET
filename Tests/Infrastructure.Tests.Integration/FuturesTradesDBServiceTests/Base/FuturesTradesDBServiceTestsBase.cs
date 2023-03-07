@@ -8,6 +8,8 @@ using Infrastructure.Database.Contexts;
 using Infrastructure.Services.Trading;
 using Infrastructure.Tests.Integration.Common;
 
+using Microsoft.EntityFrameworkCore;
+
 using Respawn;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
@@ -57,7 +59,10 @@ public abstract class FuturesTradesDBServiceTestsBase
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        this.DbContext = new FuturesTradingDbContext(this.ConnectionString);
+        var optionsBuilder = new DbContextOptionsBuilder();
+        optionsBuilder.UseSqlServer(this.ConnectionString);
+        this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
+        
         await this.DbContext.Database.EnsureCreatedAsync();
 
         this.SUT = new FuturesTradesDBService(this.DbContext);
