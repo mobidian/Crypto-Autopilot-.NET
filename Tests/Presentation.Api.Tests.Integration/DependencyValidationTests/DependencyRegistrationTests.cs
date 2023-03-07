@@ -4,8 +4,8 @@ using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.General;
 using Application.Interfaces.Services.Trading;
-using Application.Interfaces.Services.Trading.BybitExchange;
-using Application.Interfaces.Services.Trading.BybitExchange.Monitors;
+using Application.Interfaces.Services.Trading.Bybit;
+using Application.Interfaces.Services.Trading.Bybit.Monitors;
 
 using Bybit.Net.Clients;
 using Bybit.Net.Clients.UsdPerpetualApi;
@@ -24,8 +24,8 @@ using Infrastructure.Logging;
 using Infrastructure.Services.General;
 using Infrastructure.Services.Proxies;
 using Infrastructure.Services.Trading;
-using Infrastructure.Services.Trading.BybitExchange;
-using Infrastructure.Services.Trading.BybitExchange.Monitors;
+using Infrastructure.Services.Trading.Bybit;
+using Infrastructure.Services.Trading.Bybit.Monitors;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
