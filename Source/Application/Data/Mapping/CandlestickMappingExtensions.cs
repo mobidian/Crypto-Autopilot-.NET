@@ -2,7 +2,7 @@
 
 using Domain.Models;
 
-namespace Application.Mapping;
+namespace Application.Data.Mapping;
 
 public static class CandlestickMappingExtensions
 {
@@ -16,7 +16,7 @@ public static class CandlestickMappingExtensions
         Close = candlestick.Close,
         Volume = candlestick.Volume,
     };
-    
+
     public static Candlestick ToDomainObject(this CandlestickDbEntity entity) => new Candlestick
     {
         CurrencyPair = new CurrencyPair(entity.CurrencyPair),
