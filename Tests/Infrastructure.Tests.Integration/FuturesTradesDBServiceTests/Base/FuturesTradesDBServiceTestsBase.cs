@@ -14,7 +14,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
-    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("OrderHistoryDB-TestDatabase");
+    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("TradingHistoryDB-TestDatabase");
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;

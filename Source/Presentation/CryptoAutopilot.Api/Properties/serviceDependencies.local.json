@@ -2,9 +2,9 @@
   "dependencies": {
     "mssql1": {
       "secretStore": null,
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/cryptoautopilot-server/databases/OrderHistoryDB",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/cryptoautopilot-server/databases/TradingHistoryDB",
       "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:OrderHistoryDB"
+      "connectionId": "ConnectionStrings:TradingHistoryDB"
     }
   }
 }

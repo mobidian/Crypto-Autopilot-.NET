@@ -78,7 +78,7 @@ public abstract class GeneralEndpointsTestsBase
         this.HttpClient = this.ApiFactory.CreateClient();
 
         var optionsBuilder = new DbContextOptionsBuilder();
-        optionsBuilder.UseSqlServer(this.ApiFactory.Services.GetRequiredService<IConfiguration>().GetConnectionString("OrderHistoryDB"));
+        optionsBuilder.UseSqlServer(this.ApiFactory.Services.GetRequiredService<IConfiguration>().GetConnectionString("TradingHistoryDB"));
         this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
         this.FuturesTradesDBService = new FuturesTradesDBService(this.DbContext);
 

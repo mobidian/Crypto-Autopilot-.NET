@@ -16,7 +16,7 @@ public class DesignTimeFuturesTradingDbContextDbContextFactory : IDesignTimeDbCo
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("OrderHistoryDB")!);
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!);
         return new FuturesTradingDbContext(optionsBuilder.Options);
     }
 }

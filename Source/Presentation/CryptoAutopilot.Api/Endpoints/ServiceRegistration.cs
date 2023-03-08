@@ -37,7 +37,7 @@ public static partial class ServicesEndpointsExtensions
         
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
         
-        services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("OrderHistoryDB")!));
+        services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
         services.AddScoped<IFuturesTradesDBService, FuturesTradesDBService>();
         
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
