@@ -1,4 +1,6 @@
-﻿using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+﻿using Application.Data.Mapping;
+
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
@@ -9,23 +11,24 @@ public class GetAllFuturesOrdersByCurrencyPairTests : FuturesTradesDBServiceTest
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
-        var matchingCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, currencyPair).Generate();
-        var matchingFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, matchingCandlestick.CurrencyPair).Generate(15);
-        await InsertOneCandlestickAndMultipleFuturesOrdersAsync(matchingCandlestick, matchingFuturesOrders);
-
-        for (var i = 0; i < 10; i++)
+        var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, currencyPair).Generate(15);
+        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()).ToArray());
+        await this.DbContext.SaveChangesAsync();
+        
+        for (var i = 0; i < 5; i++)
         {
-            var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
-            var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, randomCandlestick.CurrencyPair).Generate(15);
-            await InsertOneCandlestickAndMultipleFuturesOrdersAsync(randomCandlestick, randomFuturesOrders);
+            var diffrentCurrencyPair = this.CurrencyPairGenerator.Generate();
+            var futuresOrdersWithDiffrentCurrencyPair = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, diffrentCurrencyPair).Generate(15);
+            await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrdersWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()).ToArray());
+            await this.DbContext.SaveChangesAsync();
         }
 
-        
+
         // Act
         var retrievedFuturesOrders = await this.SUT.GetFuturesOrdersByCurrencyPairAsync(currencyPair.Name);
 
         // Assert
-        retrievedFuturesOrders.Should().BeEquivalentTo(matchingFuturesOrders);
+        retrievedFuturesOrders.Should().BeEquivalentTo(futuresOrders);
     }
 
     [Test]
@@ -33,15 +36,16 @@ public class GetAllFuturesOrdersByCurrencyPairTests : FuturesTradesDBServiceTest
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
-
-        for (var i = 0; i < 10; i++)
+        
+        for (var i = 0; i < 5; i++)
         {
-            var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
-            var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, randomCandlestick.CurrencyPair).Generate(15);
-            await InsertOneCandlestickAndMultipleFuturesOrdersAsync(randomCandlestick, randomFuturesOrders);
+            var diffrentCurrencyPair = this.CurrencyPairGenerator.Generate();
+            var futuresOrdersWithDiffrentCurrencyPair = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, diffrentCurrencyPair).Generate(15);
+            await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrdersWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()).ToArray());
+            await this.DbContext.SaveChangesAsync();
         }
-
-
+        
+        
         // Act
         var retrievedFuturesOrders = await this.SUT.GetFuturesOrdersByCurrencyPairAsync(currencyPair.Name);
 

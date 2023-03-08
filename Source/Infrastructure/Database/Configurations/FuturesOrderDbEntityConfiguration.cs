@@ -11,7 +11,6 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
 {
     public void Configure(EntityTypeBuilder<FuturesOrderDbEntity> builder)
     {
-        builder.Property(x => x.CandlestickId).HasColumnName("Candlestick Id");
         builder.Property(x => x.UniqueID).HasColumnName("Unique ID");
 
         builder.Property(x => x.Side)

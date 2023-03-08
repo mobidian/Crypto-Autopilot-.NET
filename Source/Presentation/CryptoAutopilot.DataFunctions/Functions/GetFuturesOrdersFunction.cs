@@ -13,11 +13,11 @@ using Microsoft.Azure.Functions.Worker.Http;
 
 namespace CryptoAutopilot.DataFunctions.Functions;
 
-public class GetFuturesOrdersFunction : DataFunctionBase
+public class GetFuturesOrdersFunction : DataFunctionBase<GetFuturesOrdersFunction>
 {
-    public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetCandlesticksFunction> logger) : base(dbService, logger) { }
-
-
+    public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetFuturesOrdersFunction> logger) : base(dbService, logger) { }
+    
+    
     [Function("futuresorders")]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, string? currencyPair)
     {

@@ -3,12 +3,12 @@ using Application.Interfaces.Services;
 
 namespace CryptoAutopilot.DataFunctions.Functions;
 
-public abstract class DataFunctionBase
+public abstract class DataFunctionBase<T> where T : class
 {
     protected readonly IFuturesTradesDBService DbService;
-    protected readonly ILoggerAdapter<GetCandlesticksFunction> Logger;
+    protected readonly ILoggerAdapter<T> Logger;
 
-    protected DataFunctionBase(IFuturesTradesDBService dbService, ILoggerAdapter<GetCandlesticksFunction> logger)
+    protected DataFunctionBase(IFuturesTradesDBService dbService, ILoggerAdapter<T> logger)
     {
         this.DbService = dbService;
         this.Logger = logger;

@@ -1,5 +1,4 @@
-﻿using Application.Data.Entities;
-using Application.Data.Mapping;
+﻿using Application.Data.Mapping;
 using Application.Interfaces.Services;
 
 using Domain.Models;
@@ -17,91 +16,24 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public FuturesTradesDBService(FuturesTradingDbContext dbContext) => this.DbContext = dbContext;
 
 
-    public async Task AddCandlestickAsync(Candlestick Candlestick)
-    {
-        _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
 
-
-        var CandlestickEntity = Candlestick.ToDbEntity();
-
-        using var transaction = await this.BeginTransactionAsync();
-        await this.AddCandlestickToDbAsync(CandlestickEntity);
-    }
-    public async Task AddFuturesOrdersAsync(Candlestick Candlestick, params FuturesOrder[] FuturesOrders)
-    {
-        _ = Candlestick ?? throw new ArgumentNullException(nameof(Candlestick));
-        ValidateFuturesOrdersArray(Candlestick, FuturesOrders);
-        var CandlestickEntity = this.GetCandlestickEntityFromDb(Candlestick) ?? Candlestick.ToDbEntity();
-
-
-        using var transaction = await this.BeginTransactionAsync();
-
-        if (CandlestickEntity.Id == 0)
-            await this.AddCandlestickToDbAsync(CandlestickEntity);
-
-        var futuresOrderDbEntities = FuturesOrders.Select(o =>
-        {
-            var entity = o.ToDbEntity();
-            entity.CandlestickId = CandlestickEntity.Id;
-            return entity;
-        });
-        await this.AddFuturesOrdersToDbAsync(futuresOrderDbEntities);
-    }
-    private static void ValidateFuturesOrdersArray(Candlestick Candlestick, FuturesOrder[] FuturesOrders)
+    public async Task AddFuturesOrdersAsync(params FuturesOrder[] FuturesOrders)
     {
         _ = FuturesOrders ?? throw new ArgumentNullException(nameof(FuturesOrders));
+        
 
-        foreach (var FuturesOrder in FuturesOrders)
-        {
-            _ = FuturesOrder ?? throw new ArgumentNullException(nameof(FuturesOrder));
-
-            if (Candlestick.CurrencyPair != FuturesOrder.CurrencyPair)
-            {
-                var innerException = new ArgumentException($"Cannot insert the specified candlestick and futures order since the FuturesOrder.Symbol ({FuturesOrder.CurrencyPair}) does not match the Candlestick.CurrencyPair ({Candlestick.CurrencyPair}).", nameof(FuturesOrder.CurrencyPair));
-                throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
-            }
-        }
-    }
-    private CandlestickDbEntity? GetCandlestickEntityFromDb(Candlestick Candlestick)
-    {
-        var uniqueIndex = (Candlestick.CurrencyPair, Candlestick.Date);
-        return this.DbContext.Candlesticks.SingleOrDefault(x => x.CurrencyPair == uniqueIndex.CurrencyPair.Name && x.DateTime == uniqueIndex.Date);
-    }
-    private async Task AddCandlestickToDbAsync(CandlestickDbEntity candlestickDbEntity)
-    {
-        await this.DbContext.Candlesticks.AddAsync(candlestickDbEntity);
-        await this.DbContext.SaveChangesAsync();
-    }
-    private async Task AddFuturesOrdersToDbAsync(IEnumerable<FuturesOrderDbEntity> futuresOrderDbEntities)
-    {
+        using var transaction = await this.BeginTransactionAsync();
+        
+        var futuresOrderDbEntities = FuturesOrders.Select(o => o.ToDbEntity());
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
 
-
-    public async Task<IEnumerable<Candlestick>> GetAllCandlesticksAsync()
-    {
-        return await this.DbContext.Candlesticks
-            .OrderBy(x => x.CurrencyPair)
-            .ThenByDescending(x => x.DateTime)
-            .Select(x => x.ToDomainObject())
-            .ToListAsync();
-    }
-    public async Task<IEnumerable<Candlestick>> GetCandlesticksByCurrencyPairAsync(string currencyPair)
-    {
-        return await this.DbContext.Candlesticks
-            .Where(x => x.CurrencyPair == currencyPair)
-            .OrderBy(x => x.CurrencyPair)
-            .ThenByDescending(x => x.DateTime)
-            .Select(x => x.ToDomainObject())
-            .ToListAsync();
-    }
-
+    
     public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
     {
         return await this.DbContext.FuturesOrders
-            .Include(x => x.Candlestick)
-            .OrderBy(x => x.Candlestick.CurrencyPair)
+            .OrderBy(x => x.CurrencyPair)
             .OrderByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
             .ToListAsync();
@@ -109,9 +41,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair)
     {
         return await this.DbContext.FuturesOrders
-            .Include(x => x.Candlestick)
-            .Where(x => x.Candlestick.CurrencyPair == currencyPair)
-            .OrderBy(x => x.Candlestick.CurrencyPair)
+            .Where(x => x.CurrencyPair == currencyPair)
+            .OrderBy(x => x.CurrencyPair)
             .OrderByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
             .ToListAsync();

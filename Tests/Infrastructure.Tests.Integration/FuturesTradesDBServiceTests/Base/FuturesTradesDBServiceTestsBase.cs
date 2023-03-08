@@ -1,6 +1,4 @@
-﻿using Application.Data.Mapping;
-
-using Bybit.Net.Enums;
+﻿using Bybit.Net.Enums;
 
 using Domain.Models;
 
@@ -21,23 +19,15 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;
 
-
+    
     protected readonly Random Random = new Random();
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
-
-    protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
-        .RuleFor(c => c.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
-        .RuleFor(c => c.Date, f => f.Date.Recent(365))
-        .RuleFor(c => c.Open, f => f.Random.Decimal(1000, 1500))
-        .RuleFor(c => c.High, (f, c) => f.Random.Decimal(c.Open, c.Open + 100))
-        .RuleFor(c => c.Low, (f, c) => f.Random.Decimal(c.Open - 100, c.Open))
-        .RuleFor(c => c.Close, (f, c) => f.Random.Decimal(1000, 1500))
-        .RuleFor(c => c.Volume, f => f.Random.Decimal(100000, 300000));
     
     protected readonly Faker<FuturesOrder> FuturesOrderGenerator = new Faker<FuturesOrder>()
         .RuleFor(o => o.UniqueID, f => Guid.NewGuid())
+        .RuleFor(o => o.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.UpdateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())
@@ -77,38 +67,7 @@ public abstract class FuturesTradesDBServiceTestsBase
         await this.DbContext.Database.EnsureDeletedAsync();
     }
 
-
+    
     [TearDown]
-    public async Task TearDown() => await this.ClearDatabaseAsync();
-
-
-
-    protected static CurrencyPair GetRandomCurrencyPairExcept(Faker f, CurrencyPair currencyPair)
-    {
-        CurrencyPair newCurrencyPair;
-        do
-        {
-            newCurrencyPair = new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code);
-        }
-        while (newCurrencyPair == currencyPair);
-
-        return newCurrencyPair;
-    }
-    protected async Task InsertOneCandlestickAndMultipleFuturesOrdersAsync(Candlestick candlestick, List<FuturesOrder> futuresOrders)
-    {
-        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-
-        var candlesticksEntity = candlestick.ToDbEntity();
-        var futuresOrdersEntities = futuresOrders.Select(x => x.ToDbEntity()).ToList();
-
-        await this.DbContext.Candlesticks.AddAsync(candlesticksEntity);
-        await this.DbContext.SaveChangesAsync();
-        
-        futuresOrdersEntities.ForEach(x => x.CandlestickId = candlesticksEntity.Id);
-
-        this.DbContext.FuturesOrders.AddRange(futuresOrdersEntities);
-        await this.DbContext.SaveChangesAsync();
-
-        await transaction.CommitAsync();
-    }
+    public virtual async Task TearDown() => await this.ClearDatabaseAsync();
 }

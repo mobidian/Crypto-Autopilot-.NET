@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using Application.Data.Mapping;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
@@ -10,23 +10,17 @@ public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders_WhenFuturesOrdersExist()
     {
         // Arrange
-        var orders = new List<FuturesOrder>();
-        for (var i = 0; i < 10; i++)
-        {
-            var candlestick = this.CandlestickGenerator.Generate();
-            var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, candlestick.CurrencyPair).GenerateBetween(1, 5);
-            await this.InsertOneCandlestickAndMultipleFuturesOrdersAsync(candlestick, futuresOrders);
-
-            orders.AddRange(futuresOrders);
-        }
+        var futuresOrders = this.FuturesOrderGenerator.GenerateBetween(1, 5);
+        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()).ToArray());
+        await this.DbContext.SaveChangesAsync();
 
         // Act
         var retrievedFuturesOrders = await this.SUT.GetAllFuturesOrdersAsync();
-
+        
         // Assert
-        orders.ForEach(x => retrievedFuturesOrders.Should().ContainEquivalentOf(x));
+        futuresOrders.ForEach(x => retrievedFuturesOrders.Should().ContainEquivalentOf(x));
     }
-
+    
     [Test]
     public async Task GetAllFuturesOrders_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersExist()
     {

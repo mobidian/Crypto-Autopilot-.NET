@@ -6,10 +6,8 @@ namespace Application.Data.Entities;
 
 public class FuturesOrderDbEntity : BaseEntity
 {
-    public int CandlestickId { get; set; }
-    public virtual CandlestickDbEntity Candlestick { get; set; } = default!;
-    
     public required Guid UniqueID { get; set; }
+    public required string CurrencyPair { get; set; }
     public required DateTime CreateTime { get; set; }
     public required DateTime UpdateTime { get; set; }
     public required OrderSide Side { get; set; }
