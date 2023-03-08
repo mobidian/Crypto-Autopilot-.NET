@@ -6,6 +6,9 @@ namespace Application.Data.Entities;
 
 public class FuturesOrderDbEntity : BaseEntity
 {
+    public int? PositionId { get; set; }
+    public virtual FuturesPositionDbEntity? Position { get; set; }    
+
     public required Guid UniqueID { get; set; }
     public required string CurrencyPair { get; set; }
     public required DateTime CreateTime { get; set; }

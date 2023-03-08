@@ -22,6 +22,7 @@ public class FuturesTradingDbContext : DbContext
                     .ToList()
                     .ForEach(fk => fk.DeleteBehavior = DeleteBehavior.Restrict);
     }
-
+    
     public DbSet<FuturesOrderDbEntity> FuturesOrders { get; set; }
+    public DbSet<FuturesPositionDbEntity> FuturesPositions { get; set; }
 }
