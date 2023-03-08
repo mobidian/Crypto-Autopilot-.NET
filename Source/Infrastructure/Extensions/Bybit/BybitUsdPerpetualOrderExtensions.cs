@@ -7,7 +7,7 @@ namespace Infrastructure.Extensions.Bybit;
 
 public static class BybitUsdPerpetualOrderExtensions
 {
-    public static FuturesOrder ToDomainObject(BybitUsdPerpetualOrder perpetualOrder, PositionSide positionSide) => new FuturesOrder
+    public static FuturesOrder ToDomainObject(this BybitUsdPerpetualOrder perpetualOrder, PositionSide positionSide) => new FuturesOrder
     {
         UniqueID = Guid.Parse(perpetualOrder.Id),
         CurrencyPair = perpetualOrder.Symbol,
