@@ -1,5 +1,9 @@
-﻿using Application.Data.Mapping;
+﻿using System.Text;
+
+using Application.Data.Mapping;
 using Application.Interfaces.Services;
+
+using Bybit.Net.Enums;
 
 using Domain.Models;
 
@@ -16,18 +20,77 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public FuturesTradesDBService(FuturesTradingDbContext dbContext) => this.DbContext = dbContext;
 
 
-    public async Task AddFuturesOrdersAsync(params FuturesOrder[] FuturesOrders)
+    public async Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
-        _ = FuturesOrders ?? throw new ArgumentNullException(nameof(FuturesOrders));
-        
+        _ = futuresOrder ?? throw new ArgumentNullException(nameof(futuresOrder));
+        if (OrderShouldBeAssignedToPosition(futuresOrder) && positionId is null)
+        {
+            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+        else if (!OrderShouldBeAssignedToPosition(futuresOrder) && positionId is not null)
+        {
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+
 
         using var transaction = await this.BeginTransactionAsync();
+
+        var entity = futuresOrder.ToDbEntity();
+        if (positionId is not null)
+        {
+            var position = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+            entity.PositionId = position.Id;
+        }
+
+        await this.DbContext.FuturesOrders.AddAsync(entity);
+        await this.DbContext.SaveChangesAsync();
+    }
+    public async Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
+    {
+        _ = futuresOrders ?? throw new ArgumentNullException(nameof(futuresOrders));
+
+
+        var allShouldBeAssignedPosition = futuresOrders.All(OrderShouldBeAssignedToPosition);
+        var noneShouldBeAssignedPosition = futuresOrders.All(OrderShouldNotBeAssignedToPosition);
         
-        var futuresOrderDbEntities = FuturesOrders.Select(o => o.ToDbEntity());
+        // this check is here because all the specified orders should either be with a position or without a position 
+        if (!allShouldBeAssignedPosition && !noneShouldBeAssignedPosition)
+        {
+            var sb = new StringBuilder();
+            sb.Append("Some of the specified orders can be associated with a position while some cannot. ");
+            sb.Append("All the specified orders need to have the same requirements in terms of beeing associated with a position to add them in the database at once.");
+            throw new ArgumentException(sb.ToString(), nameof(futuresOrders));
+        }
+        
+        if (allShouldBeAssignedPosition && positionId is null)
+        {
+            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+        else if (noneShouldBeAssignedPosition && positionId is not null)
+        {
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+                
+
+
+        using var transaction = await this.BeginTransactionAsync();
+
+        var futuresOrderDbEntities = futuresOrders.Select(order => order.ToDbEntity());
+        if (positionId is not null)
+        {
+            var position = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+
+            foreach (var item in futuresOrderDbEntities)
+                item.PositionId = position.Id;
+        }
+
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
-
     public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
     {
         return await this.DbContext.FuturesOrders
@@ -45,15 +108,30 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .Select(x => x.ToDomainObject())
             .ToListAsync();
     }
-
-    public async Task UpdateFuturesOrderAsync(Guid uniqueID, FuturesOrder newFuturesOrderValue)
+    public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder newFuturesOrderValue, Guid? positionId = null)
     {
         _ = newFuturesOrderValue ?? throw new ArgumentNullException(nameof(newFuturesOrderValue));
+        if (OrderShouldBeAssignedToPosition(newFuturesOrderValue) && positionId is null)
+        {
+            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+        else if (!OrderShouldBeAssignedToPosition(newFuturesOrderValue) && positionId is not null)
+        {
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
 
 
         using var transaction = await this.BeginTransactionAsync();
 
-        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.BybitID == uniqueID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {uniqueID}");
+        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {bybitID}");
+        if (positionId is not null)
+        {
+            var position = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+            dbEntity.PositionId = position.Id;
+        }
+
         dbEntity.BybitID = newFuturesOrderValue.BybitID;
         dbEntity.CreateTime = newFuturesOrderValue.CreateTime;
         dbEntity.UpdateTime = newFuturesOrderValue.UpdateTime;
@@ -69,11 +147,28 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
         await this.DbContext.SaveChangesAsync();
     }
+    public async Task DeleteFuturesOrderAsync(Guid bybitID)
+    {
+        using var _ = await this.BeginTransactionAsync();
+
+        var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleAsync();
+        this.DbContext.Remove(order);
+        await this.DbContext.SaveChangesAsync();
+    }
 
 
-    /// <summary>
-    /// Begins a new transaction and returns a <see cref="TransactionalOperation"/> object which wraps the transaction
-    /// </summary>
-    /// <returns></returns>
-    private async Task<TransactionalOperation> BeginTransactionAsync() => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
+
+    private static bool OrderShouldBeAssignedToPosition(FuturesOrder futuresOrder)
+    {
+        var marketCreated = futuresOrder.Type == OrderType.Market && futuresOrder.Status == OrderStatus.Created;
+        var limitFilled = futuresOrder.Type == OrderType.Market && futuresOrder.Status == OrderStatus.Filled;
+        return marketCreated || limitFilled;
+    }
+    private static bool OrderShouldNotBeAssignedToPosition(FuturesOrder futuresOrder)
+    {
+        return !OrderShouldBeAssignedToPosition(futuresOrder);
+    }
+
+    private async Task<TransactionalOperation> BeginTransactionAsync()
+        => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
 }

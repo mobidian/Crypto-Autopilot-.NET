@@ -4,10 +4,10 @@ namespace Application.Interfaces.Services;
 
 public interface IFuturesTradesDBService
 {
-    public Task AddFuturesOrdersAsync(params FuturesOrder[] FuturesOrders);
-
+    public Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null);
+    public Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrder, Guid? positionId = null);
     public Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync();
     public Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair);
-
-    public Task UpdateFuturesOrderAsync(Guid uniqueID, FuturesOrder futuresOrder);
+    public Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder newFuturesOrderValue, Guid? positionId = null);
+    public Task DeleteFuturesOrderAsync(Guid bybitID);
 }

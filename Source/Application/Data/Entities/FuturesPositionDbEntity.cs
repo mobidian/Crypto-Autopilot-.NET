@@ -15,5 +15,5 @@ public class FuturesPositionDbEntity : BaseEntity
     public required decimal EntryPrice { get; set; }
     public required decimal? ExitPrice { get; set; }
     
-    public IEnumerable<FuturesOrderDbEntity> FuturesOrders { get; set; } = Enumerable.Empty<FuturesOrderDbEntity>();
+    public IEnumerable<FuturesOrderDbEntity> FuturesOrders { get; set; } = default!;
 }

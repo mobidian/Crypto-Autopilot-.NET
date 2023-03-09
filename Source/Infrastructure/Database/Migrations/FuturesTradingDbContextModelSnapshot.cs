@@ -167,7 +167,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FuturesPositions");
+                    b.ToTable("FuturesPositions", (string)null);
                 });
 
             modelBuilder.Entity("Application.Data.Entities.FuturesOrderDbEntity", b =>
