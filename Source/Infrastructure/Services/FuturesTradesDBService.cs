@@ -151,8 +151,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task DeleteFuturesOrderAsync(Guid bybitID)
     {
         using var _ = await this.BeginTransactionAsync();
-
-        var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleAsync();
+        
+        var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
         this.DbContext.Remove(order);
         await this.DbContext.SaveChangesAsync();
     }
