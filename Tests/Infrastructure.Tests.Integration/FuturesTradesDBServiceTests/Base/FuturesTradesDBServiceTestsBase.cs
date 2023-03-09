@@ -19,27 +19,80 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;
 
-    
-    protected readonly Random Random = new Random();
+
+    protected readonly Faker Faker = new Faker();
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
     
+    protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
+        .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
+        .RuleFor(p => p.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
+        .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000))
+        .RuleFor(p => p.Leverage, f => f.Random.Decimal(0, 100))
+        .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000))
+        .RuleSet("Long", set =>
+        {
+            set.RuleFor(p => p.Side, PositionSide.Buy);
+            set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
+            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice + 3000));
+        })
+        .RuleSet("Short", set =>
+        {
+            set.RuleFor(p => p.Side, PositionSide.Sell);
+            set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
+            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice - 3000));
+        });
+
     protected readonly Faker<FuturesOrder> FuturesOrderGenerator = new Faker<FuturesOrder>()
         .RuleFor(o => o.BybitID, f => Guid.NewGuid())
         .RuleFor(o => o.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
-        .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
-        .RuleFor(o => o.UpdateTime, f => f.Date.Recent(365))
-        .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())
-        .RuleFor(o => o.PositionSide, f => f.Random.Enum<PositionSide>())
-        .RuleFor(o => o.Type, f => f.Random.Enum<OrderType>())
-        .RuleFor(o => o.Price, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.Quantity, f => f.Random.Decimal(0, 10))
-        .RuleFor(o => o.StopLoss, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.TakeProfit, f => f.Random.Decimal(0, 1000))
-        .RuleFor(o => o.TimeInForce, f => f.Random.Enum<TimeInForce>())
-        .RuleFor(o => o.Status, f => f.Random.Enum<OrderStatus>());
-    
+        .RuleFor(o => o.CreateTime, f => f.Date.Past(1))
+        .RuleFor(o => o.UpdateTime, (f, p) => p.CreateTime.AddHours(f.Random.Int(0, 12)))
+        .RuleFor(o => o.Price, f => f.Random.Decimal(5000, 15000))
+        .RuleFor(o => o.Quantity, f => f.Random.Decimal(100, 300))
+        .RuleFor(o => o.Status, OrderStatus.Created)
+        .RuleSet("Market Buy", set =>
+        {
+            set.RuleFor(o => o.Type, OrderType.Market);
+            set.RuleFor(o => o.Side, f => OrderSide.Buy);
+            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
+            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
+            set.RuleFor(o => o.TimeInForce, f => TimeInForce.ImmediateOrCancel);
+
+        })
+        .RuleSet("Market Sell", set =>
+        {
+            set.RuleFor(o => o.Type, OrderType.Market);
+            set.RuleFor(o => o.Side, f => OrderSide.Sell);
+            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
+            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
+            set.RuleFor(o => o.TimeInForce, f => TimeInForce.ImmediateOrCancel);
+        })
+        .RuleSet("Limit Buy", set =>
+        {
+            set.RuleFor(o => o.Type, OrderType.Limit);
+            set.RuleFor(o => o.Side, f => OrderSide.Buy);
+            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
+            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
+            set.RuleFor(o => o.TimeInForce, f => TimeInForce.GoodTillCanceled);
+        })
+        .RuleSet("Sell Buy", set =>
+        {
+            set.RuleFor(o => o.Type, OrderType.Limit);
+            set.RuleFor(o => o.Side, f => OrderSide.Sell);
+            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
+            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
+            set.RuleFor(o => o.TimeInForce, f => TimeInForce.GoodTillCanceled);
+        })
+        .RuleSet("Long", set =>
+        {
+            set.RuleFor(o => o.PositionSide, f => PositionSide.Buy);
+        })
+        .RuleSet("Short", set =>
+        {
+            set.RuleFor(o => o.PositionSide, f => PositionSide.Sell);
+        });
     
     private Respawner DbRespawner;
     protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
@@ -52,7 +105,7 @@ public abstract class FuturesTradesDBServiceTestsBase
         var optionsBuilder = new DbContextOptionsBuilder();
         optionsBuilder.UseSqlServer(this.ConnectionString);
         this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
-        
+
         await this.DbContext.Database.EnsureCreatedAsync();
 
         this.SUT = new FuturesTradesDBService(this.DbContext);
@@ -67,7 +120,25 @@ public abstract class FuturesTradesDBServiceTestsBase
         await this.DbContext.Database.EnsureDeletedAsync();
     }
 
-    
+
     [TearDown]
     public virtual async Task TearDown() => await this.ClearDatabaseAsync();
+    
+    
+    
+    protected static IEnumerable<string> GetOrdersThatShouldHaveForeignKey()
+    {
+        yield return "Market Buy, Long";
+        yield return "Market Buy, Short";
+        yield return "Market Sell, Long";
+        yield return "Market Sell, Short";
+    }
+    protected static IEnumerable<string> GetOrdersThatShouldNotHaveForeignKey()
+    {
+        yield return "Limit Buy, Long";
+        yield return "Limit Buy, Short";
+        yield return "Limit Sell, Long";
+        yield return "Limit Buy, Short";
+    }
 }
+ 

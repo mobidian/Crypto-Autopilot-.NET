@@ -64,6 +64,6 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
     private async Task AddCandlestickAndFuturesOrdersInTheDatabaseAsync(Candlestick randomCandlestick, List<FuturesOrder> randomFuturesOrders)
     {
         foreach (var randomFuturesOrder in randomFuturesOrders)
-            await this.FuturesTradesDBService.AddFuturesOrdersAsync(randomFuturesOrder);
+            await this.FuturesTradesDBService.AddFuturesOrderAsync(randomFuturesOrder);
     }
 }
