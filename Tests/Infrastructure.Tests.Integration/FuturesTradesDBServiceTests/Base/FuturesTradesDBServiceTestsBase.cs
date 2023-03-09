@@ -98,7 +98,7 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
 
 
-
+    
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
@@ -125,20 +125,15 @@ public abstract class FuturesTradesDBServiceTestsBase
     public virtual async Task TearDown() => await this.ClearDatabaseAsync();
     
     
-    
-    protected static IEnumerable<string> GetOrdersThatShouldHaveForeignKey()
+     
+    protected static IEnumerable<string> GetRuleSetsForMarketOrders()
     {
-        yield return "Market Buy, Long";
-        yield return "Market Buy, Short";
-        yield return "Market Sell, Long";
-        yield return "Market Sell, Short";
+        yield return "Market Buy";
+        yield return "Market Sell";
     }
-    protected static IEnumerable<string> GetOrdersThatShouldNotHaveForeignKey()
+    protected static IEnumerable<string> GetRuleSetsForLimitOrders()
     {
-        yield return "Limit Buy, Long";
-        yield return "Limit Buy, Short";
-        yield return "Limit Sell, Long";
-        yield return "Limit Buy, Short";
+        yield return "Limit Buy";
+        yield return "Limit Sell";
     }
 }
- 

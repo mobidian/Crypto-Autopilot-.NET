@@ -108,15 +108,15 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .Select(x => x.ToDomainObject())
             .ToListAsync();
     }
-    public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder newFuturesOrderValue, Guid? positionId = null)
+    public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
-        _ = newFuturesOrderValue ?? throw new ArgumentNullException(nameof(newFuturesOrderValue));
-        if (OrderShouldBeAssignedToPosition(newFuturesOrderValue) && positionId is null)
+        _ = updatedFuturesOrder ?? throw new ArgumentNullException(nameof(updatedFuturesOrder));
+        if (OrderShouldBeAssignedToPosition(updatedFuturesOrder) && positionId is null)
         {
             var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-        else if (!OrderShouldBeAssignedToPosition(newFuturesOrderValue) && positionId is not null)
+        else if (!OrderShouldBeAssignedToPosition(updatedFuturesOrder) && positionId is not null)
         {
             var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
@@ -131,19 +131,20 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             var position = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
             dbEntity.PositionId = position.Id;
         }
-
-        dbEntity.BybitID = newFuturesOrderValue.BybitID;
-        dbEntity.CreateTime = newFuturesOrderValue.CreateTime;
-        dbEntity.UpdateTime = newFuturesOrderValue.UpdateTime;
-        dbEntity.Side = newFuturesOrderValue.Side;
-        dbEntity.PositionSide = newFuturesOrderValue.PositionSide;
-        dbEntity.Type = newFuturesOrderValue.Type;
-        dbEntity.Price = newFuturesOrderValue.Price;
-        dbEntity.Quantity = newFuturesOrderValue.Quantity;
-        dbEntity.StopLoss = newFuturesOrderValue.StopLoss;
-        dbEntity.TakeProfit = newFuturesOrderValue.TakeProfit;
-        dbEntity.TimeInForce = newFuturesOrderValue.TimeInForce;
-        dbEntity.Status = newFuturesOrderValue.Status;
+        
+        dbEntity.CurrencyPair = updatedFuturesOrder.CurrencyPair.Name;
+        dbEntity.BybitID = updatedFuturesOrder.BybitID;
+        dbEntity.CreateTime = updatedFuturesOrder.CreateTime;
+        dbEntity.UpdateTime = updatedFuturesOrder.UpdateTime;
+        dbEntity.Side = updatedFuturesOrder.Side;
+        dbEntity.PositionSide = updatedFuturesOrder.PositionSide;
+        dbEntity.Type = updatedFuturesOrder.Type;
+        dbEntity.Price = updatedFuturesOrder.Price;
+        dbEntity.Quantity = updatedFuturesOrder.Quantity;
+        dbEntity.StopLoss = updatedFuturesOrder.StopLoss;
+        dbEntity.TakeProfit = updatedFuturesOrder.TakeProfit;
+        dbEntity.TimeInForce = updatedFuturesOrder.TimeInForce;
+        dbEntity.Status = updatedFuturesOrder.Status;
 
         await this.DbContext.SaveChangesAsync();
     }

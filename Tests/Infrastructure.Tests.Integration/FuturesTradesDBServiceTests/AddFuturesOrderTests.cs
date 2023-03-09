@@ -9,7 +9,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldNotHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
     public async Task AddFuturesOrderWithoutPositionGuid_ShouldAddFuturesOrder_WhenOrderShouldNotPointToPosition(string ruleSets)
     {
         // Arrange
@@ -23,7 +23,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
         
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForMarketOrders))]
     public async Task AddFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition(string ruleSets)
     {
         // Arrange
@@ -39,7 +39,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
     
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForMarketOrders))]
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrder_WhenOrderRequiresPosition(string ruleSets)
     {
         // Arrange
@@ -56,7 +56,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
 
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldNotHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
     public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition(string ruleSets)
     {
         // Arrange

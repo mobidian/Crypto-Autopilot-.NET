@@ -15,7 +15,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldNotHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
     public async Task AddFuturesOrdersWithoutPositionGuid_ShouldAddFuturesOrders_WhenAllOrdersShouldNotPointToPosition(string ruleSets)
     {
         // Arrange
@@ -29,7 +29,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     }
     
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForMarketOrders))]
     public async Task AddFuturesOrdersWithoutPositionGuid_ShouldThrow_WhenAllOrdersRequirePosition(string ruleSets)
     {
         // Arrange
@@ -45,7 +45,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 
     
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForMarketOrders))]
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrders_WhenAllFuturesOrdersRequirePosition(string ruleSets)
     {
         // Arrange
@@ -62,7 +62,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     }
     
     [Test]
-    [TestCaseSource(nameof(GetOrdersThatShouldNotHaveForeignKey))]
+    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
     public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenAllFuturesOrdersShouldNotPointToPosition(string ruleSets)
     {
         // Arrange
@@ -84,8 +84,8 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesOrder_ShouldThrow_WhenInputIsInconsistent()
     {
         // Arrange
-        var orders1 = GetOrdersThatShouldHaveForeignKey().Select(ruleset => this.FuturesOrderGenerator.Generate($"default, {ruleset}"));
-        var orders2 = GetOrdersThatShouldNotHaveForeignKey().Select(ruleset => this.FuturesOrderGenerator.Generate($"default, {ruleset}"));
+        var orders1 = GetRuleSetsForMarketOrders().Select(ruleset => this.FuturesOrderGenerator.Generate($"default, {ruleset}"));
+        var orders2 = GetRuleSetsForLimitOrders().Select(ruleset => this.FuturesOrderGenerator.Generate($"default, {ruleset}"));
         var orders = orders1.ToList();
         orders.AddRange(orders2);
 
