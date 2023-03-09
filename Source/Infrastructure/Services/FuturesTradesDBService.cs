@@ -7,8 +7,12 @@ using Bybit.Net.Enums;
 
 using Domain.Models;
 
+using FluentValidation;
+using FluentValidation.Results;
+
 using Infrastructure.Database.Contexts;
 using Infrastructure.Database.Internal;
+using Infrastructure.Validators;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -16,24 +20,32 @@ namespace Infrastructure.Services;
 
 public class FuturesTradesDBService : IFuturesTradesDBService
 {
+    private static readonly FuturesOrderValidator OrderValidator = new();
+    private static readonly FuturesPositionValidator PositionValidator = new();
+    
     private readonly FuturesTradingDbContext DbContext;
-    public FuturesTradesDBService(FuturesTradingDbContext dbContext) => this.DbContext = dbContext;
-
+    public FuturesTradesDBService(FuturesTradingDbContext dbContext)
+    {
+        this.DbContext = dbContext;
+    }
+    
 
     public async Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
         _ = futuresOrder ?? throw new ArgumentNullException(nameof(futuresOrder));
-        if (OrderShouldBeAssignedToPosition(futuresOrder) && positionId is null)
+       
+        var validaiton = OrderNeedsPosition(futuresOrder);
+        if (validaiton.IsValid && positionId is null)
         {
-            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
+            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.", new ValidationException(validaiton.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-        else if (!OrderShouldBeAssignedToPosition(futuresOrder) && positionId is not null)
+        else if (!validaiton.IsValid && positionId is not null)
         {
-            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.", new ValidationException(validaiton.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-
+        
 
         using var transaction = await this.BeginTransactionAsync();
 
@@ -52,8 +64,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         _ = futuresOrders ?? throw new ArgumentNullException(nameof(futuresOrders));
 
 
-        var allShouldBeAssignedPosition = futuresOrders.All(OrderShouldBeAssignedToPosition);
-        var noneShouldBeAssignedPosition = futuresOrders.All(OrderShouldNotBeAssignedToPosition);
+        var allShouldBeAssignedPosition = futuresOrders.All(x => OrderNeedsPosition(x).IsValid);
+        var noneShouldBeAssignedPosition = futuresOrders.All(x => OrderShouldNotHavePosition(x).IsValid);
         
         // this check is here because all the specified orders should either be with a position or without a position 
         if (!allShouldBeAssignedPosition && !noneShouldBeAssignedPosition)
@@ -111,14 +123,16 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
         _ = updatedFuturesOrder ?? throw new ArgumentNullException(nameof(updatedFuturesOrder));
-        if (OrderShouldBeAssignedToPosition(updatedFuturesOrder) && positionId is null)
+        
+        var validation = OrderNeedsPosition(updatedFuturesOrder);
+        if (validation.IsValid && positionId is null)
         {
-            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
+            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.", new ValidationException(validation.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-        else if (!OrderShouldBeAssignedToPosition(updatedFuturesOrder) && positionId is not null)
+        else if (!validation.IsValid && positionId is not null)
         {
-            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.", new ValidationException(validation.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
 
@@ -158,16 +172,14 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     }
 
 
-
-    private static bool OrderShouldBeAssignedToPosition(FuturesOrder futuresOrder)
+    
+    private static ValidationResult OrderNeedsPosition(FuturesOrder futuresOrder)
     {
-        var marketCreated = futuresOrder.Type == OrderType.Market && futuresOrder.Status == OrderStatus.Created;
-        var limitFilled = futuresOrder.Type == OrderType.Market && futuresOrder.Status == OrderStatus.Filled;
-        return marketCreated || limitFilled;
+        return OrderValidator.Validate(futuresOrder, x => x.IncludeRuleSets("Type Market", "Status Created"));
     }
-    private static bool OrderShouldNotBeAssignedToPosition(FuturesOrder futuresOrder)
+    private static ValidationResult OrderShouldNotHavePosition(FuturesOrder futuresOrder)
     {
-        return !OrderShouldBeAssignedToPosition(futuresOrder);
+        return OrderValidator.Validate(futuresOrder, x => x.IncludeRuleSets("Type Limit", "Status Created"));
     }
 
     private async Task<TransactionalOperation> BeginTransactionAsync()

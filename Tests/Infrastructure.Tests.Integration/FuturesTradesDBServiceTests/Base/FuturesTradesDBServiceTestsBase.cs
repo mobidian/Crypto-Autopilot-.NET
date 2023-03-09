@@ -77,7 +77,7 @@ public abstract class FuturesTradesDBServiceTestsBase
             set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
             set.RuleFor(o => o.TimeInForce, f => TimeInForce.GoodTillCanceled);
         })
-        .RuleSet("Sell Buy", set =>
+        .RuleSet("Limit Sell", set =>
         {
             set.RuleFor(o => o.Type, OrderType.Limit);
             set.RuleFor(o => o.Side, f => OrderSide.Sell);

@@ -33,8 +33,10 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order);
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
+            .WithInnerExceptionExactly<ArgumentException>().WithMessage("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.")
+            .WithInnerExceptionExactly<FluentValidation.ValidationException>();
     }
 
     
@@ -69,7 +71,9 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
         
         // Assert
-        (await func.Should().ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage("Only a created market order or a filled limit order can be associated with a position.");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
+            .WithInnerExceptionExactly<ArgumentException>().WithMessage("Only a created market order or a filled limit order can be associated with a position.")
+            .WithInnerExceptionExactly<FluentValidation.ValidationException>(); 
     }
 }
