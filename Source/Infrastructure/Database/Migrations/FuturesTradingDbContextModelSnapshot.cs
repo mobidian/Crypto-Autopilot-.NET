@@ -30,6 +30,10 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<Guid>("BybitID")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Unique ID");
+
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
 
@@ -96,19 +100,15 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(32)")
                         .HasColumnName("Order Type");
 
-                    b.Property<Guid>("UniqueID")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("Unique ID");
-
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PositionId");
-
-                    b.HasIndex("UniqueID")
+                    b.HasIndex("BybitID")
                         .IsUnique();
+
+                    b.HasIndex("PositionId");
 
                     b.ToTable("FuturesOrders", (string)null);
 
@@ -131,6 +131,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CryptoAutopilotId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CurrencyPair")
                         .IsRequired()

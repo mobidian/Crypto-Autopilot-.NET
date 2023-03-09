@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -27,6 +28,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CryptoAutopilotId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CurrencyPair = table.Column<string>(name: "Currency Pair", type: "nvarchar(max)", nullable: false),
                     Side = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     Margin = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),

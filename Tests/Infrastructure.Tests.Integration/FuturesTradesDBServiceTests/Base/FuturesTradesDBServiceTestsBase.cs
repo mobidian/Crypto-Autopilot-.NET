@@ -26,7 +26,7 @@ public abstract class FuturesTradesDBServiceTestsBase
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
     
     protected readonly Faker<FuturesOrder> FuturesOrderGenerator = new Faker<FuturesOrder>()
-        .RuleFor(o => o.UniqueID, f => Guid.NewGuid())
+        .RuleFor(o => o.BybitID, f => Guid.NewGuid())
         .RuleFor(o => o.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.UpdateTime, f => f.Date.Recent(365))

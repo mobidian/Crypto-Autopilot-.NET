@@ -16,7 +16,6 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public FuturesTradesDBService(FuturesTradingDbContext dbContext) => this.DbContext = dbContext;
 
 
-
     public async Task AddFuturesOrdersAsync(params FuturesOrder[] FuturesOrders)
     {
         _ = FuturesOrders ?? throw new ArgumentNullException(nameof(FuturesOrders));
@@ -29,7 +28,6 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         await this.DbContext.SaveChangesAsync();
     }
 
-    
     public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
     {
         return await this.DbContext.FuturesOrders
@@ -48,7 +46,6 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .ToListAsync();
     }
 
-
     public async Task UpdateFuturesOrderAsync(Guid uniqueID, FuturesOrder newFuturesOrderValue)
     {
         _ = newFuturesOrderValue ?? throw new ArgumentNullException(nameof(newFuturesOrderValue));
@@ -56,8 +53,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
         using var transaction = await this.BeginTransactionAsync();
 
-        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.UniqueID == uniqueID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {uniqueID}");
-        dbEntity.UniqueID = newFuturesOrderValue.UniqueID;
+        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.BybitID == uniqueID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {uniqueID}");
+        dbEntity.BybitID = newFuturesOrderValue.BybitID;
         dbEntity.CreateTime = newFuturesOrderValue.CreateTime;
         dbEntity.UpdateTime = newFuturesOrderValue.UpdateTime;
         dbEntity.Side = newFuturesOrderValue.Side;
@@ -72,7 +69,6 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
         await this.DbContext.SaveChangesAsync();
     }
-
 
 
     /// <summary>

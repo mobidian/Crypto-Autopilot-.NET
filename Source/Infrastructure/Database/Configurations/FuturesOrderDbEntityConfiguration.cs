@@ -11,7 +11,7 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
 {
     public void Configure(EntityTypeBuilder<FuturesOrderDbEntity> builder)
     {
-        builder.Property(x => x.UniqueID).HasColumnName("Unique ID");
+        builder.Property(x => x.BybitID).HasColumnName("Unique ID");
 
         builder.Property(x => x.Side)
                .HasConversion(@enum => @enum == OrderSide.Buy ? "Buy" : "Sell", @string => @string == "Buy" ? OrderSide.Buy : OrderSide.Sell)
@@ -44,7 +44,7 @@ public class FuturesOrderDbEntityConfiguration : IEntityTypeConfiguration<Future
                .HasColumnName("Order Status");
 
 
-        builder.HasIndex(x => x.UniqueID).IsUnique();
+        builder.HasIndex(x => x.BybitID).IsUnique();
 
         
         builder.ToTable("FuturesOrders", tableBuilder => tableBuilder.IsTemporal());

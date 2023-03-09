@@ -2,12 +2,11 @@
 
 using Bybit.Net.Enums;
 
-using Domain.Models;
-
 namespace Application.Data.Entities;
 
 public class FuturesPositionDbEntity : BaseEntity
 {
+    public required Guid CryptoAutopilotId { get; init; }
     public required string CurrencyPair { get; set; }
     public required PositionSide Side { get; set; }
     public required decimal Margin { get; set; }

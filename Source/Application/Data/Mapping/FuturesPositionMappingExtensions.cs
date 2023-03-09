@@ -8,6 +8,7 @@ public static class FuturesPositionMappingExtensions
 {
     public static FuturesPositionDbEntity ToDbEntity(this FuturesPosition position) => new FuturesPositionDbEntity
     {
+        CryptoAutopilotId = position.CryptoAutopilotId,
         CurrencyPair = position.CurrencyPair.Name,
         Side = position.Side,
         Margin = position.Margin,
@@ -19,6 +20,7 @@ public static class FuturesPositionMappingExtensions
     
     public static FuturesPosition ToDomainObject(this FuturesPositionDbEntity entity) => new FuturesPosition
     {
+        CryptoAutopilotId = entity.CryptoAutopilotId,
         CurrencyPair = entity.CurrencyPair,
         Side = entity.Side,
         Margin = entity.Margin,

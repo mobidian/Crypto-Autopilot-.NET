@@ -8,7 +8,7 @@ public static class FuturesOrderMappingExtensions
 {
     public static FuturesOrderDbEntity ToDbEntity(this FuturesOrder futuresOrder) => new FuturesOrderDbEntity
     {
-        UniqueID = futuresOrder.UniqueID,
+        BybitID = futuresOrder.BybitID,
         CurrencyPair = futuresOrder.CurrencyPair.Name,
         CreateTime = futuresOrder.CreateTime,
         UpdateTime = futuresOrder.UpdateTime,
@@ -25,7 +25,7 @@ public static class FuturesOrderMappingExtensions
     
     public static FuturesOrder ToDomainObject(this FuturesOrderDbEntity entity) => new FuturesOrder
     {
-        UniqueID = entity.UniqueID,
+        BybitID = entity.BybitID,
         CurrencyPair = entity.CurrencyPair,
         CreateTime = entity.CreateTime,
         UpdateTime = entity.UpdateTime,

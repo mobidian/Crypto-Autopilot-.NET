@@ -39,7 +39,7 @@ public abstract class GeneralEndpointsTestsBase
         .RuleFor(c => c.Volume, f => Math.Round(f.Random.Decimal(100000, 300000), precision));
 
     protected readonly Faker<FuturesOrder> FuturesOrderGenerator = new Faker<FuturesOrder>()
-        .RuleFor(o => o.UniqueID, f => Guid.NewGuid())
+        .RuleFor(o => o.BybitID, f => Guid.NewGuid())
         .RuleFor(o => o.CreateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.UpdateTime, f => f.Date.Recent(365))
         .RuleFor(o => o.Side, f => f.Random.Enum<OrderSide>())

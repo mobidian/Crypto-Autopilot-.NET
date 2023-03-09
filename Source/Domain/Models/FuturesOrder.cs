@@ -4,7 +4,7 @@ namespace Domain.Models;
 
 public class FuturesOrder
 {
-    public required Guid UniqueID { get; init; }
+    public required Guid BybitID { get; init; }
     public required CurrencyPair CurrencyPair { get; init; }
     public required DateTime CreateTime { get; init; }
     public required DateTime UpdateTime { get; init; }
