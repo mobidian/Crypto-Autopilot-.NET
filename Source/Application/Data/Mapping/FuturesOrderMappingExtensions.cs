@@ -17,8 +17,8 @@ public static class FuturesOrderMappingExtensions
         Type = futuresOrder.Type,
         Price = futuresOrder.Price,
         Quantity = futuresOrder.Quantity,
-        StopLoss = futuresOrder.StopLoss!.Value,
-        TakeProfit = futuresOrder.TakeProfit!.Value,
+        StopLoss = futuresOrder.StopLoss,
+        TakeProfit = futuresOrder.TakeProfit,
         TimeInForce = futuresOrder.TimeInForce,
         Status = futuresOrder.Status,
     };
@@ -34,8 +34,8 @@ public static class FuturesOrderMappingExtensions
         Type = entity.Type,
         Price = entity.Price,
         Quantity = entity.Quantity,
-        StopLoss = entity.StopLoss!.Value,
-        TakeProfit = entity.TakeProfit!.Value,
+        StopLoss = entity.StopLoss,
+        TakeProfit = entity.TakeProfit,
         TimeInForce = entity.TimeInForce,
         Status = entity.Status,
     };
