@@ -8,6 +8,9 @@ namespace Infrastructure.Validators;
 
 public class FuturesPositionValidator : AbstractValidator<FuturesPosition>
 {
+    public const string Long = "Long";
+    public const string Short = "Short";
+    
     public FuturesPositionValidator()
     {
         this.RuleFor(x => x.CryptoAutopilotId).NotEqual(Guid.Empty);
@@ -18,13 +21,13 @@ public class FuturesPositionValidator : AbstractValidator<FuturesPosition>
         this.RuleFor(x => x.EntryPrice).GreaterThanOrEqualTo(0);
         this.RuleFor(x => x.ExitPrice).GreaterThanOrEqualTo(0).Unless(x => x.ExitPrice is null);
 
-        this.RuleSet("Long", () =>
+        this.RuleSet(Long, () =>
         {
             this.RuleFor(x => x.Side).Equal(PositionSide.Buy);
             this.RuleFor(x => x.ExitPrice).GreaterThanOrEqualTo(x => x.EntryPrice);
         });
         
-        this.RuleSet("Short", () =>
+        this.RuleSet(Short, () =>
         {
             this.RuleFor(x => x.Side).Equal(PositionSide.Sell);
             this.RuleFor(x => x.ExitPrice).LessThanOrEqualTo(x => x.EntryPrice);

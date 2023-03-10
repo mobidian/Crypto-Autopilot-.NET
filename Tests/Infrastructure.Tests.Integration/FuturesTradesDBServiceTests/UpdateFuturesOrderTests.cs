@@ -11,15 +11,14 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
-    public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldUpdateFuturesOrder_WhenOrderShouldNotPointToPosition(string ruleSets)
+    public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldUpdateFuturesOrder_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {ruleSets}");
+        var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}");
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
-
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {ruleSets}");
+        
+        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {LimitOrder}, {SideBuy}");
 
 
         // Act
@@ -31,18 +30,16 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     }
 
     [Test]
-    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
-    public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition(string ruleSets)
+    public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {ruleSets}");
+        var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}");
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
         var updatedOrder = this.FuturesOrderGenerator.Clone()
             .RuleFor(x => x.BybitID, order.BybitID)
-            .RuleFor(x => x.BybitID, order.BybitID)
-            .Generate($"default, {this.Faker.PickRandom(GetRuleSetsForMarketOrders())}");
+            .Generate($"default, {MarketOrder}, {SideBuy}");
 
         
         // Act
@@ -58,17 +55,16 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
     [Test]
-    [TestCaseSource(nameof(GetRuleSetsForMarketOrders))]
-    public async Task UpdateFuturesOrderWithPositionGuid_ShouldUpdateFuturesOrder_WhenOrderRequiresPosition(string ruleSets)
+    public async Task UpdateFuturesOrderWithPositionGuid_ShouldUpdateFuturesOrder_WhenOrderRequiresPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {ruleSets}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {ruleSets.Split(',').Last().Trim()}");
+        var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
         await InsertRelatedPositionAndOrderAsync(position, order);
 
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {ruleSets}");
+        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
 
-
+        
         // Act
         await this.SUT.UpdateFuturesOrderAsync(updatedOrder.BybitID, updatedOrder, position.CryptoAutopilotId);
 
@@ -79,31 +75,30 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     private async Task InsertRelatedPositionAndOrderAsync(FuturesPosition position, FuturesOrder order)
     {
         using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-
-        await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
-
+        
+        
         var orderEntity = order.ToDbEntity();
-        orderEntity.Position = this.DbContext.FuturesPositions.Single(x => x.CryptoAutopilotId == position.CryptoAutopilotId);
+        orderEntity.Position = position.ToDbEntity();
+        
         await this.DbContext.FuturesOrders.AddAsync(orderEntity);
         await this.DbContext.SaveChangesAsync();
+        
 
         await transaction.CommitAsync();
     }
-
+    
     [Test]
-    [TestCaseSource(nameof(GetRuleSetsForLimitOrders))]
-    public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition(string ruleSets)
+    public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {ruleSets}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {ruleSets.Split(',').Last().Trim()}");
+        var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
 
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
-
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {ruleSets}");
+        
+        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {LimitOrder}, {SideBuy}");
 
 
         // Act
@@ -115,5 +110,27 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
             .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
             .WithInnerException<ArgumentException>().WithMessage("Only a created market order or a filled limit order can be associated with a position.")
             .WithInnerExceptionExactly<FluentValidation.ValidationException>();
+    }
+
+
+    [Test]
+    public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenTheOrderPositionSideDoesNotMatchThePositionSide()
+    {
+        // Arrange
+        var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        await InsertRelatedPositionAndOrderAsync(position, order);
+
+        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");
+        
+
+        // Act
+        var func = async () => await this.SUT.UpdateFuturesOrderAsync(updatedOrder.BybitID, updatedOrder, position.CryptoAutopilotId);
+
+
+        // Assert
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
+            .WithInnerException<ArgumentException>().WithMessage($"The position side of the order did not match the side of the position with CryptoAutopilotId {position.CryptoAutopilotId}");
     }
 }
