@@ -178,8 +178,43 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         this.DbContext.Remove(order);
         await this.DbContext.SaveChangesAsync();
     }
-
     
+    public async Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders)
+    {
+        _ = position ?? throw new ArgumentNullException(nameof(position));
+        _ = futuresOrders ?? throw new ArgumentNullException(nameof(futuresOrders));
+
+
+        PositionRequirementConsistentForAllOrders(futuresOrders, out var allNeedPosition, out var noneNeedPosition);
+
+        if (noneNeedPosition)
+        {
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+        else if (allNeedPosition && futuresOrders.First().PositionSide != position.Side)
+        {
+            var innerException = new ArgumentException("The position side of the specified orders does not match the side of the specified position");
+            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+        }
+        
+
+
+        var positionDbEntity = position.ToDbEntity();
+        var ordersDbEntities = futuresOrders.Select(x =>
+        {
+            var entity = x.ToDbEntity();
+            entity.Position = positionDbEntity;
+            return entity;
+        });
+
+        
+        using var transaction = await this.BeginTransactionAsync();
+        
+        await this.DbContext.FuturesOrders.AddRangeAsync(ordersDbEntities);
+        await this.DbContext.SaveChangesAsync();
+    }
+
 
     private static Task<ValidationResult> ValidateOrderNeedsPositionAsync(FuturesOrder futuresOrder)
     {
