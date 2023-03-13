@@ -11,7 +11,7 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    public async Task AddFuturesPosition_ShouldAddFuturesPositionAndOrders_WhenInputIsValid()
+    public async Task AddFuturesPosition_ShouldAddFuturesPositionAndOrders_WhenAllFuturesOrdersRequirePosition()
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
@@ -24,25 +24,9 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         this.DbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
         this.DbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
     }
-
-    [Test]
-    public async Task AddFuturesPosition_ShouldThrow_WhenAllFuturesOrdersShouldNotPointToPosition()
-    {
-        // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}");
-        
-        // Act
-        var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
-        
-        // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<ArgumentException>().WithMessage("Only a created market order or a filled limit order can be associated with a position.");
-    }
     
     [Test]
-    public async Task AddFuturesPosition_ShouldThrow_WhenNotAllOrdersRequirePosition()
+    public async Task AddFuturesPosition_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition()
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
@@ -54,13 +38,14 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
 
         // Act
         var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
-        
+
         // Assert
-        var sb = new StringBuilder();
-        sb.Append("Some of the specified orders can be associated with a position while some cannot. ");
-        sb.Append("All the specified orders need to have the same requirements in terms of beeing associated with a position to add them in the database at once.");
-        await func.Should().ThrowExactlyAsync<ArgumentException>().WithMessage($"{sb} (Parameter 'futuresOrders')");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
+            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have opened a position");
     }
+
 
     [Test]
     public async Task AddFuturesPosition_ShouldThrow_WhenNotAllOrdersRequireTheSamePositionSide()
@@ -75,13 +60,14 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         
         // Act
         var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
-        
+
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<ArgumentException>().WithMessage("Not all orders have the same position side");
+            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have the same position side");
     }
-
+    
     [Test]
     public async Task AddFuturesPosition_ShouldThrow_WhenThePositionSideOfTheOrdersDoesNotMatchThePositionSide()
     {

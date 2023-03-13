@@ -4,7 +4,7 @@ using Domain.Models;
 
 using FluentValidation;
 
-namespace Infrastructure.Validators;
+namespace Application.Data.Validation;
 
 public class FuturesPositionValidator : AbstractValidator<FuturesPosition>
 {
@@ -20,17 +20,8 @@ public class FuturesPositionValidator : AbstractValidator<FuturesPosition>
         this.RuleFor(x => x.Quantity).GreaterThanOrEqualTo(0);
         this.RuleFor(x => x.EntryPrice).GreaterThanOrEqualTo(0);
         this.RuleFor(x => x.ExitPrice).GreaterThanOrEqualTo(0).Unless(x => x.ExitPrice is null);
-
-        this.RuleSet(Long, () =>
-        {
-            this.RuleFor(x => x.Side).Equal(PositionSide.Buy);
-            this.RuleFor(x => x.ExitPrice).GreaterThanOrEqualTo(x => x.EntryPrice);
-        });
         
-        this.RuleSet(Short, () =>
-        {
-            this.RuleFor(x => x.Side).Equal(PositionSide.Sell);
-            this.RuleFor(x => x.ExitPrice).LessThanOrEqualTo(x => x.EntryPrice);
-        });
+        this.RuleSet(Long, () => this.RuleFor(x => x.Side).Equal(PositionSide.Buy));
+        this.RuleSet(Short, () => this.RuleFor(x => x.Side).Equal(PositionSide.Sell));
     }
 }

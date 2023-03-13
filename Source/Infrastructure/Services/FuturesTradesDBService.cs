@@ -1,6 +1,5 @@
-﻿using System.Text;
-
-using Application.Data.Mapping;
+﻿using Application.Data.Mapping;
+using Application.Data.Validation;
 using Application.Interfaces.Services;
 
 using Domain.Models;
@@ -10,43 +9,44 @@ using FluentValidation.Results;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Database.Internal;
-using Infrastructure.Validators;
 
 using Microsoft.EntityFrameworkCore;
 
-using static Infrastructure.Validators.FuturesOrderValidator;
+using static Application.Data.Validation.FuturesOrdersConsistencyValidator;
+using static Application.Data.Validation.FuturesOrderValidator;
 
 namespace Infrastructure.Services;
 
 public class FuturesTradesDBService : IFuturesTradesDBService
 {
     private static readonly FuturesOrderValidator OrderValidator = new();
+    private static readonly FuturesOrdersConsistencyValidator OrdersConsistencyValidator = new();
     private static readonly FuturesPositionValidator PositionValidator = new();
-    
+
     private readonly FuturesTradingDbContext DbContext;
     public FuturesTradesDBService(FuturesTradingDbContext dbContext)
     {
         this.DbContext = dbContext;
     }
-    
+
 
     public async Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
         _ = futuresOrder ?? throw new ArgumentNullException(nameof(futuresOrder));
-       
-        var validaiton = await ValidateOrderNeedsPositionAsync(futuresOrder);
-        if (validaiton.IsValid && positionId is null)
+        
+        var validation = await OrderValidator.ValidateAsync(futuresOrder, x => x.IncludeRulesNotInRuleSet().IncludeRuleSets(OrderOpenedPosition));
+        if (validation.IsValid && positionId is null)
         {
-            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.", new ValidationException(validaiton.Errors));
+            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.", new ValidationException(validation.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-        else if (!validaiton.IsValid && positionId is not null)
+        else if (!validation.IsValid && positionId is not null)
         {
-            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.", new ValidationException(validaiton.Errors));
+            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.", new ValidationException(validation.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
 
-        
+
         var entity = futuresOrder.ToDbEntity();
         if (positionId is not null)
         {
@@ -56,7 +56,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
                 var innerException = new ArgumentException($"The position side of the order did not match the side of the position with CryptoAutopilotId {positionId}");
                 throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
             }
-            
+
             entity.PositionId = position.Id;
         }
 
@@ -67,41 +67,37 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     }
     public async Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
     {
-        _ = futuresOrders ?? throw new ArgumentNullException(nameof(futuresOrders));
-
-
-        PositionRequirementConsistentForAllOrders(futuresOrders, out var allNeedPosition, out var noneNeedPosition);
-        
-        if (allNeedPosition && positionId is null)
+        var validationResult = positionId switch
         {
-            var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.");
-            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
-        }
-        else if (noneNeedPosition && positionId is not null)
+            null => await OrdersConsistencyValidator.ValidateAsync(futuresOrders, x => x.IncludeRulesNotInRuleSet().IncludeRuleSets(NoOrderOpensPosition)),
+            _ => await OrdersConsistencyValidator.ValidateAsync(futuresOrders, x => x.IncludeRulesNotInRuleSet().IncludeRuleSets(AllOrdersOpenPosition)),
+        };
+
+        if (!validationResult.IsValid)
         {
-            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            var innerException = new ValidationException(validationResult.Errors);
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
 
 
 
-        var futuresOrderDbEntities = futuresOrders.Select(order => order.ToDbEntity());
+        var futuresOrderDbEntities = futuresOrders.Select(x => x.ToDbEntity()).ToArray();
         if (positionId is not null)
         {
-            var position = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
-            if (position.Side != futuresOrders.First().PositionSide)
+            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+            if (positionDbEntity.Side != futuresOrders.First().PositionSide)
             {
                 var innerException = new ArgumentException($"The position side of the orders did not match the side of the position with CryptoAutopilotId {positionId}");
                 throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
             }
 
-            foreach (var item in futuresOrderDbEntities)
-                item.PositionId = position.Id;
+            foreach (var futuresOrderDbEntity in futuresOrderDbEntities)
+                futuresOrderDbEntity.PositionId = positionDbEntity.Id;
         }
 
-        
+
         using var transaction = await this.BeginTransactionAsync();
-        
+
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
@@ -125,8 +121,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
         _ = updatedFuturesOrder ?? throw new ArgumentNullException(nameof(updatedFuturesOrder));
-        
-        var validation = await ValidateOrderNeedsPositionAsync(updatedFuturesOrder);
+
+        var validation = await OrderValidator.ValidateAsync(updatedFuturesOrder, x => x.IncludeRulesNotInRuleSet().IncludeRuleSets(OrderOpenedPosition));
         if (validation.IsValid && positionId is null)
         {
             var innerException = new ArgumentException("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.", new ValidationException(validation.Errors));
@@ -137,7 +133,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.", new ValidationException(validation.Errors));
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-
+         
 
         using var transaction = await this.BeginTransactionAsync();
 
@@ -153,7 +149,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
             dbEntity.PositionId = position.Id;
         }
-        
+
         dbEntity.CurrencyPair = updatedFuturesOrder.CurrencyPair.Name;
         dbEntity.BybitID = updatedFuturesOrder.BybitID;
         dbEntity.CreateTime = updatedFuturesOrder.CreateTime;
@@ -173,77 +169,53 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task DeleteFuturesOrderAsync(Guid bybitID)
     {
         using var _ = await this.BeginTransactionAsync();
-        
+
         var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
         this.DbContext.Remove(order);
         await this.DbContext.SaveChangesAsync();
     }
-    
+
     public async Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders)
     {
-        _ = position ?? throw new ArgumentNullException(nameof(position));
-        _ = futuresOrders ?? throw new ArgumentNullException(nameof(futuresOrders));
-
-
-        PositionRequirementConsistentForAllOrders(futuresOrders, out var allNeedPosition, out var noneNeedPosition);
-
-        if (noneNeedPosition)
+        var positionValidationResult = await PositionValidator.ValidateAsync(position);
+        if(!positionValidationResult.IsValid)
         {
-            var innerException = new ArgumentException("Only a created market order or a filled limit order can be associated with a position.");
+            var innerException = new ValidationException(positionValidationResult.Errors);
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-        else if (allNeedPosition && futuresOrders.First().PositionSide != position.Side)
+
+        var ordersValidationResult = await OrdersConsistencyValidator.ValidateAsync(futuresOrders, x => x.IncludeRulesNotInRuleSet().IncludeRuleSets(AllOrdersOpenPosition));
+        if (!ordersValidationResult.IsValid)
         {
-            var innerException = new ArgumentException("The position side of the specified orders does not match the side of the specified position");
+            var innerException = new ValidationException(ordersValidationResult.Errors);
             throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
         }
-        
 
 
         var positionDbEntity = position.ToDbEntity();
-        var ordersDbEntities = futuresOrders.Select(x =>
+        var futuresOrderDbEntities = futuresOrders.Select(x => x.ToDbEntity()).ToArray();
+        foreach (var futuresOrderDbEntity in futuresOrderDbEntities)
         {
-            var entity = x.ToDbEntity();
-            entity.Position = positionDbEntity;
-            return entity;
-        });
+            if (futuresOrderDbEntity.PositionSide != positionDbEntity.Side)
+            {
+                var innerException = new ArgumentException($"The position side of the specified orders does not match the side of the specified position");
+                throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
+            }
+        }
 
-        
+
         using var transaction = await this.BeginTransactionAsync();
+
+        await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
+        await this.DbContext.SaveChangesAsync();
         
-        await this.DbContext.FuturesOrders.AddRangeAsync(ordersDbEntities);
+        foreach (var futuresOrderDbEntity in futuresOrderDbEntities)
+            futuresOrderDbEntity.PositionId = positionDbEntity.Id;
+
+        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
-
-
-    private static Task<ValidationResult> ValidateOrderNeedsPositionAsync(FuturesOrder futuresOrder)
-    {
-        return OrderValidator.ValidateAsync(futuresOrder, x => x.IncludeRuleSets(MarketOrder, StatusCreated));
-    }
-    private static Task<ValidationResult> ValidateOrderShouldNotHavePositionAsync(FuturesOrder futuresOrder)
-    {
-        return OrderValidator.ValidateAsync(futuresOrder, x => x.IncludeRuleSets(LimitOrder, StatusCreated));
-    }
-    private static void PositionRequirementConsistentForAllOrders(IEnumerable<FuturesOrder> futuresOrders, out bool allNeedPosition, out bool noneNeedPosition)
-    {
-        allNeedPosition = futuresOrders.All(x => ValidateOrderNeedsPositionAsync(x).GetAwaiter().GetResult().IsValid);
-        noneNeedPosition = futuresOrders.All(x => ValidateOrderShouldNotHavePositionAsync(x).GetAwaiter().GetResult().IsValid);
-        
-        if (!allNeedPosition && !noneNeedPosition)
-        {
-            var sb = new StringBuilder();
-            sb.Append("Some of the specified orders can be associated with a position while some cannot. ");
-            sb.Append("All the specified orders need to have the same requirements in terms of beeing associated with a position to add them in the database at once.");
-            throw new ArgumentException(sb.ToString(), nameof(futuresOrders));
-        }
-        
-        var positionSide = futuresOrders.First().PositionSide;
-        if (!futuresOrders.All(x => x.PositionSide == positionSide))
-        {
-            var innerException = new ArgumentException("Not all orders have the same position side");
-            throw new DbUpdateException("An error occurred while saving the entity changes. See the inner exception for details.", innerException);
-        }
-    }
+    
 
     private async Task<TransactionalOperation> BeginTransactionAsync()
         => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
