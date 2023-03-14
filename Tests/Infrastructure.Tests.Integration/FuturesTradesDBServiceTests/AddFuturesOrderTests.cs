@@ -31,10 +31,8 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order);
 
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<ArgumentException>().WithMessage("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.")
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>();
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order can't be a market order or a filled limit order in order, otherwise it would have opened a position");
     }
 
     
@@ -65,17 +63,15 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         
         // Act
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
-        
+
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<ArgumentException>().WithMessage("Only a created market order or a filled limit order can be associated with a position.")
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>(); 
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order must be a market order or a filled limit order in order, otherwise it cannot have opened a position");
     }
 
 
     [Test]
-    public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenTheOrderPositionSideDoesNotMatchThePositionSide()
+    public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenTheOrderPositionSideDoesNotMatchTheSideOfThePosition()
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
@@ -87,8 +83,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
         
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage($"The position side of the order did not match the side of the position with CryptoAutopilotId {position.CryptoAutopilotId}");
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
     }
 }

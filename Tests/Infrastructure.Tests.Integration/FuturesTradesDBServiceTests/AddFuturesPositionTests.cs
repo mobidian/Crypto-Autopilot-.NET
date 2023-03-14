@@ -1,10 +1,6 @@
-﻿using System.Text;
-
-using Application.Data.Mapping;
+﻿using Application.Data.Mapping;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
 
@@ -40,36 +36,12 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
 
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have opened a position");
-    }
-
-
-    [Test]
-    public async Task AddFuturesPosition_ShouldThrow_WhenNotAllOrdersRequireTheSamePositionSide()
-    {
-        // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
-        var orders = new[]
-        {
-            this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}"),
-            this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}"),
-        };
-        
-        // Act
-        var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
-
-        // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have the same position side");
     }
     
     [Test]
-    public async Task AddFuturesPosition_ShouldThrow_WhenThePositionSideOfTheOrdersDoesNotMatchThePositionSide()
+    public async Task AddFuturesPosition_ShouldThrow_WhenThePositionSideOfTheAnyOrderDoesNotMatchTheSideOfThePosition()
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
@@ -79,8 +51,7 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
         
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage($"The position side of the specified orders does not match the side of the specified position");
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
     }
 }

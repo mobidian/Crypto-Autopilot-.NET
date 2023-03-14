@@ -47,10 +47,8 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage("A created market order or a filled limit order needs to be associated with a position and no position identifier has been specified.")
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>();
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order can't be a market order or a filled limit order in order, otherwise it would have opened a position");
     }
 
 
@@ -72,20 +70,6 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Assert
         this.DbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
     }
-    private async Task InsertRelatedPositionAndOrderAsync(FuturesPosition position, FuturesOrder order)
-    {
-        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-        
-        
-        var orderEntity = order.ToDbEntity();
-        orderEntity.Position = position.ToDbEntity();
-        
-        await this.DbContext.FuturesOrders.AddAsync(orderEntity);
-        await this.DbContext.SaveChangesAsync();
-        
-
-        await transaction.CommitAsync();
-    }
     
     [Test]
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition()
@@ -104,12 +88,10 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Act
         var func = async () => await this.SUT.UpdateFuturesOrderAsync(updatedOrder.BybitID, updatedOrder, position.CryptoAutopilotId);
 
-
+        
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage("Only a created market order or a filled limit order can be associated with a position.")
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>();
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order must be a market order or a filled limit order in order, otherwise it cannot have opened a position");
     }
 
 
@@ -127,10 +109,26 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Act
         var func = async () => await this.SUT.UpdateFuturesOrderAsync(updatedOrder.BybitID, updatedOrder, position.CryptoAutopilotId);
 
-
+        
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage($"The position side of the order did not match the side of the position with CryptoAutopilotId {position.CryptoAutopilotId}");
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
+    }
+
+
+    
+    private async Task InsertRelatedPositionAndOrderAsync(FuturesPosition position, FuturesOrder order)
+    {
+        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
+
+
+        var orderEntity = order.ToDbEntity();
+        orderEntity.Position = position.ToDbEntity();
+
+        await this.DbContext.FuturesOrders.AddAsync(orderEntity);
+        await this.DbContext.SaveChangesAsync();
+
+
+        await transaction.CommitAsync();
     }
 }

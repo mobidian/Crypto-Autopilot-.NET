@@ -32,9 +32,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrdersAsync(orders);
         
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "No order should have opened a position");
     }
 
@@ -72,15 +70,13 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         
 
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have opened a position");
     }
 
     
     [Test]
-    public async Task AddFuturesOrder_ShouldThrow_WhenNotAllOrdersRequireTheSamePositionSide()
+    public async Task AddFuturesOrder_ShouldThrow_WhenNotAllOrdersHaveTheSamePositionSide()
     {
         // Arrange
         var orders = new[]
@@ -93,9 +89,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrdersAsync(orders);
         
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerExceptionExactly<FluentValidation.ValidationException>().And
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have the same position side");
     }
 
@@ -110,10 +104,9 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         
         // Act
         var func = async () => await this.SUT.AddFuturesOrdersAsync(orders, position.CryptoAutopilotId);
-        
+
         // Assert
-        (await func.Should()
-            .ThrowExactlyAsync<DbUpdateException>().WithMessage("An error occurred while saving the entity changes. See the inner exception for details."))
-            .WithInnerException<ArgumentException>().WithMessage($"The position side of the orders did not match the side of the position with CryptoAutopilotId {position.CryptoAutopilotId}");
+        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
+                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
     }
 }
