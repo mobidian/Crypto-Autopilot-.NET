@@ -103,20 +103,24 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     }
     public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
     {
-        return await this.DbContext.FuturesOrders
+        var orders = this.DbContext.FuturesOrders
             .OrderBy(x => x.CurrencyPair)
             .OrderByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
-            .ToListAsync();
+            .AsEnumerable();
+        
+        return await Task.FromResult(orders);
     }
     public async Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair)
     {
-        return await this.DbContext.FuturesOrders
+        var orders = this.DbContext.FuturesOrders
             .Where(x => x.CurrencyPair == currencyPair)
             .OrderBy(x => x.CurrencyPair)
             .OrderByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
-            .ToListAsync();
+            .AsEnumerable();
+        
+        return await Task.FromResult(orders);
     }
     public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
