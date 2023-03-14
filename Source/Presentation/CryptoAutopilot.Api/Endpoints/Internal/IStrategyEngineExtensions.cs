@@ -10,11 +10,12 @@ namespace CryptoAutopilot.Api.Endpoints.Internal;
 
 internal static class IStrategyEngineExtensions
 {
-    internal static async Task<IResult> TryAwaitStartupAsync(this IStrategyEngine engine, IServiceProvider services, TimeSpan timeout)
+    internal static async Task<IResult> StartAsync(this IStrategyEngine engine, IServiceProvider services, TimeSpan timeout)
     {
         _ = Task.Run(engine.StartTradingAsync);
 
-        if (await engine.AwaitStartupAsync(timeout) == false)
+        await engine.WaitForRunningTrueAsync(timeout);
+        if (!engine.IsRunning())
             return Results.Problem(detail: $"The operation of starting the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
 
         services.GetRequiredService<IStrategiesTracker>().Add(engine);
@@ -25,21 +26,20 @@ internal static class IStrategyEngineExtensions
             StartTime = services.GetRequiredService<IDateTimeProvider>().Now
         });
     }
-    internal static async Task<bool> AwaitStartupAsync(this IStrategyEngine engine, TimeSpan timeout)
+    internal static async Task WaitForRunningTrueAsync(this IStrategyEngine engine, TimeSpan timeout)
     {
-        var stopwatch = Stopwatch.StartNew();
+        var timestamp = Stopwatch.GetTimestamp();
 
-        while (!engine.IsRunning() && stopwatch.Elapsed < timeout)
+        while (!engine.IsRunning() && Stopwatch.GetElapsedTime(timestamp) < timeout)
             await Task.Delay(50);
-
-        return engine.IsRunning();
     }
 
-    internal static async Task<IResult> TryAwaitShutdownAsync(this IStrategyEngine engine, IServiceProvider services, TimeSpan timeout)
+    internal static async Task<IResult> StopAsync(this IStrategyEngine engine, IServiceProvider services, TimeSpan timeout)
     {
         _ = Task.Run(engine.StopTradingAsync);
-
-        if (await engine.AwaitShutdownAsync(timeout) == false)
+        
+        await engine.WaitForRunningFalseAsync(timeout);
+        if (engine.IsRunning())
             return Results.Problem(detail: $"The operation of stopping the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
 
         return Results.Ok(new StrategyEngineStoppedResponse
@@ -49,13 +49,11 @@ internal static class IStrategyEngineExtensions
             StopTime = services.GetRequiredService<IDateTimeProvider>().Now
         });
     }
-    internal static async Task<bool> AwaitShutdownAsync(this IStrategyEngine engine, TimeSpan timeout)
+    internal static async Task WaitForRunningFalseAsync(this IStrategyEngine engine, TimeSpan timeout)
     {
-        var stopwatch = Stopwatch.StartNew();
-
-        while (engine.IsRunning() && stopwatch.Elapsed < timeout)
+        var timestamp = Stopwatch.GetTimestamp();
+        
+        while (engine.IsRunning() && Stopwatch.GetElapsedTime(timestamp) < timeout)
             await Task.Delay(50);
-
-        return !engine.IsRunning();
     }
 }

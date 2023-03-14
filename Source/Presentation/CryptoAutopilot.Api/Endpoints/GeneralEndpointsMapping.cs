@@ -38,7 +38,7 @@ public static partial class ServicesEndpointsExtensions
             if (strategy is null)
                 return Results.NotFound();
 
-            return await strategy.TryAwaitShutdownAsync(services, TimeSpan.FromSeconds(15));
+            return await strategy.StopAsync(services, TimeSpan.FromSeconds(15));
         }).WithTags("Strategies");
     }
     private static GetStrategyEngineResponse StrategyEngineToResponse(IStrategyEngine strategy) => new GetStrategyEngineResponse
