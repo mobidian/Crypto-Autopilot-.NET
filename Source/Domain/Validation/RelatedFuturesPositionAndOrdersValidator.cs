@@ -6,10 +6,10 @@ using Domain.Models;
 
 using FluentValidation;
 
-using static Application.Data.Validation.FuturesOrdersConsistencyValidator;
-using static Application.Data.Validation.FuturesOrderValidator;
+using static Domain.Validation.FuturesOrdersConsistencyValidator;
+using static Domain.Validation.FuturesOrderValidator;
 
-namespace Application.Data.Validation;
+namespace Domain.Validation;
 
 public class RelatedFuturesPositionAndOrdersValidator : AbstractValidator<(FuturesPosition Position, IEnumerable<FuturesOrder> Orders)>
 {

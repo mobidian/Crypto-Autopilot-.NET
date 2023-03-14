@@ -1,8 +1,8 @@
 ﻿using Application.Data.Mapping;
-using Application.Data.Validation;
 using Application.Interfaces.Services;
 
 using Domain.Models;
+using Domain.Validation;
 
 using FluentValidation;
 
@@ -11,8 +11,8 @@ using Infrastructure.Database.Internal;
 
 using Microsoft.EntityFrameworkCore;
 
-using static Application.Data.Validation.FuturesOrdersConsistencyValidator;
-using static Application.Data.Validation.FuturesOrderValidator;
+using static Domain.Validation.FuturesOrdersConsistencyValidator;
+using static Domain.Validation.FuturesOrderValidator;
 
 namespace Infrastructure.Services;
 

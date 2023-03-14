@@ -2,25 +2,25 @@
 
 using FluentValidation;
 
-using static Application.Data.Validation.FuturesOrderValidator;
+using static Domain.Validation.FuturesOrderValidator;
 
-namespace Application.Data.Validation;
+namespace Domain.Validation;
 
 public class FuturesOrdersConsistencyValidator : AbstractValidator<IEnumerable<FuturesOrder>>
 {
     private static readonly FuturesOrderValidator OrderValidator = new();
-    
-    
+
+
     public const string NoOrderOpensPosition = nameof(NoOrderOpensPosition);
     public const string AllOrdersOpenPosition = nameof(AllOrdersOpenPosition);
-    
+
     public FuturesOrdersConsistencyValidator()
     {
         this.RuleFor(orders => orders).NotNull().NotEmpty();
-        
+
         // All orders must be valid
         this.RuleFor(orders => orders).Must(orders => orders.All(order => OrderValidator.Validate(order, options => options.IncludeRulesNotInRuleSet()).IsValid)).WithMessage("All orders must be valid");
-        
+
         // All orders must have the same position side
         this.RuleFor(orders => orders).Must(orders =>
         {
@@ -41,7 +41,7 @@ public class FuturesOrdersConsistencyValidator : AbstractValidator<IEnumerable<F
             .Must(orders => orders.All(DidNotOpenPosition))
             .WithMessage("No order should have opened a position");
         });
-        
+
         this.RuleSet(AllOrdersOpenPosition, () =>
         {
             this.RuleFor(orders => orders)
@@ -51,7 +51,7 @@ public class FuturesOrdersConsistencyValidator : AbstractValidator<IEnumerable<F
     }
 
 
-    
+
     private static bool OpenedPosition(FuturesOrder futuresOrder)
     {
         return OrderValidator.Validate(futuresOrder, x => x.IncludeRuleSets(OrderOpenedPosition)).IsValid;
