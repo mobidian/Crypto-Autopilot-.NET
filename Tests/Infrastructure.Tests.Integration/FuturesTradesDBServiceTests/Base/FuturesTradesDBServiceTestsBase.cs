@@ -1,4 +1,6 @@
-﻿using Bybit.Net.Enums;
+﻿using Application.Data.Mapping;
+
+using Bybit.Net.Enums;
 
 using Domain.Models;
 
@@ -129,4 +131,28 @@ public abstract class FuturesTradesDBServiceTestsBase
 
     [TearDown]
     public virtual async Task TearDown() => await this.ClearDatabaseAsync();
+
+
+    
+    protected async Task InsertRelatedPositionAndOrdersAsync(FuturesPosition position, IEnumerable<FuturesOrder> orders)
+    {
+        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
+
+
+        var positionDbEntity = position.ToDbEntity();
+        await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
+        await this.DbContext.SaveChangesAsync();
+        
+        var futuresOrderDbEntities = orders.Select(x =>
+        {
+            var entity = x.ToDbEntity();
+            entity.PositionId = positionDbEntity.Id;
+            return entity;
+        });
+        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
+        await this.DbContext.SaveChangesAsync();
+
+
+        await transaction.CommitAsync();
+    }
 }

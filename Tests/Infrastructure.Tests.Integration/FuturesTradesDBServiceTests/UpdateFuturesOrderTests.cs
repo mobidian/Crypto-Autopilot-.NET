@@ -58,7 +58,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
-        await InsertRelatedPositionAndOrderAsync(position, order);
+        await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
         var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
 
@@ -101,7 +101,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
-        await InsertRelatedPositionAndOrderAsync(position, order);
+        await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
         var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");
         
@@ -113,22 +113,5 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Assert
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
-    }
-
-
-    
-    private async Task InsertRelatedPositionAndOrderAsync(FuturesPosition position, FuturesOrder order)
-    {
-        using var transaction = await this.DbContext.Database.BeginTransactionAsync();
-
-
-        var orderEntity = order.ToDbEntity();
-        orderEntity.Position = position.ToDbEntity();
-
-        await this.DbContext.FuturesOrders.AddAsync(orderEntity);
-        await this.DbContext.SaveChangesAsync();
-
-
-        await transaction.CommitAsync();
     }
 }
