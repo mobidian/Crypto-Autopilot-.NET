@@ -156,7 +156,26 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
-    
+    public async Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition)
+    {
+        await PositionValidator.ValidateAndThrowAsync(updatedPosition);
+
+        
+        using var transaction = await this.BeginTransactionAsync();
+
+        var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Did not find a position with crypto autopilot id {positionId}");
+        await PositionAndOrdersValidator.ValidateAndThrowAsync((updatedPosition, positionDbEntity.FuturesOrders.Select(x => x.ToDomainObject())));
+        
+        positionDbEntity.CurrencyPair = updatedPosition.CurrencyPair.Name;
+        positionDbEntity.Side = updatedPosition.Side;
+        positionDbEntity.Margin = updatedPosition.Margin;
+        positionDbEntity.Leverage = updatedPosition.Leverage;
+        positionDbEntity.Quantity = updatedPosition.Quantity;
+        positionDbEntity.EntryPrice = updatedPosition.EntryPrice;
+        positionDbEntity.ExitPrice = updatedPosition.ExitPrice;
+        
+        await this.DbContext.SaveChangesAsync();
+    }
 
     private async Task<TransactionalOperation> BeginTransactionAsync()
         => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
