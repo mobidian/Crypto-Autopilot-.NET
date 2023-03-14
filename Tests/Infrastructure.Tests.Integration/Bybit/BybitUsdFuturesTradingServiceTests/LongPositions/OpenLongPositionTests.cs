@@ -9,7 +9,7 @@ namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTe
 public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
 {
     [Test]
-    public async Task OpenPosition_OpensLongPosition_WhenLongPositionDoesNotExist()
+    public async Task OpenPosition_ShouldOpenLongPosition_WhenLongPositionDoesNotExist()
     {
         // Arrange
         var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
