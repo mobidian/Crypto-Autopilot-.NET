@@ -11,7 +11,7 @@ public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var futuresOrders = this.FuturesOrderGenerator.GenerateBetween(1, 5);
-        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()).ToArray());
+        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()));
         await this.DbContext.SaveChangesAsync();
 
         // Act

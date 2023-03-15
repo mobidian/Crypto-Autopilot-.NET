@@ -75,7 +75,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     {
         var orders = this.DbContext.FuturesOrders
             .OrderBy(x => x.CurrencyPair)
-            .OrderByDescending(x => x.CreateTime)
+            .ThenByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
             .AsEnumerable();
         
@@ -86,7 +86,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         var orders = this.DbContext.FuturesOrders
             .Where(x => x.CurrencyPair == currencyPair)
             .OrderBy(x => x.CurrencyPair)
-            .OrderByDescending(x => x.CreateTime)
+            .ThenByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
             .AsEnumerable();
         
@@ -155,6 +155,25 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         });
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.SaveChangesAsync();
+    }
+    public async Task<IEnumerable<FuturesPosition>> GetAllFuturesPositionsAsync()
+    {
+        var positions = this.DbContext.FuturesPositions
+            .OrderBy(x => x.CurrencyPair)
+            .Select(x => x.ToDomainObject())
+            .AsEnumerable();
+        
+        return await Task.FromResult(positions);
+    }
+    public async Task<IEnumerable<FuturesPosition>> GetFuturesPositionsByCurrencyPairAsync(string currencyPair)
+    {
+        var positions = this.DbContext.FuturesPositions
+            .Where(x => x.CurrencyPair == currencyPair)
+            .OrderBy(x => x.CurrencyPair)
+            .Select(x => x.ToDomainObject())
+            .AsEnumerable();
+        
+        return await Task.FromResult(positions);
     }
     public async Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition)
     {
