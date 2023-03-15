@@ -20,7 +20,7 @@ public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersF
     public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetFuturesOrdersFunction> logger) : base(dbService, logger) { }
 
     
-    [Function("Data/Trading/FuturesOrders")]
+    [Function("Data/Trading/Orders")]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, [FromQuery] string? contractName)
     {
         try
