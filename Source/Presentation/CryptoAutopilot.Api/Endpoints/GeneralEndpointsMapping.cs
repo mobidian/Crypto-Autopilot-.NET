@@ -41,7 +41,7 @@ public static partial class ServicesEndpointsExtensions
             return await strategy.StopAsync(services, TimeSpan.FromSeconds(15));
         }).WithTags("Strategies");
     }
-    private static GetStrategyEngineResponse StrategyEngineToResponse(IStrategyEngine strategy) => new GetStrategyEngineResponse
+    private static StrategyEngineResponse StrategyEngineToResponse(IStrategyEngine strategy) => new StrategyEngineResponse
     {
         Guid = strategy.Guid,
         StartedStrategyTypeName = strategy.GetType().Name,

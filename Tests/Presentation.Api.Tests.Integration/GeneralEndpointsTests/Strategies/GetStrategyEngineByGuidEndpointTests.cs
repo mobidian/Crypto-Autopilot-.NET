@@ -22,7 +22,7 @@ public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
         var strategyResponse = await this.HttpClient.GetAsync($"strategies?guid={engines[i].Guid}");
 
         // Assert
-        var response = await strategyResponse.Content.ReadFromJsonAsync<GetStrategyEngineResponse>();
+        var response = await strategyResponse.Content.ReadFromJsonAsync<StrategyEngineResponse>();
         response!.Guid.Should().Be(engines[i].Guid);
         response.StartedStrategyTypeName.Should().Be(engines[i].GetType().Name);
         response.IsRunning.Should().Be(engines[i].IsRunning());

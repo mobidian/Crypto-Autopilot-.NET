@@ -21,7 +21,7 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
 
         // Assert
         var response = await strategiesResponse.Content.ReadFromJsonAsync<GetAllStrategyEnginesResponse>();
-        response!.Strategies.Should().BeEquivalentTo(engines.Select(engine => new GetStrategyEngineResponse
+        response!.Strategies.Should().BeEquivalentTo(engines.Select(engine => new StrategyEngineResponse
         {
             Guid = engine.Guid,
             StartedStrategyTypeName = engine.GetType().Name,

@@ -28,4 +28,8 @@
     <ProjectReference Include="..\..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Responses\Data\Trading\Positions\" />
+  </ItemGroup>
+
 </Project>

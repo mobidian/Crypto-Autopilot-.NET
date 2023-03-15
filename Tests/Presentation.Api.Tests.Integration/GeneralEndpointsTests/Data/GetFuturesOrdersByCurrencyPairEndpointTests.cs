@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 
-using CryptoAutopilot.Api.Contracts.Responses.Data;
+using CryptoAutopilot.Api.Contracts.Responses.Data.Trading.Orders;
 
 using Domain.Models;
 
@@ -32,8 +32,8 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         var futuresOrdersResponse = await this.HttpClient.GetAsync($"futuresorders?currencyPair={currencyPair}");
 
         // Assert
-        var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByCurrencyPairResponse>();
-        response!.CurrencyPair.Should().Be(currencyPair.Name);
+        var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByContractNameResponse>();
+        response!.ContractName.Should().Be(currencyPair.Name);
         response!.FuturesOrders.Should().BeEquivalentTo(matchingFuturesOrders);
     }
 
@@ -55,8 +55,8 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         var futuresOrdersResponse = await this.HttpClient.GetAsync($"futuresorders?currencyPair={currencyPair}");
 
         // Assert
-        var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByCurrencyPairResponse>();
-        response!.CurrencyPair.Should().Be(currencyPair.Name);
+        var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByContractNameResponse>();
+        response!.ContractName.Should().Be(currencyPair.Name);
         response!.FuturesOrders.Should().BeEmpty();
     }
 

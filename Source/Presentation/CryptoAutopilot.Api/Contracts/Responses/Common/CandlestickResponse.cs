@@ -2,7 +2,7 @@
 
 public class CandlestickResponse
 {
-    public required string CurrencyPair { get; init; }
+    public required string ContractName { get; init; }
     public required DateTime Date { get; init; }
     public required decimal Open { get; init; }
     public required decimal High { get; init; }

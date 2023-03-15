@@ -4,30 +4,31 @@ using Application.Interfaces.Logging;
 using Application.Interfaces.Services;
 
 using CryptoAutopilot.Api.Contracts.Responses.Common;
-using CryptoAutopilot.Api.Contracts.Responses.Data;
+using CryptoAutopilot.Api.Contracts.Responses.Data.Trading.Orders;
 using CryptoAutopilot.DataFunctions.Extensions;
+using CryptoAutopilot.DataFunctions.Functions.Abstract;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace CryptoAutopilot.DataFunctions.Functions;
+namespace CryptoAutopilot.DataFunctions.Functions.Data.Trading.Orders;
 
-public class GetFuturesOrdersFunction : DataFunctionBase<GetFuturesOrdersFunction>
+public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersFunction>
 {
     public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetFuturesOrdersFunction> logger) : base(dbService, logger) { }
+
     
-    
-    [Function("futuresorders")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, [FromQuery] string? currencyPair)
+    [Function("Data/Trading/FuturesOrders")]
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, [FromQuery] string? contractName)
     {
         try
         {
-            if (currencyPair is null)
+            if (contractName is null)
             {
                 var futuresOrders = await DbService.GetAllFuturesOrdersAsync();
-                
+
                 var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
                 {
                     BybitID = x.BybitID,
@@ -50,8 +51,8 @@ public class GetFuturesOrdersFunction : DataFunctionBase<GetFuturesOrdersFunctio
             }
             else
             {
-                var futuresOrders = await DbService.GetFuturesOrdersByCurrencyPairAsync(currencyPair);
-                
+                var futuresOrders = await DbService.GetFuturesOrdersByCurrencyPairAsync(contractName);
+
                 var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
                 {
                     BybitID = x.BybitID,
@@ -68,9 +69,9 @@ public class GetFuturesOrdersFunction : DataFunctionBase<GetFuturesOrdersFunctio
                     TimeInForce = x.TimeInForce,
                     Status = x.Status
                 });
-                var response = new GetFuturesOrdersByCurrencyPairResponse
+                var response = new GetFuturesOrdersByContractNameResponse
                 {
-                    CurrencyPair = currencyPair.ToUpper(),
+                    ContractName = contractName.ToUpper(),
                     FuturesOrders = futuresOrdersResponses,
                 };
 
@@ -80,11 +81,11 @@ public class GetFuturesOrdersFunction : DataFunctionBase<GetFuturesOrdersFunctio
         catch (Exception exception)
         {
             this.Logger.LogError(exception, $"{exception.GetType().FullName}: {exception.Message}\n{exception.StackTrace}");
-            
+
             var response = request.CreateResponse(HttpStatusCode.InternalServerError);
             await response.WriteAsJsonAsync(new
             {
-                Message = exception.Message
+                exception.Message
             });
             return response;
         }

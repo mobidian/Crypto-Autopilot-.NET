@@ -29,4 +29,7 @@
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Functions\Data\Trading\Positions\" />
+  </ItemGroup>
 </Project>

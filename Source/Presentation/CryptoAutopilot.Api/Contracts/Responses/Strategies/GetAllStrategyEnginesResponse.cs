@@ -2,5 +2,5 @@
 
 public class GetAllStrategyEnginesResponse
 {
-    public required IEnumerable<GetStrategyEngineResponse> Strategies { get; init; }
+    public required IEnumerable<StrategyEngineResponse> Strategies { get; init; }
 }

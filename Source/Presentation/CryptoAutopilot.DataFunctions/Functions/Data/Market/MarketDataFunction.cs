@@ -6,20 +6,22 @@ using Application.Interfaces.Services.Bybit;
 using Bybit.Net.Enums;
 
 using CryptoAutopilot.Api.Contracts.Responses.Common;
-using CryptoAutopilot.Api.Contracts.Responses.Data;
+using CryptoAutopilot.Api.Contracts.Responses.Data.Market;
 using CryptoAutopilot.DataFunctions.Extensions;
+using CryptoAutopilot.DataFunctions.Functions.Abstract;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace CryptoAutopilot.DataFunctions.Functions;
+namespace CryptoAutopilot.DataFunctions.Functions.Data.Market;
 
-public class MarketDataFunction : TradingDataFunctionBase<MarketDataFunction>
+public class GetContractHistoryFunction : TradingDataFunctionBase<GetContractHistoryFunction>
 {
-    public MarketDataFunction(IBybitUsdFuturesMarketDataProvider marketDataProvider, ILoggerAdapter<MarketDataFunction> logger) : base(marketDataProvider, logger) { }
+    public GetContractHistoryFunction(IBybitUsdFuturesMarketDataProvider marketDataProvider, ILoggerAdapter<GetContractHistoryFunction> logger) : base(marketDataProvider, logger) { }
 
-    [Function("MarketData/ContractHistory")]
+
+    [Function("Data/Market/ContractHistory")]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, [FromQuery] string name, [FromQuery] int min)
     {
         if (!Enum.IsDefined(typeof(KlineInterval), min * 60))
@@ -28,13 +30,13 @@ public class MarketDataFunction : TradingDataFunctionBase<MarketDataFunction>
             await badRequestResponse.WriteStringAsync($"There is no defined {min} minutes timeframe");
             return badRequestResponse;
         }
-        
-        
+
+
         var timeframe = (KlineInterval)(min * 60);
         var klines = await this.MarketDataProvider.GetAllCandlesticksAsync(name, timeframe);
         var candlesticks = klines.Select(x => new CandlestickResponse
         {
-            CurrencyPair = x.Symbol,
+            ContractName = x.Symbol,
             Date = x.OpenTime,
             Open = x.OpenPrice,
             High = x.HighPrice,
@@ -42,14 +44,14 @@ public class MarketDataFunction : TradingDataFunctionBase<MarketDataFunction>
             Close = x.ClosePrice,
             Volume = x.Volume
         });
-           
-        var response = new GetContractCandlesticksResponse
+
+        var response = new GetContractHistoryResponse
         {
-            CurrencyPair = name,
+            ContractName = name,
             Timeframe = timeframe,
             Candlesticks = candlesticks
         };
-        
+
         return await request.CreateOkJsonResponseAsync(response);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 
-using CryptoAutopilot.Api.Contracts.Responses.Data;
+using CryptoAutopilot.Api.Contracts.Responses.Data.Trading.Orders;
 
 using Domain.Models;
 
