@@ -2,7 +2,7 @@
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
 public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 {
@@ -16,11 +16,11 @@ public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 
         // Act
         var retrievedFuturesOrders = await this.SUT.GetAllFuturesOrdersAsync();
-        
+
         // Assert
         futuresOrders.ForEach(x => retrievedFuturesOrders.Should().ContainEquivalentOf(x));
     }
-    
+
     [Test]
     public async Task GetAllFuturesOrders_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersExist()
     {

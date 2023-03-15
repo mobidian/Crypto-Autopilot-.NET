@@ -2,7 +2,7 @@
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
 
 public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
 {
@@ -15,12 +15,12 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
 
         // Act
         await this.SUT.AddFuturesPositionAsync(position, orders);
-        
+
         // Assert
         this.DbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
         this.DbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
     }
-    
+
     [Test]
     public async Task AddFuturesPosition_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition()
     {
@@ -39,17 +39,17 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have opened a position");
     }
-    
+
     [Test]
     public async Task AddFuturesPosition_ShouldThrow_WhenThePositionSideOfTheAnyOrderDoesNotMatchTheSideOfThePosition()
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");
-        
+
         // Act
         var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
-        
+
         // Assert
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");

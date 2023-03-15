@@ -2,12 +2,12 @@
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
 
 public class GetAllFuturesPositionsTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders_WhenFuturesOrdersExist()
+    public async Task GetAllFuturesPositions_ShouldReturnAllFuturesPositions_WhenFuturesPositionsExist()
     {
         // Arrange
         var futuresPositions = this.FuturesPositionsGenerator.GenerateBetween(1, 5);
@@ -22,7 +22,7 @@ public class GetAllFuturesPositionsTests : FuturesTradesDBServiceTestsBase
     }
 
     [Test]
-    public async Task GetAllFuturesOrders_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersExist()
+    public async Task GetAllFuturesPositions_ShouldReturnEmptyEnumerable_WhenNoFuturesPositionsExist()
     {
         // Act
         var retrievedFuturesPositions = await this.SUT.GetAllFuturesPositionsAsync();

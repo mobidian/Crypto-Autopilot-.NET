@@ -2,12 +2,12 @@
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
 
 public class GetFuturesPositionsByCurrencyPairTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    public async Task GetAllFuturesOrdersByCurrencyPair_ShouldReturnAllFuturesOrdersWithCurrencyPair_WhenFuturesOrdersWithCurrencyPairExist()
+    public async Task GetFuturesPositionsByCurrencyPair_ShouldReturnAllFuturesPositionsWithCurrencyPair_WhenFuturesPositionsWithCurrencyPairExist()
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
@@ -30,9 +30,9 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesTradesDBServiceTest
         // Assert
         retrievedFuturesPositions.Should().BeEquivalentTo(futuresPositions);
     }
-    
+
     [Test]
-    public async Task GetAllFuturesOrdersByCurrencyPair_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersWithCurrencyPairExist()
+    public async Task GetFuturesPositionsByCurrencyPair_ShouldReturnEmptyEnumerable_WhenNoFuturesPositionsWithCurrencyPairExist()
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
@@ -45,7 +45,7 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesTradesDBServiceTest
             await this.DbContext.SaveChangesAsync();
         }
 
-        
+
         // Act
         var retrievedFuturesPositions = await this.SUT.GetFuturesPositionsByCurrencyPairAsync(currencyPair.Name);
 

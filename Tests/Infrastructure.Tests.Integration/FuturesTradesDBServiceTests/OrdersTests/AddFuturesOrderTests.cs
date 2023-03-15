@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
 public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 {
@@ -13,20 +13,20 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}");
-        
+
         // Act
         await this.SUT.AddFuturesOrderAsync(order);
 
         // Assert
         this.DbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
     }
-        
+
     [Test]
     public async Task AddFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition()
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}");
-        
+
         // Act
         var func = async () => await this.SUT.AddFuturesOrderAsync(order);
 
@@ -35,7 +35,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order can't be a market order or a filled limit order in order, otherwise it would have opened a position");
     }
 
-    
+
     [Test]
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrder_WhenOrderRequiresPosition()
     {
@@ -44,7 +44,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
-        
+
         // Act
         await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
 
@@ -60,7 +60,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
-        
+
         // Act
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
 
@@ -81,7 +81,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
         // Act
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
-        
+
         // Assert
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
                 .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");

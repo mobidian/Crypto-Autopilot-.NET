@@ -2,7 +2,7 @@
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
 
 public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
 {
@@ -13,19 +13,19 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
-        
+
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
             .Generate($"default, {PositionSideLong}");
 
-        
+
         // Act
         await this.SUT.UpdateFuturesPositionAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
-        
+
         // Assert
         this.DbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
     }
-    
+
     [Test]
     public async Task UpdateFuturesPosition_ShouldThrow_WhenFuturesPositionSideDoesNotMatchTheOldFuturesPositionSide()
     {

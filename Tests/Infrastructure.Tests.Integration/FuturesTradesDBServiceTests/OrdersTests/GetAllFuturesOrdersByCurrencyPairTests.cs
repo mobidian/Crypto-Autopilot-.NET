@@ -2,19 +2,19 @@
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
-public class GetAllFuturesOrdersByCurrencyPairTests : FuturesTradesDBServiceTestsBase
+public class GetFuturesOrdersByCurrencyPairTests : FuturesTradesDBServiceTestsBase
 {
     [Test]
-    public async Task GetAllFuturesOrdersByCurrencyPair_ShouldReturnAllFuturesOrdersWithCurrencyPair_WhenFuturesOrdersWithCurrencyPairExist()
+    public async Task GetFuturesOrdersByCurrencyPair_ShouldReturnAllFuturesOrdersWithCurrencyPair_WhenFuturesOrdersWithCurrencyPairExist()
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
         var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, currencyPair).Generate(15);
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()).ToArray());
         await this.DbContext.SaveChangesAsync();
-        
+
         for (var i = 0; i < 5; i++)
         {
             var diffrentCurrencyPair = this.CurrencyPairGenerator.Generate();
@@ -30,13 +30,13 @@ public class GetAllFuturesOrdersByCurrencyPairTests : FuturesTradesDBServiceTest
         // Assert
         retrievedFuturesOrders.Should().BeEquivalentTo(futuresOrders);
     }
-
+    
     [Test]
-    public async Task GetAllFuturesOrdersByCurrencyPair_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersWithCurrencyPairExist()
+    public async Task GetFuturesOrdersByCurrencyPair_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersWithCurrencyPairExist()
     {
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
-        
+
         for (var i = 0; i < 5; i++)
         {
             var diffrentCurrencyPair = this.CurrencyPairGenerator.Generate();
@@ -44,8 +44,8 @@ public class GetAllFuturesOrdersByCurrencyPairTests : FuturesTradesDBServiceTest
             await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrdersWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()).ToArray());
             await this.DbContext.SaveChangesAsync();
         }
-        
-        
+
+
         // Act
         var retrievedFuturesOrders = await this.SUT.GetFuturesOrdersByCurrencyPairAsync(currencyPair.Name);
 

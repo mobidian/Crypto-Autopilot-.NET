@@ -4,7 +4,7 @@ using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests;
+namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
 public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
 {
@@ -18,7 +18,7 @@ public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
         // Act
         await this.SUT.DeleteFuturesOrderAsync(futuresOrder.BybitID);
-        
+
         // Assert
         this.DbContext.FuturesOrders.Should().BeEmpty();
     }
@@ -31,7 +31,7 @@ public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
         // Act
         var func = async () => await this.SUT.DeleteFuturesOrderAsync(bybitId);
-        
+
         // Assert
         await func.Should().ThrowExactlyAsync<DbUpdateException>().WithMessage($"No order with bybitID {bybitId} was found in the database");
     }
