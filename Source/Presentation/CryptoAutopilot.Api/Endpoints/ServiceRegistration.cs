@@ -18,11 +18,11 @@ using CryptoExchange.Net.Authentication;
 using Infrastructure;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
+using Infrastructure.Proxies;
 using Infrastructure.Services;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
 using Infrastructure.Services.General;
-using Infrastructure.Services.Proxies;
 
 using Microsoft.EntityFrameworkCore;
 

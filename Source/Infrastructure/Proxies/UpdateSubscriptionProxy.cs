@@ -2,7 +2,7 @@
 
 using CryptoExchange.Net.Sockets;
 
-namespace Infrastructure.Services.Proxies;
+namespace Infrastructure.Proxies;
 
 public class UpdateSubscriptionProxy : IUpdateSubscriptionProxy
 {
@@ -42,7 +42,7 @@ public class UpdateSubscriptionProxy : IUpdateSubscriptionProxy
         add => this.Subscription.Exception += value;
         remove => this.Subscription.Exception -= value;
     }
-    
+
     public Task CloseAsync() => this.Subscription.CloseAsync();
     public Task ReconnectAsync() => this.Subscription.ReconnectAsync();
 }
