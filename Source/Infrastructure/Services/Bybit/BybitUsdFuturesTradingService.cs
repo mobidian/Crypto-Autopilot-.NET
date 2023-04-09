@@ -22,7 +22,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     private readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
     private readonly IBybitUsdFuturesTradingApiClient TradingClient;
     private readonly IMediator Mediator;
-
+    
     public BybitUsdFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdFuturesTradingApiClient tradingClient, IMediator mediator)
     {
         if (leverage is <= 0 or > 100)
