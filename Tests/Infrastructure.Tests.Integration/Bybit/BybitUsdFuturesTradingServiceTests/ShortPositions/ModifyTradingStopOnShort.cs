@@ -8,8 +8,10 @@ namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTe
 
 public class ModifyTradingStopOnShort : BybitUsdFuturesTradingServiceTestsBase
 {
-    [Test]
-    public async Task ModifyTradingStop_ShouldModifyTradingStop_WhenShortPositionExists()
+    [TestCase(-100, 100, Description = "Both StopLoss and TakeProfit specified")]
+    [TestCase(-100, 0, Description = "Only StopLoss specified")]
+    [TestCase(0, 100, Description = "Only TakeProfit specified")]
+    public async Task ModifyTradingStop_ShouldModifyTradingStop_WhenShortPositionExists(int newStopLossOffset, int newTakeProfitOffset)
     {
         // Arrange
         var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
@@ -21,8 +23,8 @@ public class ModifyTradingStopOnShort : BybitUsdFuturesTradingServiceTestsBase
 
 
         // Act
-        var newStopLoss = stopLoss - 100;
-        var newTakeProfit = takeProfit - 100;
+        decimal? newStopLoss = stopLoss + newStopLossOffset;
+        decimal? newTakeProfit = takeProfit + newTakeProfitOffset;
 
         await this.SUT.ModifyTradingStopAsync(PositionSide.Sell, newStopLoss, newTakeProfit, tradingStopTriggerType);
 

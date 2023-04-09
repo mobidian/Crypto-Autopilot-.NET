@@ -8,8 +8,10 @@ namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTe
 
 public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
 {
-    [Test]
-    public async Task ModifyTradingStop_ShouldModifyTradingStop_WhenLongPositionExists()
+    [TestCase(100, -100, Description = "Both StopLoss and TakeProfit specified")]
+    [TestCase(100, 0, Description = "Only StopLoss specified")]
+    [TestCase(0, -100, Description = "Only TakeProfit specified")]
+    public async Task ModifyTradingStop_ShouldModifyTradingStop_WhenLongPositionExists(int newStopLossOffset, int newTakeProfitOffset)
     {
         // Arrange
         var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
@@ -18,15 +20,15 @@ public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
         var tradingStopTriggerType = TriggerType.LastPrice;
 
         await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-
+        
 
         // Act
-        var newStopLoss = stopLoss + 100;
-        var newTakeProfit = takeProfit + 100;
+        decimal? newStopLoss = stopLoss + newStopLossOffset;
+        decimal? newTakeProfit = takeProfit + newTakeProfitOffset;
 
         await this.SUT.ModifyTradingStopAsync(PositionSide.Buy, newStopLoss, newTakeProfit, tradingStopTriggerType);
 
-
+        
         // Assert
         this.SUT.LongPosition.Should().NotBeNull();
         this.SUT.LongPosition!.StopLoss.Should().Be(newStopLoss);

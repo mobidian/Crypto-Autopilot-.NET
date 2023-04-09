@@ -8,28 +8,31 @@ namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTe
 
 public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
 {
-    [Test]
-    public async Task PlaceLimitOrder_ShouldPlaceBuyLimitOrder_WhenNoBuyLimitOrderExists()
+    [TestCase(-300, 300, Description = "Both StopLoss and TakeProfit specified")]
+    [TestCase(-300, null, Description = "Only StopLoss specified")]
+    [TestCase(null, 300, Description = "Only TakeProfit specified")]
+    [TestCase(null, null, Description = "Neither StopLoss nor TakeProfit specified")]
+    public async Task PlaceLimitOrder_ShouldPlaceBuyLimitOrder_WhenNoBuyLimitOrderExists(int? stopLossOffset, int? takeProfitOffset)
     {
         // Arrange
         var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         var limitPrice = lastPrice - 500;
-        var stopLoss = limitPrice - 300;
-        var takeProfit = limitPrice + 300;
+        decimal? stopLoss = stopLossOffset.HasValue ? limitPrice + stopLossOffset.Value : null;
+        decimal? takeProfit = takeProfitOffset.HasValue ? limitPrice + takeProfitOffset.Value : null;
         var tradingStopTriggerType = TriggerType.LastPrice;
 
         // Act
         await this.SUT.PlaceLimitOrderAsync(OrderSide.Buy, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-
+        
         // Assert
         this.SUT.BuyLimitOrder.Should().NotBeNull();
         this.SUT.BuyLimitOrder!.Side.Should().Be(OrderSide.Buy);
         this.SUT.BuyLimitOrder!.Price.Should().Be(limitPrice);
         this.SUT.BuyLimitOrder!.Quantity.Should().Be(Math.Round(this.Margin * this.Leverage / limitPrice, 2));
-        this.SUT.BuyLimitOrder!.StopLoss.Should().Be(stopLoss);
-        this.SUT.BuyLimitOrder!.StopLossTriggerType.Should().Be(tradingStopTriggerType);
-        this.SUT.BuyLimitOrder!.TakeProfit.Should().Be(takeProfit);
-        this.SUT.BuyLimitOrder!.TakeProfitTriggerType.Should().Be(tradingStopTriggerType);
+        this.SUT.BuyLimitOrder!.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
+        this.SUT.BuyLimitOrder!.StopLossTriggerType.Should().Be(stopLossOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
+        this.SUT.BuyLimitOrder!.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
+        this.SUT.BuyLimitOrder!.TakeProfitTriggerType.Should().Be(takeProfitOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
     }
 
     [Test]
