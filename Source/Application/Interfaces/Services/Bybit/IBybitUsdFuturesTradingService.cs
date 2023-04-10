@@ -7,17 +7,20 @@ public interface IBybitUsdFuturesTradingService
 {
     public BybitPositionUsd? LongPosition { get; }
     public BybitPositionUsd? ShortPosition { get; }
+    
+    public IEnumerable<BybitUsdPerpetualOrder> LimitOrders { get; }
+    public IEnumerable<BybitUsdPerpetualOrder> BuyLimitOrders { get; }
+    public IEnumerable<BybitUsdPerpetualOrder> SellLimitOrders { get; }
 
-    public BybitUsdPerpetualOrder? BuyLimitOrder { get; }
-    public BybitUsdPerpetualOrder? SellLimitOrder { get; }
-
-
-    public Task OpenPositionAsync(PositionSide positionSide, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice);
-    public Task ModifyTradingStopAsync(PositionSide positionSide, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice);
+    
+    public Task<BybitPositionUsd> OpenPositionAsync(PositionSide positionSide, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice);
+    public Task<BybitPositionUsd> ModifyTradingStopAsync(PositionSide positionSide, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice);
     public Task ClosePositionAsync(PositionSide positionSide);
-
-
-    public Task PlaceLimitOrderAsync(OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice);
-    public Task ModifyLimitOrderAsync(OrderSide orderSide, decimal newLimitPrice, decimal newMargin, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice);
-    public Task CancelLimitOrderAsync(OrderSide orderSide);
+    public Task CloseAllPositionsAsync();
+    
+    
+    public Task<BybitUsdPerpetualOrder> PlaceLimitOrderAsync(OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice);
+    public Task<BybitUsdPerpetualOrder> ModifyLimitOrderAsync(Guid bybitId, decimal newLimitPrice, decimal newMargin, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice);
+    public Task CancelLimitOrdersAsync(params Guid[] bybitIds);
+    public Task CancelAllLimitOrdersAsync();
 }

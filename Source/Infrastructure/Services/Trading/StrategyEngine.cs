@@ -43,29 +43,12 @@ public abstract class StrategyEngine : IStrategyEngine
         while (!this.CTS.IsCancellationRequested)
             await this.TakeActionAsync();
         
-        await this.ClosePositionsAndLimitOrdersAsync();
+        await Task.WhenAll(this.TradingService.CloseAllPositionsAsync(),
+                           this.TradingService.CancelAllLimitOrdersAsync());
 
         this.Running = false;
     }
     protected abstract Task TakeActionAsync();
-    private async Task ClosePositionsAndLimitOrdersAsync()
-    {
-        var tasks = new List<Task>();
-
-        if (this.TradingService.LongPosition is not null)
-            tasks.Add(this.TradingService.ClosePositionAsync(PositionSide.Buy));
-
-        if (this.TradingService.ShortPosition is not null)
-            tasks.Add(this.TradingService.ClosePositionAsync(PositionSide.Sell));
-        
-        if (this.TradingService.BuyLimitOrder is not null)
-            tasks.Add(this.TradingService.CancelLimitOrderAsync(OrderSide.Buy));
-        
-        if (this.TradingService.SellLimitOrder is not null)
-            tasks.Add(this.TradingService.CancelLimitOrderAsync(OrderSide.Sell));
-        
-        await Task.WhenAll(tasks);
-    }
 
     public async Task StopTradingAsync()
     {
