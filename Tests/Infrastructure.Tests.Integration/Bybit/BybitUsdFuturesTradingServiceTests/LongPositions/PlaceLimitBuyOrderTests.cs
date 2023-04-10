@@ -25,14 +25,14 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
         await this.SUT.PlaceLimitOrderAsync(OrderSide.Buy, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
         
         // Assert
-        this.SUT.BuyLimitOrder.Should().NotBeNull();
-        this.SUT.BuyLimitOrder!.Side.Should().Be(OrderSide.Buy);
-        this.SUT.BuyLimitOrder!.Price.Should().Be(limitPrice);
-        this.SUT.BuyLimitOrder!.Quantity.Should().Be(Math.Round(this.Margin * this.Leverage / limitPrice, 2));
-        this.SUT.BuyLimitOrder!.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
-        this.SUT.BuyLimitOrder!.StopLossTriggerType.Should().Be(stopLossOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
-        this.SUT.BuyLimitOrder!.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        this.SUT.BuyLimitOrder!.TakeProfitTriggerType.Should().Be(takeProfitOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
+        this.SUT.BuyLimitOrders.Should().NotBeNullOrEmpty();
+        this.SUT.BuyLimitOrders.Single().Side.Should().Be(OrderSide.Buy);
+        this.SUT.BuyLimitOrders.Single().Price.Should().Be(limitPrice);
+        this.SUT.BuyLimitOrders.Single().Quantity.Should().Be(Math.Round(this.Margin * this.Leverage / limitPrice, 2));
+        this.SUT.BuyLimitOrders.Single().StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
+        this.SUT.BuyLimitOrders.Single().StopLossTriggerType.Should().Be(stopLossOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
+        this.SUT.BuyLimitOrders.Single().TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
+        this.SUT.BuyLimitOrders.Single().TakeProfitTriggerType.Should().Be(takeProfitOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
     }
 
     [Test]
@@ -67,23 +67,5 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
 
         // Assert
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
-    }
-
-    [Test]
-    public async Task PlaceLimitOrder_ShouldThrow_WhenLimitBuyOrderAlreadyExists()
-    {
-        // Arrange
-        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
-        var limitPrice = lastPrice - 500;
-        var stopLoss = limitPrice - 300;
-        var takeProfit = limitPrice + 300;
-        var tradingStopTriggerType = TriggerType.LastPrice;
-        await this.SUT.PlaceLimitOrderAsync(OrderSide.Buy, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-
-        // Act
-        var func = async () => await this.SUT.PlaceLimitOrderAsync(OrderSide.Buy, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-
-        // Assert
-        await func.Should().ThrowExactlyAsync<InvalidOrderException>("There is an open Buy limit order already");
     }
 }

@@ -92,18 +92,9 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase
     [TearDown]
     public async Task TearDown()
     {
-        if (this.SUT.LongPosition is not null)
-            await this.SUT.ClosePositionAsync(PositionSide.Buy);
-
-        if (this.SUT.ShortPosition is not null)
-            await this.SUT.ClosePositionAsync(PositionSide.Sell);
-
-        if (this.SUT.BuyLimitOrder is not null)
-            await this.SUT.CancelLimitOrderAsync(OrderSide.Buy);
-
-        if (this.SUT.SellLimitOrder is not null)
-            await this.SUT.CancelLimitOrderAsync(OrderSide.Sell);
-
+        await Task.WhenAll(this.SUT.CloseAllPositionsAsync(),
+                           this.SUT.CancelAllLimitOrdersAsync());
+        
 
         var dbContext = this.Services.GetRequiredService<FuturesTradingDbContext>();
         await this.DbRespawner.ResetAsync(dbContext.Database.GetConnectionString()!);

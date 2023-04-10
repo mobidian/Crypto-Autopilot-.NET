@@ -56,22 +56,4 @@ public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
         // Assert
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
     }
-
-    [Test]
-    public async Task OpenPosition_ShouldThrow_WhenLongPositionIsOpenAlready()
-    {
-        // Arrange
-        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
-        var stopLoss = lastPrice - 300;
-        var takeProfit = lastPrice + 300;
-        var tradingStopTriggerType = TriggerType.LastPrice;
-
-        await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-
-        // Act
-        var func = async () => await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-
-        // Assert
-        await func.Should().ThrowExactlyAsync<InvalidOrderException>().WithMessage($"There is a Buy position open already");
-    }
 }
