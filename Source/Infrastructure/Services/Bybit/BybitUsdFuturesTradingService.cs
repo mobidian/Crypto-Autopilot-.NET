@@ -147,16 +147,14 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     }
     public async Task CloseAllPositionsAsync()
     {
-        var tasks = new List<Task>();
-        
         foreach (var positionSide in this.positions.Keys)
             if (this.positions[positionSide] is not null)
-                tasks.Add(this.ClosePositionAsync(positionSide));
+                await this.ClosePositionAsync(positionSide);
         
-        await Task.WhenAll(tasks);
+        // // TODO parallelization // //
     }
 
-    
+
     public async Task<BybitUsdPerpetualOrder> PlaceLimitOrderAsync(OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice)
     {
         var quantity = Math.Round(Margin * this.Leverage / LimitPrice, 2);
@@ -229,36 +227,30 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     
     public async Task CancelLimitOrdersAsync(params Guid[] bybitIds)
     {
-        var tasks = new List<Task>();
-
         foreach (var bybitId in bybitIds)
-            tasks.Add(CancelPublishRemoveLimitOrderAsync(bybitId));
-        
-        await Task.WhenAll(tasks);
-    }
-    private async Task CancelPublishRemoveLimitOrderAsync(Guid bybitId)
-    {
-        if (!this.limitOrders.TryGetValue(bybitId, out var oldLimitOrder))
-            return;
-        
-                
-        await this.TradingClient.CancelOrderAsync(this.CurrencyPair.Name, oldLimitOrder.Id);
-
-        await this.Mediator.Publish(new CancelledLimitOrderNotification
         {
-            BybitId = bybitId
-        });
+            if (!this.limitOrders.TryGetValue(bybitId, out var oldLimitOrder))
+                continue;
+            
+
+            await this.TradingClient.CancelOrderAsync(this.CurrencyPair.Name, oldLimitOrder.Id);
+
+            await this.Mediator.Publish(new CancelledLimitOrderNotification
+            {
+                BybitId = bybitId
+            });
+            
+            this.limitOrders.Remove(bybitId);
+        }
         
-        this.limitOrders.Remove(bybitId);
+        // // TODO parallelization // //
     }
-    
+
     public async Task CancelAllLimitOrdersAsync()
     {
-        var tasks = new List<Task>();
-
         foreach (var bybitId in this.limitOrders.Keys)
-            tasks.Add(this.CancelLimitOrdersAsync(bybitId));
+            await this.CancelLimitOrdersAsync(bybitId);
         
-        await Task.WhenAll(tasks);
+        // // TODO parallelization // //
     }
 }
