@@ -132,7 +132,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         using var _ = await this.BeginTransactionAsync();
 
         var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).FirstOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
-        this.DbContext.Remove(order);
+        this.DbContext.FuturesOrders.Remove(order);
         await this.DbContext.SaveChangesAsync();
     }
 
