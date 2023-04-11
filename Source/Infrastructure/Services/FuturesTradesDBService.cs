@@ -39,7 +39,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         var entity = futuresOrder.ToDbEntity();
         if (positionId is not null)
         {
-            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstAsync();
             await PositionAndOrdersValidator.ValidateAndThrowAsync((positionDbEntity.ToDomainObject(), new[] { futuresOrder }));
 
             entity.PositionId = positionDbEntity.Id;
@@ -58,7 +58,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         var futuresOrderDbEntities = futuresOrders.Select(x => x.ToDbEntity()).ToArray();
         if (positionId is not null)
         {
-            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstAsync();
             await PositionAndOrdersValidator.ValidateAndThrowAsync((positionDbEntity.ToDomainObject(), futuresOrders));
 
             foreach (var futuresOrderDbEntity in futuresOrderDbEntities)
@@ -99,10 +99,10 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         var ruleSet = positionId is not null ? OrderOpenedPosition : OrderDidNotOpenPosition;
         await OrderValidator.ValidateAsync(updatedFuturesOrder, x => x.IncludeRulesNotInRuleSet().IncludeRuleSets(ruleSet).ThrowOnFailures());
 
-        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {bybitID}");
+        var dbEntity = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).FirstOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {bybitID}");
         if (positionId is not null)
         {
-            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleAsync();
+            var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstAsync();
             await PositionAndOrdersValidator.ValidateAndThrowAsync((positionDbEntity.ToDomainObject(), new[] { updatedFuturesOrder }));
 
             dbEntity.PositionId = positionDbEntity.Id;
@@ -131,7 +131,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     {
         using var _ = await this.BeginTransactionAsync();
 
-        var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).SingleOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
+        var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).FirstOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
         this.DbContext.Remove(order);
         await this.DbContext.SaveChangesAsync();
     }
@@ -182,7 +182,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         
         using var transaction = await this.BeginTransactionAsync();
 
-        var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).SingleOrDefaultAsync() ?? throw new DbUpdateException($"Did not find a position with crypto autopilot id {positionId}");
+        var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstOrDefaultAsync() ?? throw new DbUpdateException($"Did not find a position with crypto autopilot id {positionId}");
         await PositionAndOrdersValidator.ValidateAndThrowAsync((updatedPosition, positionDbEntity.FuturesOrders.Select(x => x.ToDomainObject())));
         
         positionDbEntity.CurrencyPair = updatedPosition.CurrencyPair.Name;
