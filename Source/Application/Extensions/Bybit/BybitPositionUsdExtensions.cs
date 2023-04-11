@@ -2,7 +2,7 @@
 
 using Domain.Models;
 
-namespace Infrastructure.Extensions.Bybit;
+namespace Application.Extensions.Bybit;
 
 public static class BybitPositionUsdExtensions
 {

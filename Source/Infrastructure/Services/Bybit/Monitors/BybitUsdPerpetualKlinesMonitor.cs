@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Proxies;
+﻿using Application.Extensions;
+using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
 
@@ -7,8 +8,6 @@ using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 using Bybit.Net.Objects.Models.Socket;
 
 using CryptoExchange.Net.Sockets;
-
-using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Bybit.Monitors;
 

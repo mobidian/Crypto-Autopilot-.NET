@@ -1,16 +1,14 @@
 ﻿using Application.Exceptions;
+using Application.Extensions;
 using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit.Monitors;
 
-using Bybit.Net.Clients.UsdPerpetualApi;
 using Bybit.Net.Enums;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 using Bybit.Net.Objects.Models.Socket;
 
 using CryptoExchange.Net.Sockets;
-
-using Infrastructure.Extensions;
 
 namespace Infrastructure.Services.Bybit.Monitors;
 

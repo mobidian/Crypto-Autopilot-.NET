@@ -1,6 +1,7 @@
-﻿using Bybit.Net.Enums;
+﻿using Application.Extensions.Bybit;
 
-using Infrastructure.Extensions.Bybit;
+using Bybit.Net.Enums;
+
 using Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests.AbstractBase;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests;

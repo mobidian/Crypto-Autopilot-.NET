@@ -3,7 +3,7 @@ using Bybit.Net.Objects.Models;
 
 using Domain.Models;
 
-namespace Infrastructure.Extensions.Bybit;
+namespace Application.Extensions.Bybit;
 
 public static class BybitUsdPerpetualOrderExtensions
 {

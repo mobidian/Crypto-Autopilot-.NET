@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Application.Extensions.Bybit;
 using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
@@ -6,7 +7,6 @@ using Bybit.Net.Objects.Models;
 
 using Domain.Models;
 
-using Infrastructure.Extensions.Bybit;
 using Infrastructure.Notifications;
 
 using MediatR;

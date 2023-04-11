@@ -1,6 +1,6 @@
 ﻿using Bybit.Net.Enums;
 
-namespace Infrastructure.Extensions.Bybit;
+namespace Application.Extensions.Bybit;
 
 public static class BybitPositionSideExtensions
 {

@@ -1,11 +1,10 @@
-﻿using Application.Interfaces.Services.Bybit;
+﻿using Application.Extensions;
+using Application.Extensions.Bybit;
+using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 using Bybit.Net.Objects.Models;
-
-using Infrastructure.Extensions;
-using Infrastructure.Extensions.Bybit;
 
 namespace Infrastructure.Services.Bybit;
 
