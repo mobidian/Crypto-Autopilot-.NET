@@ -81,15 +81,27 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         var cryptoAutopilotId = Guid.NewGuid();
         var position = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, positionSide);
-        
+
+        var existed = this.positions[positionSide] is not null;
         this.positionGuids[positionSide] = cryptoAutopilotId;
         this.positions[positionSide] = position;
         
-        await this.Mediator.Publish(new PositionOpenedNotification
+        if (!existed)
         {
-            Position = position!.ToDomainObject(cryptoAutopilotId),
-            FuturesOrders = new[] { order.ToDomainObject(positionSide) },
-        });
+            await this.Mediator.Publish(new PositionOpenedNotification
+            {
+                Position = position!.ToDomainObject(cryptoAutopilotId),
+                FuturesOrders = new[] { order.ToDomainObject(positionSide) },
+            });
+        }
+        else
+        {
+            await this.Mediator.Publish(new PositionUpdatedNotification
+            {
+                PositionCryptoAutopilotId = cryptoAutopilotId,
+                UpdatedPosition = position!.ToDomainObject(cryptoAutopilotId)
+            });
+        }
         
         return position!;
     }
