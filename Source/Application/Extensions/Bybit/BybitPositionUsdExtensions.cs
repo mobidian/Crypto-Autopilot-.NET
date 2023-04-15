@@ -6,7 +6,7 @@ namespace Application.Extensions.Bybit;
 
 public static class BybitPositionUsdExtensions
 {
-    public static FuturesPosition ToDomainObject(this BybitPositionUsd position, Guid CryptoAutopilotId, decimal? exitPrice = null) => new FuturesPosition
+    public static FuturesPosition ToDomainObject(this BybitPositionUsd position, Guid CryptoAutopilotId) => new FuturesPosition
     {
         CryptoAutopilotId = CryptoAutopilotId,
         CurrencyPair = position.Symbol,
@@ -15,6 +15,7 @@ public static class BybitPositionUsdExtensions
         Leverage = position.Leverage,
         Quantity = position.Quantity,
         EntryPrice = position.EntryPrice,
-        ExitPrice = exitPrice
+        StopLoss = position.StopLoss,
+        TakeProfit = position.TakeProfit,
     };
 }

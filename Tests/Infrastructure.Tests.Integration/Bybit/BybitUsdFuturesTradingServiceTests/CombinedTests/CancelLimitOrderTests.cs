@@ -1,7 +1,6 @@
 ﻿using Bybit.Net.Enums;
-using Bybit.Net.Objects.Models;
 
-using CryptoExchange.Net.CommonObjects;
+using Domain.Models;
 
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
 
@@ -21,8 +20,7 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
 
         
         // Act
-        var orderId = Guid.Parse(order.Id);
-        await this.SUT.CancelLimitOrdersAsync(orderId);
+        await this.SUT.CancelLimitOrdersAsync(order.BybitID);
 
         
         // Assert
@@ -35,7 +33,7 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
         // Arrange
         var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
         
-        var orders = new List<BybitUsdPerpetualOrder>();
+        var orders = new List<FuturesOrder>();
         for (var offset = 100; offset <= 500; offset += 100)
             orders.Add(Random.Shared.Next(2) switch
             {
@@ -44,9 +42,9 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
                 _ => throw new NotImplementedException(),
             });
 
-
+        
         // Act
-        var ids = orders.Take(3).Select(x => Guid.Parse(x.Id)).ToArray();
+        var ids = orders.Take(3).Select(x => x.BybitID).ToArray();
         await this.SUT.CancelLimitOrdersAsync(ids);
 
         

@@ -24,9 +24,11 @@ public class FuturesPositionDbEntityConfiguration : IEntityTypeConfiguration<Fut
         builder.Property(x => x.Leverage).HasPrecision(18, 4);
         builder.Property(x => x.Quantity).HasPrecision(18, 4);
         builder.Property(x => x.EntryPrice).HasPrecision(18, 4);
+        builder.Property(x => x.StopLoss).HasPrecision(18, 4);
+        builder.Property(x => x.TakeProfit).HasPrecision(18, 4);
         builder.Property(x => x.ExitPrice).HasPrecision(18, 4);
 
-        
+
         builder.HasIndex(x => x.CryptoAutopilotId).IsUnique();
 
         

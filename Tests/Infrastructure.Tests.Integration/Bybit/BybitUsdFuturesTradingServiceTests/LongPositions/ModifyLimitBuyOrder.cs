@@ -1,9 +1,6 @@
 ﻿using Application.Exceptions;
 
 using Bybit.Net.Enums;
-using Bybit.Net.Objects.Models;
-
-using CryptoExchange.Net.CommonObjects;
 
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
 
@@ -31,8 +28,7 @@ public class ModifyLimitBuyOrder : BybitUsdFuturesTradingServiceTestsBase
         var newTakeProfit = newLimitPrice + 400;
         var newTradingStopTriggerType = TriggerType.MarkPrice;
         
-        var orderId = Guid.Parse(order.Id);
-        await this.SUT.ModifyLimitOrderAsync(orderId, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
+        await this.SUT.ModifyLimitOrderAsync(order.BybitID, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
 
 
         // Assert
@@ -41,9 +37,16 @@ public class ModifyLimitBuyOrder : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.BuyLimitOrders.Single().Price.Should().Be(newLimitPrice);
         this.SUT.BuyLimitOrders.Single().Quantity.Should().Be(Math.Round(newMargin * this.Leverage / newLimitPrice, 2));
         this.SUT.BuyLimitOrders.Single().StopLoss.Should().Be(newStopLoss);
-        this.SUT.BuyLimitOrders.Single().StopLossTriggerType.Should().Be(newTradingStopTriggerType);
         this.SUT.BuyLimitOrders.Single().TakeProfit.Should().Be(newTakeProfit);
-        this.SUT.BuyLimitOrders.Single().TakeProfitTriggerType.Should().Be(newTradingStopTriggerType);
+        
+        var orderFromApi = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, this.SUT.BuyLimitOrders.Single().BybitID.ToString());
+        orderFromApi.Side.Should().Be(OrderSide.Buy);
+        orderFromApi.Price.Should().Be(newLimitPrice);
+        orderFromApi.Quantity.Should().Be(Math.Round(newMargin * this.Leverage / newLimitPrice, 2));
+        orderFromApi.StopLoss.Should().Be(newStopLoss);
+        orderFromApi.StopLossTriggerType.Should().Be(newTradingStopTriggerType);
+        orderFromApi.TakeProfit.Should().Be(newTakeProfit);
+        orderFromApi.TakeProfitTriggerType.Should().Be(newTradingStopTriggerType);
     }
 
     [Test]
@@ -66,8 +69,7 @@ public class ModifyLimitBuyOrder : BybitUsdFuturesTradingServiceTestsBase
         var newTakeProfit = newLimitPrice + 400;
         var newTradingStopTriggerType = TriggerType.MarkPrice;
 
-        var orderId = Guid.Parse(order.Id);
-        var func = async () => await this.SUT.ModifyLimitOrderAsync(orderId, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
+        var func = async () => await this.SUT.ModifyLimitOrderAsync(order.BybitID, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
 
 
         // Assert
@@ -94,8 +96,7 @@ public class ModifyLimitBuyOrder : BybitUsdFuturesTradingServiceTestsBase
         var newTakeProfit = newLimitPrice - 400;
         var newTradingStopTriggerType = TriggerType.MarkPrice;
 
-        var orderId = Guid.Parse(order.Id);
-        var func = async () => await this.SUT.ModifyLimitOrderAsync(orderId, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
+        var func = async () => await this.SUT.ModifyLimitOrderAsync(order.BybitID, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
 
 
         // Assert

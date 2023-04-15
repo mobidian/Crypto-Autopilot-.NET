@@ -25,19 +25,15 @@ public class Candlestick : IQuote, ICloneable
     [JsonIgnore]
     public bool IsDoji => this.Close == this.Open;
 
-
-    public virtual object Clone()
+    
+    public virtual object Clone() => new Candlestick
     {
-        return new Candlestick
-        {
-            CurrencyPair = (CurrencyPair)this.CurrencyPair.Clone(),
-
-            Date = this.Date,
-            Open = this.Open,
-            High = this.High,
-            Low = this.Low,
-            Close = this.Close,
-            Volume = this.Volume,
-        };
-    }
+        CurrencyPair = (CurrencyPair)this.CurrencyPair.Clone(),
+        Date = this.Date,
+        Open = this.Open,
+        High = this.High,
+        Low = this.Low,
+        Close = this.Close,
+        Volume = this.Volume,
+    };
 }

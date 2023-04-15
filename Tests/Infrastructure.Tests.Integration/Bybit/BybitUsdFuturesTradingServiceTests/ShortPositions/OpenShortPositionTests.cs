@@ -26,11 +26,9 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
         // Assert
         this.SUT.ShortPosition.Should().NotBeNull();
         this.SUT.ShortPosition!.Side.Should().Be(PositionSide.Sell);
-        this.SUT.ShortPosition!.PositionMode.Should().Be(PositionMode.BothSideSell);
         this.SUT.ShortPosition!.Leverage.Should().Be(this.Leverage);
         this.SUT.ShortPosition!.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
         this.SUT.ShortPosition!.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        this.SUT.ShortPosition!.StopLossTakeProfitMode.Should().Be(StopLossTakeProfitMode.Full);
         
         var position = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Sell);
         position!.Side.Should().Be(PositionSide.Sell);

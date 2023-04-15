@@ -15,6 +15,8 @@ public static class FuturesPositionMappingExtensions
         Leverage = position.Leverage,
         Quantity = position.Quantity,
         EntryPrice = position.EntryPrice,
+        StopLoss = position.StopLoss,
+        TakeProfit = position.TakeProfit,
         ExitPrice = position.ExitPrice,
     };
     
@@ -27,6 +29,8 @@ public static class FuturesPositionMappingExtensions
         Leverage = entity.Leverage,
         Quantity = entity.Quantity,
         EntryPrice = entity.EntryPrice,
+        StopLoss = entity.StopLoss,
+        TakeProfit = entity.TakeProfit,
         ExitPrice = entity.ExitPrice,
     };
 }

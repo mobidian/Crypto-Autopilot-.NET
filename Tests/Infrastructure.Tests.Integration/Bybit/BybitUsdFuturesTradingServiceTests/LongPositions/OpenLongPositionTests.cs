@@ -26,11 +26,9 @@ public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
         // Assert
         this.SUT.LongPosition.Should().NotBeNull();
         this.SUT.LongPosition!.Side.Should().Be(PositionSide.Buy);
-        this.SUT.LongPosition!.PositionMode.Should().Be(PositionMode.BothSideBuy);
         this.SUT.LongPosition!.Leverage.Should().Be(this.Leverage);
         this.SUT.LongPosition!.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
         this.SUT.LongPosition!.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        this.SUT.LongPosition!.StopLossTakeProfitMode.Should().Be(StopLossTakeProfitMode.Full);
         
         var position = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Buy);
         position!.Side.Should().Be(PositionSide.Buy);

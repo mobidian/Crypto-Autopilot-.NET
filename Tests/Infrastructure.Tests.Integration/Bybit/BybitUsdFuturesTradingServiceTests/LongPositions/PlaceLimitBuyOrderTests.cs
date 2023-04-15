@@ -30,9 +30,16 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.BuyLimitOrders.Single().Price.Should().Be(limitPrice);
         this.SUT.BuyLimitOrders.Single().Quantity.Should().Be(Math.Round(this.Margin * this.Leverage / limitPrice, 2));
         this.SUT.BuyLimitOrders.Single().StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
-        this.SUT.BuyLimitOrders.Single().StopLossTriggerType.Should().Be(stopLossOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
         this.SUT.BuyLimitOrders.Single().TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        this.SUT.BuyLimitOrders.Single().TakeProfitTriggerType.Should().Be(takeProfitOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
+        
+        var order = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, this.SUT.BuyLimitOrders.Single().BybitID.ToString());
+        order.Side.Should().Be(OrderSide.Buy);
+        order.Price.Should().Be(limitPrice);
+        order.Quantity.Should().Be(Math.Round(this.Margin * this.Leverage / limitPrice, 2));
+        order.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
+        order.StopLossTriggerType.Should().Be(stopLossOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
+        order.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
+        order.TakeProfitTriggerType.Should().Be(takeProfitOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
     }
 
     [Test]

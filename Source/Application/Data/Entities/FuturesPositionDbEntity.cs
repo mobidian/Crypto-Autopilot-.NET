@@ -13,7 +13,9 @@ public class FuturesPositionDbEntity : BaseEntity
     public required decimal Leverage { get; set; }
     public required decimal Quantity { get; set; }
     public required decimal EntryPrice { get; set; }
-    public required decimal? ExitPrice { get; set; }
+    public decimal? StopLoss { get; set; }
+    public decimal? TakeProfit { get; set; }
+    public decimal? ExitPrice { get; set; }
     
     public virtual IEnumerable<FuturesOrderDbEntity>? FuturesOrders { get; set; }
 }
