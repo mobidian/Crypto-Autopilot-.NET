@@ -7,7 +7,8 @@ using Bybit.Net.Objects.Models;
 
 using Domain.Models;
 
-using Infrastructure.Notifications;
+using Infrastructure.Notifications.FuturesOrders;
+using Infrastructure.Notifications.FuturesPositions;
 
 using MediatR;
 
@@ -25,9 +26,9 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     
     public BybitUsdFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdFuturesTradingApiClient tradingClient, IMediator mediator)
     {
-        if (leverage is <= 0 or > 100)
-            throw new ArgumentException("The leverage has to be between 0 and 100 inclusive", nameof(leverage));
-
+        if (leverage is < 1 or > 100)
+            throw new ArgumentException("The leverage has to be between 1 and 100 inclusive", nameof(leverage));
+        
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
         this.FuturesAccount = futuresAccount ?? throw new ArgumentNullException(nameof(futuresAccount));
@@ -99,7 +100,8 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
             await this.Mediator.Publish(new PositionUpdatedNotification
             {
                 PositionCryptoAutopilotId = cryptoAutopilotId,
-                UpdatedPosition = position!.ToDomainObject(cryptoAutopilotId)
+                UpdatedPosition = position!.ToDomainObject(cryptoAutopilotId),
+                FuturesOrders = new[] { order.ToDomainObject(positionSide) },
             });
         }
         
@@ -151,9 +153,10 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         await this.Mediator.Publish(new PositionUpdatedNotification
         {
             PositionCryptoAutopilotId = cryptoAutopilotId,
-            UpdatedPosition = this.positions[positionSide]!.ToDomainObject(cryptoAutopilotId, order.Price)
+            UpdatedPosition = this.positions[positionSide]!.ToDomainObject(cryptoAutopilotId, order.Price),
+            FuturesOrders = new[] { order.ToDomainObject(positionSide) }
         });
-        
+
         this.positionGuids[positionSide] = null;
         this.positions[positionSide] = null;
     }
@@ -257,12 +260,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         // // TODO parallelization // //
     }
-
-    public async Task CancelAllLimitOrdersAsync()
-    {
-        foreach (var bybitId in this.limitOrders.Keys)
-            await this.CancelLimitOrdersAsync(bybitId);
-        
-        // // TODO parallelization // //
-    }
+    
+    public async Task CancelAllLimitOrdersAsync() => await this.CancelLimitOrdersAsync(this.limitOrders.Keys.ToArray());
 }
