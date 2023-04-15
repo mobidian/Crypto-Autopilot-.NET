@@ -9,7 +9,7 @@ public interface IFuturesTradesDBService
     public Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync();
     public Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair);
     public Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null);
-    public Task DeleteFuturesOrderAsync(Guid bybitID);
+    public Task DeleteFuturesOrdersAsync(params Guid[] bybitIDs);
     
     public Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders);
     public Task<IEnumerable<FuturesPosition>> GetAllFuturesPositionsAsync();

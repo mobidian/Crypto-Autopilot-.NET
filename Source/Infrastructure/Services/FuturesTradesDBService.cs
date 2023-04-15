@@ -127,12 +127,17 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
         await this.DbContext.ValidateAndSaveChangesAsync();
     }
-    public async Task DeleteFuturesOrderAsync(Guid bybitID)
+    public async Task DeleteFuturesOrdersAsync(params Guid[] bybitIDs)
     {
-        using var _ = await this.BeginTransactionAsync();
+        foreach (var bybitID in bybitIDs)
+            if (await this.DbContext.FuturesOrders.FirstOrDefaultAsync(x => x.BybitID == bybitID) is null)
+                throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
 
-        var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).FirstOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
-        this.DbContext.FuturesOrders.Remove(order);
+        
+        using var _ = await this.BeginTransactionAsync();
+        
+        var orders = this.DbContext.FuturesOrders.Where(x => bybitIDs.Contains(x.BybitID));
+        this.DbContext.FuturesOrders.RemoveRange(orders);
         await this.DbContext.ValidateAndSaveChangesAsync();
     }
 

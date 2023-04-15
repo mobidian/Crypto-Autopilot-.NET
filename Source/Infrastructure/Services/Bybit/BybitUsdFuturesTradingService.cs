@@ -1,4 +1,6 @@
-﻿using Application.Exceptions;
+﻿using System.Collections.Concurrent;
+
+using Application.Exceptions;
 using Application.Extensions.Bybit;
 using Application.Interfaces.Services.Bybit;
 
@@ -37,25 +39,30 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         this.Mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-
-    //// //// ////
-
-
-    private readonly IDictionary<PositionSide, Guid?> positionGuids = new Dictionary<PositionSide, Guid?>()
-    {
-        { PositionSide.Buy, null },
-        { PositionSide.Sell, null }
-    };
-    private readonly IDictionary<PositionSide, BybitPositionUsd?> positions = new Dictionary<PositionSide, BybitPositionUsd?>()
-    {
-        { PositionSide.Buy, null },
-        { PositionSide.Sell, null }
-    };
-    public BybitPositionUsd? LongPosition => this.positions[PositionSide.Buy];
-    public BybitPositionUsd? ShortPosition => this.positions[PositionSide.Sell];
-
     
-    private readonly IDictionary<Guid, BybitUsdPerpetualOrder> limitOrders = new Dictionary<Guid, BybitUsdPerpetualOrder>();
+    //// //// ////
+    
+    
+    private readonly IDictionary<PositionSide, (Guid CryptoAutopilotId, BybitPositionUsd Value)> positionsData = new Dictionary<PositionSide, (Guid, BybitPositionUsd)>();
+    public BybitPositionUsd? LongPosition
+    {
+        get
+        {
+            this.positionsData.TryGetValue(PositionSide.Buy, out var positionData);
+            return positionData.Value;
+        }
+    }
+    public BybitPositionUsd? ShortPosition
+    {
+        get
+        {
+            this.positionsData.TryGetValue(PositionSide.Sell, out var positionData);
+            return positionData.Value;
+        }
+    }
+
+
+    private readonly IDictionary<Guid, BybitUsdPerpetualOrder> limitOrders = new ConcurrentDictionary<Guid, BybitUsdPerpetualOrder>();
     public IEnumerable<BybitUsdPerpetualOrder> LimitOrders => this.limitOrders.Values;
     public IEnumerable<BybitUsdPerpetualOrder> BuyLimitOrders => this.limitOrders.Values.Where(x => x.Side == OrderSide.Buy);
     public IEnumerable<BybitUsdPerpetualOrder> SellLimitOrders => this.limitOrders.Values.Where(x => x.Side == OrderSide.Sell);
@@ -82,10 +89,9 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         var cryptoAutopilotId = Guid.NewGuid();
         var position = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, positionSide);
-
-        var existed = this.positions[positionSide] is not null;
-        this.positionGuids[positionSide] = cryptoAutopilotId;
-        this.positions[positionSide] = position;
+        
+        var existed = this.positionsData.ContainsKey(positionSide);
+        this.positionsData[positionSide] = (cryptoAutopilotId, position!);
         
         if (!existed)
         {
@@ -109,7 +115,11 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     }
     public async Task<BybitPositionUsd> ModifyTradingStopAsync(PositionSide positionSide, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice)
     {
-        var position = this.positions[positionSide] ?? throw new InvalidOrderException($"No open {positionSide} was found");
+        if (!this.positionsData.TryGetValue(positionSide, out var positionData))
+            throw new InvalidOrderException($"No open {positionSide} position was found");
+
+
+        var position = positionData.Value;
 
         await this.TradingClient.SetTradingStopAsync(this.CurrencyPair.Name,
                                                      positionSide,
@@ -122,10 +132,10 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
                                                      positionMode: position.PositionMode);
 
         
-        var cryptoAutopilotId = this.positionGuids[positionSide]!.Value;
+        var cryptoAutopilotId = this.positionsData[positionSide]!.CryptoAutopilotId;
         var updatedPosition = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, positionSide);
 
-        this.positions[positionSide] = updatedPosition;
+        this.positionsData[positionSide] = (cryptoAutopilotId, updatedPosition!);
 
         await this.Mediator.Publish(new PositionUpdatedNotification
         {
@@ -137,7 +147,11 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     }
     public async Task ClosePositionAsync(PositionSide positionSide)
     {
-        var position = this.positions[positionSide] ?? throw new InvalidOrderException($"No open {positionSide} position was found");
+        if (!this.positionsData.TryGetValue(positionSide, out var positionData))
+            throw new InvalidOrderException($"No open {positionSide} position was found");
+
+
+        var position = positionData.Value;
 
         var order = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
                                                              positionSide.GetClosingOrderSide(),
@@ -148,28 +162,26 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
                                                              false,
                                                              positionMode: position.PositionMode);
 
-
-        var cryptoAutopilotId = this.positionGuids[positionSide]!.Value;
+        
+        (var cryptoAutopilotId, position) = this.positionsData[positionSide];
         await this.Mediator.Publish(new PositionUpdatedNotification
         {
             PositionCryptoAutopilotId = cryptoAutopilotId,
-            UpdatedPosition = this.positions[positionSide]!.ToDomainObject(cryptoAutopilotId, order.Price),
+            UpdatedPosition = position.ToDomainObject(cryptoAutopilotId, order.Price),
             FuturesOrders = new[] { order.ToDomainObject(positionSide) }
         });
-
-        this.positionGuids[positionSide] = null;
-        this.positions[positionSide] = null;
+        
+        this.positionsData.Remove(positionSide);
     }
     public async Task CloseAllPositionsAsync()
     {
-        foreach (var positionSide in this.positions.Keys)
-            if (this.positions[positionSide] is not null)
-                await this.ClosePositionAsync(positionSide);
+        foreach (var positionSide in this.positionsData.Keys)
+            await this.ClosePositionAsync(positionSide);
         
         // // TODO parallelization // //
     }
 
-
+    
     public async Task<BybitUsdPerpetualOrder> PlaceLimitOrderAsync(OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice)
     {
         var quantity = Math.Round(Margin * this.Leverage / LimitPrice, 2);
@@ -242,24 +254,18 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     
     public async Task CancelLimitOrdersAsync(params Guid[] bybitIds)
     {
-        foreach (var bybitId in bybitIds)
+        var existingIds = bybitIds.Where(this.limitOrders.ContainsKey);
+        await Parallel.ForEachAsync(existingIds, async (bybitId, _) =>
         {
-            if (!this.limitOrders.TryGetValue(bybitId, out var oldLimitOrder))
-                continue;
-            
-
-            await this.TradingClient.CancelOrderAsync(this.CurrencyPair.Name, oldLimitOrder.Id);
-
-            await this.Mediator.Publish(new CancelledLimitOrderNotification
-            {
-                BybitId = bybitId
-            });
-            
+            await this.TradingClient.CancelOrderAsync(this.CurrencyPair.Name, bybitId.ToString());
             this.limitOrders.Remove(bybitId);
-        }
+        });
         
-        // // TODO parallelization // //
+        await this.Mediator.Publish(new CancelledLimitOrdersNotification
+        {
+            BybitIds = bybitIds
+        });
     }
-    
-    public async Task CancelAllLimitOrdersAsync() => await this.CancelLimitOrdersAsync(this.limitOrders.Keys.ToArray());
+
+    public Task CancelAllLimitOrdersAsync() => this.CancelLimitOrdersAsync(this.limitOrders.Keys.ToArray());
 }

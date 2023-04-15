@@ -17,7 +17,7 @@ public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
         await this.DbContext.SaveChangesAsync();
 
         // Act
-        await this.SUT.DeleteFuturesOrderAsync(futuresOrder.BybitID);
+        await this.SUT.DeleteFuturesOrdersAsync(futuresOrder.BybitID);
 
         // Assert
         this.DbContext.FuturesOrders.Should().BeEmpty();
@@ -30,7 +30,7 @@ public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var bybitId = Guid.NewGuid();
 
         // Act
-        var func = async () => await this.SUT.DeleteFuturesOrderAsync(bybitId);
+        var func = async () => await this.SUT.DeleteFuturesOrdersAsync(bybitId);
 
         // Assert
         await func.Should().ThrowExactlyAsync<DbUpdateException>().WithMessage($"No order with bybitID {bybitId} was found in the database");

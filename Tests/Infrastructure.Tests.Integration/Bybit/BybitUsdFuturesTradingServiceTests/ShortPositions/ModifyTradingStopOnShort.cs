@@ -48,6 +48,6 @@ public class ModifyTradingStopOnShort : BybitUsdFuturesTradingServiceTestsBase
         var func = async () => await this.SUT.ModifyTradingStopAsync(PositionSide.Sell, stopLoss, takeProfit, tradingStopTriggerType);
 
         // Assert
-        await func.Should().ThrowExactlyAsync<InvalidOrderException>("No open Sell was found");
+        await func.Should().ThrowExactlyAsync<InvalidOrderException>("No open Sell position was found");
     }
 }
