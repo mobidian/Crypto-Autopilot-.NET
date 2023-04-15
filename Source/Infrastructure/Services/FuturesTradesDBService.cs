@@ -48,7 +48,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         using var transaction = await this.BeginTransactionAsync();
 
         await this.DbContext.FuturesOrders.AddAsync(entity);
-        await this.DbContext.SaveChangesAsync();
+        await this.DbContext.ValidateAndSaveChangesAsync();
     }
     public async Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
     {
@@ -69,7 +69,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         using var transaction = await this.BeginTransactionAsync();
 
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
-        await this.DbContext.SaveChangesAsync();
+        await this.DbContext.ValidateAndSaveChangesAsync();
     }
     public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
     {
@@ -125,7 +125,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         dbEntity.TimeInForce = updatedFuturesOrder.TimeInForce;
         dbEntity.Status = updatedFuturesOrder.Status;
 
-        await this.DbContext.SaveChangesAsync();
+        await this.DbContext.ValidateAndSaveChangesAsync();
     }
     public async Task DeleteFuturesOrderAsync(Guid bybitID)
     {
@@ -133,7 +133,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
         var order = await this.DbContext.FuturesOrders.Where(x => x.BybitID == bybitID).FirstOrDefaultAsync() ?? throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
         this.DbContext.FuturesOrders.Remove(order);
-        await this.DbContext.SaveChangesAsync();
+        await this.DbContext.ValidateAndSaveChangesAsync();
     }
 
     public async Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders)
@@ -154,7 +154,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             return entity;
         });
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
-        await this.DbContext.SaveChangesAsync();
+        await this.DbContext.ValidateAndSaveChangesAsync();
     }
     public async Task<IEnumerable<FuturesPosition>> GetAllFuturesPositionsAsync()
     {
@@ -183,7 +183,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         using var transaction = await this.BeginTransactionAsync();
 
         var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstOrDefaultAsync() ?? throw new DbUpdateException($"Did not find a position with crypto autopilot id {positionId}");
-        await PositionAndOrdersValidator.ValidateAndThrowAsync((updatedPosition, positionDbEntity.FuturesOrders.Select(x => x.ToDomainObject())));
+        await PositionAndOrdersValidator.ValidateAndThrowAsync((updatedPosition, positionDbEntity.FuturesOrders!.Select(x => x.ToDomainObject())));
         
         positionDbEntity.CurrencyPair = updatedPosition.CurrencyPair.Name;
         positionDbEntity.Side = updatedPosition.Side;
@@ -193,7 +193,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         positionDbEntity.EntryPrice = updatedPosition.EntryPrice;
         positionDbEntity.ExitPrice = updatedPosition.ExitPrice;
         
-        await this.DbContext.SaveChangesAsync();
+        await this.DbContext.ValidateAndSaveChangesAsync();
     }
 
     private async Task<TransactionalOperation> BeginTransactionAsync()
