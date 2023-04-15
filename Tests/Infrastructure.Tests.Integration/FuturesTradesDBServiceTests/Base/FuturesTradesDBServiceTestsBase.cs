@@ -36,7 +36,7 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
         .RuleFor(p => p.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
         .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000))
-        .RuleFor(p => p.Leverage, f => f.Random.Decimal(0, 100))
+        .RuleFor(p => p.Leverage, f => f.Random.Decimal(1, 100))
         .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000))
         .RuleSet(PositionSideLong, set =>
         {
