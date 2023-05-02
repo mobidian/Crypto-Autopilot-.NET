@@ -13,7 +13,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesOrdersWithoutPositionGuid_ShouldAddFuturesOrders_WhenAllOrdersShouldNotPointToPosition()
     {
         // Arrange
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {LimitOrder}, {SideBuy}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
         // Act
         await this.SUT.AddFuturesOrdersAsync(orders);
@@ -26,8 +26,8 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesOrdersWithoutPositionGuid_ShouldThrow_WhenAnyFuturesOrderRequiresPosition()
     {
         // Arrange
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {LimitOrder}, {SideBuy}");
-        orders.Add(this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}")); // requires position
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
+        orders.Add(this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}")); // requires position
 
         // Act
         var func = async () => await this.SUT.AddFuturesOrdersAsync(orders);
@@ -42,7 +42,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrders_WhenAllFuturesOrdersRequirePosition()
     {
         // Arrange
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
@@ -58,8 +58,8 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition()
     {
         // Arrange
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        orders.Add(this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}")); // does not require position
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
+        orders.Add(this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}")); // does not require position
 
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
@@ -82,8 +82,8 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var orders = new[]
         {
-            this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}"),
-            this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}"),
+            this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}"),
+            this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}"),
         };
 
         // Act
@@ -98,7 +98,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesOrder_ShouldThrow_WhenThePositionSideOfTheOrdersDoesNotMatchThePositionSide()
     {
         // Arrange
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell.ToRuleSetName()}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();

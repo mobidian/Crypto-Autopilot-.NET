@@ -14,7 +14,7 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
@@ -34,7 +34,7 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()

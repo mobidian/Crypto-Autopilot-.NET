@@ -27,8 +27,6 @@ public abstract class FuturesTradesDBServiceTestsBase
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
-
-    
     
     protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
         .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
@@ -48,17 +46,8 @@ public abstract class FuturesTradesDBServiceTestsBase
             set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
             set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice - 3000));
         });
-    
 
-    protected const string LimitOrder = "LimitOrder";
-    protected const string MarketOrder = "MarketOrder";
-    protected const string StatusFilled = "StatusFilled";
-    protected const string SideBuy = "SideBuy";
-    protected const string SideSell = "SideSell";
-    protected const string OrderPositionLong = "PositionLong";
-    protected const string OrderPositionShort = "PositionShort";
-    
-    protected readonly Faker<FuturesOrder> FuturesOrderGenerator = new Faker<FuturesOrder>()
+    protected readonly Faker<FuturesOrder> FuturesOrdersGenerator = new Faker<FuturesOrder>()
         .RuleFor(o => o.BybitID, f => Guid.NewGuid())
         .RuleFor(o => o.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
         .RuleFor(o => o.CreateTime, f => f.Date.Past(1))
@@ -66,38 +55,37 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleFor(o => o.Price, f => f.Random.Decimal(5000, 15000))
         .RuleFor(o => o.Quantity, f => f.Random.Decimal(100, 300))
         .RuleFor(o => o.Status, OrderStatus.Created)
-        .RuleSet(LimitOrder, set =>
+        .RuleSet(OrderType.Limit.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.Type, OrderType.Limit);
             set.RuleFor(o => o.TimeInForce, TimeInForce.GoodTillCanceled);
         })
-        .RuleSet(MarketOrder, set =>
+        .RuleSet(OrderType.Market.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.Type, OrderType.Market);
             set.RuleFor(o => o.TimeInForce, TimeInForce.ImmediateOrCancel);
         })
-        .RuleSet(StatusFilled, set => set.RuleFor(o => o.Status, OrderStatus.Filled))
-        .RuleSet(SideBuy, set =>
+        .RuleSet(OrderStatus.Filled.ToRuleSetName(), set => set.RuleFor(o => o.Status, OrderStatus.Filled))
+        .RuleSet(OrderSide.Buy.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.Side, f => OrderSide.Buy);
             set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
             set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
         })
-        .RuleSet(SideSell, set =>
+        .RuleSet(OrderSide.Sell.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.Side, f => OrderSide.Sell);
             set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
             set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
         })
-        .RuleSet(OrderPositionLong, set =>
+        .RuleSet(PositionSide.Buy.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.PositionSide, f => PositionSide.Buy);
         })
-        .RuleSet(OrderPositionShort, set =>
+        .RuleSet(PositionSide.Sell.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.PositionSide, f => PositionSide.Sell);
         });
-    
 
     
     private Respawner DbRespawner;

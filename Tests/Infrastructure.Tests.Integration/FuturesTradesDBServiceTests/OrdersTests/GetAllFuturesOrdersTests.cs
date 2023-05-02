@@ -10,7 +10,7 @@ public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders_WhenFuturesOrdersExist()
     {
         // Arrange
-        var futuresOrders = this.FuturesOrderGenerator.GenerateBetween(1, 5);
+        var futuresOrders = this.FuturesOrdersGenerator.GenerateBetween(1, 5);
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()));
         await this.DbContext.SaveChangesAsync();
 

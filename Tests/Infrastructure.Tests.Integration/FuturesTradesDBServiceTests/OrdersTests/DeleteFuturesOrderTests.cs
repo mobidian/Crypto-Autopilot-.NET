@@ -12,7 +12,7 @@ public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
     public async Task DeleteFuturesOrder_ShouldDeleteFuturesOrder_WhenFuturesOrderExists()
     {
         // Arrange
-        var futuresOrder = this.FuturesOrderGenerator.Generate();
+        var futuresOrder = this.FuturesOrdersGenerator.Generate();
         await this.DbContext.FuturesOrders.AddAsync(futuresOrder.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 

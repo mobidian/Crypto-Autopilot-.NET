@@ -13,11 +13,11 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldUpdateFuturesOrder_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}");
+        var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {LimitOrder}, {SideBuy}");
+        var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
 
         // Act
@@ -32,13 +32,13 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}");
+        var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
-        var updatedOrder = this.FuturesOrderGenerator.Clone()
+        var updatedOrder = this.FuturesOrdersGenerator.Clone()
             .RuleFor(x => x.BybitID, order.BybitID)
-            .Generate($"default, {MarketOrder}, {SideBuy}");
+            .Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
 
         // Act
@@ -55,11 +55,11 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldUpdateFuturesOrder_WhenOrderRequiresPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
 
 
         // Act
@@ -74,14 +74,14 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}");
+        var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
 
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {LimitOrder}, {SideBuy}");
+        var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
 
         // Act
@@ -98,11 +98,11 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenTheOrderPositionSideDoesNotMatchThePositionSide()
     {
         // Arrange
-        var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
-        var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");
+        var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}");
 
 
         // Act

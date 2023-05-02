@@ -14,7 +14,7 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
 
         // Act
         await this.SUT.AddFuturesPositionAsync(position, orders);
@@ -31,8 +31,8 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = new[]
         {
-            this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}"),
-            this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}"), // does not need to point to position
+            this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}"),
+            this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}"), // does not need to point to position
         };
 
         // Act
@@ -48,7 +48,7 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}");
 
         // Act
         var func = async () => await this.SUT.AddFuturesPositionAsync(position, orders);
