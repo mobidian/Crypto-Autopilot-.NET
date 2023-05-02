@@ -1,10 +1,8 @@
 ﻿using Application.Data.Mapping;
 
-using Domain.Models;
+using Bybit.Net.Enums;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
@@ -57,7 +55,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
         var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
@@ -76,7 +74,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
 
         await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
@@ -100,7 +98,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
         var updatedOrder = this.FuturesOrderGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");

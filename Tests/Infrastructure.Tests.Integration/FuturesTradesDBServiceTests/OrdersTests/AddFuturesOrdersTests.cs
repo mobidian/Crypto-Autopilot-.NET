@@ -1,8 +1,8 @@
 ﻿using Application.Data.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Bybit.Net.Enums;
 
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
@@ -42,7 +42,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
@@ -60,7 +60,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         orders.Add(this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}")); // does not require position
 
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
@@ -98,7 +98,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideShort}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 

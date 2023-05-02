@@ -29,22 +29,19 @@ public abstract class FuturesTradesDBServiceTestsBase
 
 
     
-    protected const string PositionSideLong = "Long";
-    protected const string PositionSideShort = "Short";
-
     protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
         .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
         .RuleFor(p => p.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
         .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000))
         .RuleFor(p => p.Leverage, f => f.Random.Decimal(1, 100))
         .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000))
-        .RuleSet(PositionSideLong, set =>
+        .RuleSet(PositionSide.Buy.ToString(), set =>
         {
             set.RuleFor(p => p.Side, PositionSide.Buy);
             set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
             set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice + 3000));
         })
-        .RuleSet(PositionSideShort, set =>
+        .RuleSet(PositionSide.Sell.ToString(), set =>
         {
             set.RuleFor(p => p.Side, PositionSide.Sell);
             set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);

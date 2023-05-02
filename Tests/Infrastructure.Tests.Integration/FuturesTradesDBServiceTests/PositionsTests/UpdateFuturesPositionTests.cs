@@ -1,5 +1,7 @@
 ﻿using Application.Data.Mapping;
 
+using Bybit.Net.Enums;
+
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
@@ -10,13 +12,13 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesPosition_ShouldUpdateFuturesPosition_WhenFuturesPositionIsValid()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
-            .Generate($"default, {PositionSideLong}");
+            .Generate($"default, {PositionSide.Buy}");
 
 
         // Act
@@ -30,13 +32,13 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesPosition_ShouldThrow_WhenFuturesPositionSideDoesNotMatchTheOldFuturesPositionSide()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
-            .Generate($"default, {PositionSideShort}");
+            .Generate($"default, {PositionSide.Sell}");
 
 
         // Act

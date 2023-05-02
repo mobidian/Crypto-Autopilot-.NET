@@ -1,8 +1,8 @@
 ﻿using Application.Data.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Bybit.Net.Enums;
 
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
@@ -41,7 +41,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
@@ -57,7 +57,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
@@ -75,7 +75,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideShort}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 

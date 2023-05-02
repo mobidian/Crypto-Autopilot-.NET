@@ -1,5 +1,7 @@
 ﻿using Application.Data.Mapping;
 
+using Bybit.Net.Enums;
+
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
@@ -10,7 +12,7 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesPosition_ShouldAddFuturesPositionAndOrders_WhenAllFuturesOrdersRequirePosition()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
 
         // Act
@@ -25,7 +27,7 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesPosition_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         var orders = new[]
         {
             this.FuturesOrderGenerator.Generate($"default, {MarketOrder}, {SideBuy}"),
@@ -44,7 +46,7 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task AddFuturesPosition_ShouldThrow_WhenThePositionSideOfTheAnyOrderDoesNotMatchTheSideOfThePosition()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSideLong}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionShort}");
 
         // Act
