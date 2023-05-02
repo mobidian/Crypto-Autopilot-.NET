@@ -3,6 +3,7 @@
 using Bybit.Net.Enums;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
 
@@ -12,13 +13,13 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesPosition_ShouldUpdateFuturesPosition_WhenFuturesPositionIsValid()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
-            .Generate($"default, {PositionSide.Buy}");
+            .Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
 
 
         // Act
@@ -32,13 +33,13 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
     public async Task UpdateFuturesPosition_ShouldThrow_WhenFuturesPositionSideDoesNotMatchTheOldFuturesPositionSide()
     {
         // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
-            .Generate($"default, {PositionSide.Sell}");
+            .Generate($"default, {PositionSide.Sell.ToRuleSetName()}");
 
 
         // Act

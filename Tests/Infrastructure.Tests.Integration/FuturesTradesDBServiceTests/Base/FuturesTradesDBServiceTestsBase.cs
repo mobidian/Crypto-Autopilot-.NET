@@ -7,6 +7,7 @@ using Domain.Models;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Services;
 using Infrastructure.Tests.Integration.Common;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
 
-
+    
     
     protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
         .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
@@ -35,13 +36,13 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000))
         .RuleFor(p => p.Leverage, f => f.Random.Decimal(1, 100))
         .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000))
-        .RuleSet(PositionSide.Buy.ToString(), set =>
+        .RuleSet(PositionSide.Buy.ToRuleSetName(), set =>
         {
             set.RuleFor(p => p.Side, PositionSide.Buy);
             set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
             set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice + 3000));
         })
-        .RuleSet(PositionSide.Sell.ToString(), set =>
+        .RuleSet(PositionSide.Sell.ToRuleSetName(), set =>
         {
             set.RuleFor(p => p.Side, PositionSide.Sell);
             set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);

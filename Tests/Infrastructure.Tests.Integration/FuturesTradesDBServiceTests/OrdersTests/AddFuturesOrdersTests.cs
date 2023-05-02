@@ -3,6 +3,7 @@
 using Bybit.Net.Enums;
 
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
@@ -42,7 +43,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
@@ -60,7 +61,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
         orders.Add(this.FuturesOrderGenerator.Generate($"default, {LimitOrder}, {SideBuy}, {OrderPositionLong}")); // does not require position
 
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
@@ -98,7 +99,7 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var orders = this.FuturesOrderGenerator.Generate(10, $"default, {MarketOrder}, {SideBuy}, {OrderPositionLong}");
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell}");
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell.ToRuleSetName()}");
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
 
