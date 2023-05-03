@@ -5,6 +5,8 @@ using Bybit.Net.Enums;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
 public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
@@ -33,8 +35,11 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrdersAsync(orders);
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "No order should have opened a position");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
+                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "A market order must point to a position.");
     }
 
 
@@ -71,43 +76,36 @@ public class AddFuturesOrdersTests : FuturesTradesDBServiceTestsBase
 
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have opened a position");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
+                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "A limit order which has not been filled must not point to a position.");
     }
 
 
     [Test]
-    public async Task AddFuturesOrder_ShouldThrow_WhenNotAllOrdersHaveTheSamePositionSide()
+    public async Task AddFuturesOrder_ShouldThrow_WhenThePositionSideOfAnyOrderDoesNotMatchThePositionSide()
     {
         // Arrange
-        var orders = new[]
-        {
-            this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}"),
-            this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}"),
-        };
+        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Sell.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}");
+        orders[Random.Shared.Next(orders.Count)] = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Sell.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
 
-        // Act
-        var func = async () => await this.SUT.AddFuturesOrdersAsync(orders);
-
-        // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders must have the same position side");
-    }
-
-    [Test]
-    public async Task AddFuturesOrder_ShouldThrow_WhenThePositionSideOfTheOrdersDoesNotMatchThePositionSide()
-    {
-        // Arrange
-        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell.ToRuleSetName()}");
+
         await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
         await this.DbContext.SaveChangesAsync();
+
 
         // Act
         var func = async () => await this.SUT.AddFuturesOrdersAsync(orders, position.CryptoAutopilotId);
 
+
         // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
+                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "An order which points to a position must have the appropriate value for the PositionSide property.");
     }
 }

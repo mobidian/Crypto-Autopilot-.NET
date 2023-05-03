@@ -5,6 +5,8 @@ using Bybit.Net.Enums;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
 
 public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
@@ -32,8 +34,11 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order);
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order can't be a market order or a filled limit order in order, otherwise it would have opened a position");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
+                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "A market order must point to a position.");
     }
 
 
@@ -66,8 +71,11 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "The order must be a market order or a filled limit order in order, otherwise it cannot have opened a position");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
+                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "A limit order which has not been filled must not point to a position.");
     }
 
 
@@ -84,7 +92,10 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
 
         // Assert
-        (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>()).And
-                .Errors.Should().ContainSingle(error => error.ErrorMessage == "All orders position side must match the side of the position");
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
+                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "An order which points to a position must have the appropriate value for the PositionSide property.");
     }
 }
