@@ -25,6 +25,11 @@ public class FuturesOrderDbEntityValidator : AbstractValidator<FuturesOrderDbEnt
         this.RuleSet("CheckFkRelationships", () =>
         {
             this.RuleFor(order => order)
+                .Must(order => order.PositionSide == order.Position!.Side)
+                .When(order => order.PositionId is not null)
+                .WithMessage($"An order which points to a position must have the appropriate value for the PositionSide property.");
+
+            this.RuleFor(order => order)
                 .Must(order => order.PositionId is not null && order.Side.ToPositionSide() == order.PositionSide)
                 .When(order => order.Type == OrderType.Limit && order.Status == OrderStatus.Filled)
                 .WithMessage("A filled limit order must point to a position with the appropriate position side.");

@@ -1,7 +1,5 @@
 ﻿using Application.Data.Entities;
 
-using Bybit.Net.Enums;
-
 using FluentValidation;
 
 namespace Application.Data.Validation;
@@ -17,18 +15,18 @@ public class FuturesPositionDbEntityValidator : AbstractValidator<FuturesPositio
         this.RuleFor(position => position.Quantity).GreaterThanOrEqualTo(0);
         this.RuleFor(position => position.EntryPrice).GreaterThanOrEqualTo(0);
         this.RuleFor(position => position.ExitPrice).GreaterThanOrEqualTo(0).Unless(position => position.ExitPrice is null);
-        
+
         this.RuleSet("CheckFkRelationships", () =>
         {
             this.RuleFor(position => position)
                 .Must(position =>
                 {
                     if (position.FuturesOrders is null)
-                        return false;
+                        return true;
 
-                    return position.FuturesOrders.Any(o => o.Type == OrderType.Market || (o.Type == OrderType.Limit && o.Status == OrderStatus.Filled));
+                    return position.FuturesOrders.All(x => x.PositionSide == position.Side);
                 })
-                .WithMessage("A position cannot exist in the database without an opening futures order pointing to it.");
+                .WithMessage("An order which points to a position must have the appropriate value for the PositionSide property.");
         });
     }
 }
