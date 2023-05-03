@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bybit.Net" Version="1.5.1" />
-    <PackageReference Include="FluentValidation" Version="11.5.1" />
+    <PackageReference Include="Bybit.Net" Version="2.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.5.2" />
     <PackageReference Include="Skender.Stock.Indicators" Version="2.4.10" />
   </ItemGroup>
 
