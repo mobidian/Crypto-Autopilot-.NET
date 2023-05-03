@@ -7,9 +7,8 @@ using Domain.Models;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Services;
 using Infrastructure.Tests.Integration.Common;
+using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
-
-using Microsoft.EntityFrameworkCore;
 
 using Respawn;
 
@@ -17,17 +16,21 @@ namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
 
 public abstract class FuturesTradesDBServiceTestsBase
 {
-    protected readonly string ConnectionString = new SecretsManager().GetConnectionString("TradingHistoryDB-TestDatabase");
+    private static readonly string ConnectionString = new SecretsManager().GetConnectionString("TradingHistoryDB-TestDatabase");
+    private static FuturesTradingDbContextFactory DbContextFactory = default!;
+    private static Respawner DbRespawner;
+
 
     protected FuturesTradesDBService SUT;
     protected FuturesTradingDbContext DbContext;
 
 
+    #region Fakers
     protected readonly Faker Faker = new Faker();
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
-    
+
     protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
         .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
         .RuleFor(p => p.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
@@ -86,40 +89,44 @@ public abstract class FuturesTradesDBServiceTestsBase
         {
             set.RuleFor(o => o.PositionSide, f => PositionSide.Sell);
         });
-
-    
-    private Respawner DbRespawner;
-    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
+    #endregion
 
 
-    
     [OneTimeSetUp]
-    public async Task OneTimeSetUp()
+    public static async Task OneTimeSetUp()
     {
-        var optionsBuilder = new DbContextOptionsBuilder();
-        optionsBuilder.UseSqlServer(this.ConnectionString);
-        this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
+        DbContextFactory = new FuturesTradingDbContextFactory(ConnectionString);
 
-        await this.DbContext.Database.EnsureCreatedAsync();
+        var dbContext = DbContextFactory.Create();
+        await dbContext.Database.EnsureCreatedAsync();
 
-        this.SUT = new FuturesTradesDBService(this.DbContext);
-
-        this.DbRespawner = await Respawner.CreateAsync(this.ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
-        await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
+        DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
+        await DbRespawner.ResetAsync(ConnectionString); // in case the test database already exists and is populated
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
+    public static async Task OneTimeTearDown()
     {
-        await this.DbContext.Database.EnsureDeletedAsync();
+        var dbContext = DbContextFactory.Create();
+        await dbContext.Database.EnsureDeletedAsync();
     }
 
+    [SetUp]
+    public virtual async Task SetUp()
+    {
+        this.DbContext = DbContextFactory.Create();
+        this.SUT = new FuturesTradesDBService(this.DbContext);
+
+        await Task.CompletedTask;
+    }
 
     [TearDown]
-    public virtual async Task TearDown() => await this.ClearDatabaseAsync();
-
-
+    public virtual async Task TearDown()
+    {
+        await DbRespawner.ResetAsync(ConnectionString);
+    }
     
+
     protected async Task InsertRelatedPositionAndOrdersAsync(FuturesPosition position, IEnumerable<FuturesOrder> orders)
     {
         using var transaction = await this.DbContext.Database.BeginTransactionAsync();
