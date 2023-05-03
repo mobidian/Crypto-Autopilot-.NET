@@ -10,6 +10,8 @@ using Infrastructure.Tests.Integration.Common;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
 
+using Microsoft.EntityFrameworkCore;
+
 using Respawn;
 
 namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
@@ -26,6 +28,9 @@ public abstract class FuturesTradesDBServiceTestsBase
 
 
     #region Fakers
+    private const int decimals = 4;
+
+
     protected readonly Faker Faker = new Faker();
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
@@ -34,29 +39,28 @@ public abstract class FuturesTradesDBServiceTestsBase
     protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
         .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
         .RuleFor(p => p.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
-        .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000))
-        .RuleFor(p => p.Leverage, f => f.Random.Decimal(1, 100))
-        .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000))
+        .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000, decimals))
+        .RuleFor(p => p.Leverage, f => f.Random.Decimal(1, 100, decimals))
+        .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000, decimals))
+        .RuleFor(p => p.Quantity, (_, p) => Math.Round(p.Margin * p.Leverage / p.EntryPrice, decimals))
         .RuleSet(PositionSide.Buy.ToRuleSetName(), set =>
         {
             set.RuleFor(p => p.Side, PositionSide.Buy);
-            set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
-            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice + 3000));
+            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice + 3000, decimals));
         })
         .RuleSet(PositionSide.Sell.ToRuleSetName(), set =>
         {
             set.RuleFor(p => p.Side, PositionSide.Sell);
-            set.RuleFor(p => p.Quantity, (_, p) => p.Margin * p.Leverage / p.EntryPrice);
-            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice - 3000));
+            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice - 3000, decimals));
         });
-
+    
     protected readonly Faker<FuturesOrder> FuturesOrdersGenerator = new Faker<FuturesOrder>()
         .RuleFor(o => o.BybitID, f => Guid.NewGuid())
         .RuleFor(o => o.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
         .RuleFor(o => o.CreateTime, f => f.Date.Past(1))
         .RuleFor(o => o.UpdateTime, (f, p) => p.CreateTime.AddHours(f.Random.Int(0, 12)))
-        .RuleFor(o => o.Price, f => f.Random.Decimal(5000, 15000))
-        .RuleFor(o => o.Quantity, f => f.Random.Decimal(100, 300))
+        .RuleFor(o => o.Price, f => f.Random.Decimal(5000, 15000, decimals))
+        .RuleFor(o => o.Quantity, f => f.Random.Decimal(100, 300, decimals))
         .RuleFor(o => o.Status, OrderStatus.Created)
         .RuleSet(OrderType.Limit.ToRuleSetName(), set =>
         {
@@ -72,14 +76,14 @@ public abstract class FuturesTradesDBServiceTestsBase
         .RuleSet(OrderSide.Buy.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.Side, f => OrderSide.Buy);
-            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
-            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
+            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000, decimals));
+            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000, decimals));
         })
         .RuleSet(OrderSide.Sell.ToRuleSetName(), set =>
         {
             set.RuleFor(o => o.Side, f => OrderSide.Sell);
-            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000));
-            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000));
+            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000, decimals));
+            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000, decimals));
         })
         .RuleSet(PositionSide.Buy.ToRuleSetName(), set =>
         {
@@ -115,7 +119,9 @@ public abstract class FuturesTradesDBServiceTestsBase
     public virtual async Task SetUp()
     {
         this.DbContext = DbContextFactory.Create();
-        this.SUT = new FuturesTradesDBService(this.DbContext);
+        this.DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking; // ensures the reads return the values from the database and NOT from memory
+
+        this.SUT = new FuturesTradesDBService(DbContextFactory.Create());
 
         await Task.CompletedTask;
     }
