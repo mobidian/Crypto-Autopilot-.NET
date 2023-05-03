@@ -6,7 +6,7 @@ using Domain.Models;
 using FluentValidation;
 
 using Infrastructure.Database.Contexts;
-using Infrastructure.Database.Internal;
+using Infrastructure.Internal.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +19,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     {
         this.DbContext = dbContext;
     }
-
+    
     
     public async Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
@@ -30,7 +30,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             entity.PositionId = positionDbEntity.Id;
         }
 
-        using var _ = await this.BeginTransactionAsync();
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
 
         await this.DbContext.FuturesOrders.AddAsync(entity);
         await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
@@ -47,7 +47,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         }
 
 
-        using var _ = await this.BeginTransactionAsync();
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
 
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
@@ -87,7 +87,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         }
         
 
-        using var _ = await this.BeginTransactionAsync();
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
 
         dbEntity.CurrencyPair = updatedFuturesOrder.CurrencyPair.Name;
         dbEntity.BybitID = updatedFuturesOrder.BybitID;
@@ -112,7 +112,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
                 throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
 
         
-        using var _ = await this.BeginTransactionAsync();
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
         
         var orders = this.DbContext.FuturesOrders.Where(x => bybitIDs.Contains(x.BybitID));
         this.DbContext.FuturesOrders.RemoveRange(orders);
@@ -121,7 +121,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
 
     public async Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders)
     {
-        using var _ = await this.BeginTransactionAsync();
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
         
         var positionDbEntity = position.ToDbEntity();
         await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
@@ -157,7 +157,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     }
     public async Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition)
     {
-        using var _ = await this.BeginTransactionAsync();
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
 
         var positionDbEntity = await this.DbContext.FuturesPositions
             .Include(x => x.FuturesOrders) // Include related orders to be able to validate the relationship when saving the changes
@@ -174,7 +174,4 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         
         await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
     }
-
-    private async Task<TransactionalOperation> BeginTransactionAsync()
-        => new TransactionalOperation(await this.DbContext.Database.BeginTransactionAsync());
 }
