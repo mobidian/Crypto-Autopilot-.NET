@@ -2,7 +2,6 @@
 using Application.Interfaces.Services.DataAccess;
 
 using Bybit.Net.Clients;
-using Bybit.Net.Enums;
 using Bybit.Net.Objects;
 
 using CryptoExchange.Net.Authentication;
@@ -47,7 +46,8 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase
     {
         var services = new ServiceCollection();
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(this.SecretsManager.GetConnectionString("TradingHistoryDB-TestDatabase")!));
-        services.AddSingleton<IFuturesTradesDBService, FuturesTradesDBService>();
+        services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
+        services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
         this.Services = services.BuildServiceProvider();
 

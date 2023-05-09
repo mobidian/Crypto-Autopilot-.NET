@@ -22,12 +22,13 @@ public class PositionOpenedNotification : INotification
     public required IEnumerable<FuturesOrder> FuturesOrders { get; init; }
 }
 
-public class PositionNotificationHandler : AbstractNotificationHandler<PositionOpenedNotification>
+public class PositionNotificationHandler : INotificationHandler<PositionOpenedNotification>
 {
-    public PositionNotificationHandler(IFuturesTradesDBService dbService) : base(dbService) { }
+    private readonly IFuturesPositionsRepository PositionsRepository;
+    public PositionNotificationHandler(IFuturesPositionsRepository positionsRepository) => this.PositionsRepository = positionsRepository;
 
-    public override async Task Handle(PositionOpenedNotification notification, CancellationToken cancellationToken)
+    public async Task Handle(PositionOpenedNotification notification, CancellationToken cancellationToken)
     {
-        await this.DbService.AddFuturesPositionAsync(notification.Position, notification.FuturesOrders);
+        await this.PositionsRepository.AddFuturesPositionAsync(notification.Position, notification.FuturesOrders);
     }
 }

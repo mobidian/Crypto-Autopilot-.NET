@@ -2,22 +2,22 @@
 
 using Bybit.Net.Enums;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
-public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
+public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 {
     [Test]
     public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldUpdateFuturesOrder_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
-        await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesOrders.AddAsync(order.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
@@ -27,7 +27,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
         // Assert
-        this.DbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
+        this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
     }
 
     [Test]
@@ -35,8 +35,8 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
     {
         // Arrange
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
-        await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesOrders.AddAsync(order.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         var updatedOrder = this.FuturesOrdersGenerator.Clone()
             .RuleFor(x => x.BybitID, order.BybitID)
@@ -72,7 +72,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
 
 
         // Assert
-        this.DbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
+        this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
     }
 
     [Test]
@@ -82,9 +82,9 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
 
-        await this.DbContext.FuturesOrders.AddAsync(order.ToDbEntity());
-        await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesOrders.AddAsync(order.ToDbEntity());
+        await this.ArrangeAssertDbContext.FuturesPositions.AddAsync(position.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
@@ -125,7 +125,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
                 .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "An order which points to a position must have the appropriate value for the PositionSide property.");
     }
 
-    
+
     [Test]
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenThePositionSideDoesNotMatchTheOldPositionSideAndItIsAlreadyPointingToSomePosition()
     {
@@ -143,7 +143,7 @@ public class UpdateFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Act
         var func = async () => await this.SUT.UpdateFuturesOrderAsync(updatedOrder.BybitID, updatedOrder);
 
-        
+
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<DbUpdateException>()

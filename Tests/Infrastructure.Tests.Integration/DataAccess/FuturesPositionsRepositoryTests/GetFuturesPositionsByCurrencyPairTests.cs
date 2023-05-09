@@ -1,10 +1,10 @@
 ﻿using Application.Data.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
-public class GetFuturesPositionsByCurrencyPairTests : FuturesTradesDBServiceTestsBase
+public class GetFuturesPositionsByCurrencyPairTests : FuturesPositionsRepositoryTestsBase
 {
     [Test]
     public async Task GetFuturesPositionsByCurrencyPair_ShouldReturnAllFuturesPositionsWithCurrencyPair_WhenFuturesPositionsWithCurrencyPairExist()
@@ -12,15 +12,15 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesTradesDBServiceTest
         // Arrange
         var currencyPair = this.CurrencyPairGenerator.Generate();
         var futuresPositions = this.FuturesPositionsGenerator.Clone().RuleFor(o => o.CurrencyPair, currencyPair).Generate(15);
-        await this.DbContext.FuturesPositions.AddRangeAsync(futuresPositions.Select(x => x.ToDbEntity()));
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesPositions.AddRangeAsync(futuresPositions.Select(x => x.ToDbEntity()));
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         for (var i = 0; i < 5; i++)
         {
             var diffrentCurrencyPair = this.CurrencyPairGenerator.Generate();
             var futuresOrdersWithDiffrentCurrencyPair = this.FuturesPositionsGenerator.Clone().RuleFor(o => o.CurrencyPair, diffrentCurrencyPair).Generate(15);
-            await this.DbContext.FuturesPositions.AddRangeAsync(futuresOrdersWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()));
-            await this.DbContext.SaveChangesAsync();
+            await this.ArrangeAssertDbContext.FuturesPositions.AddRangeAsync(futuresOrdersWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()));
+            await this.ArrangeAssertDbContext.SaveChangesAsync();
         }
 
 
@@ -41,8 +41,8 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesTradesDBServiceTest
         {
             var diffrentCurrencyPair = this.CurrencyPairGenerator.Generate();
             var futuresPositionsWithDiffrentCurrencyPair = this.FuturesPositionsGenerator.Clone().RuleFor(o => o.CurrencyPair, diffrentCurrencyPair).Generate(15);
-            await this.DbContext.FuturesPositions.AddRangeAsync(futuresPositionsWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()));
-            await this.DbContext.SaveChangesAsync();
+            await this.ArrangeAssertDbContext.FuturesPositions.AddRangeAsync(futuresPositionsWithDiffrentCurrencyPair.Select(x => x.ToDbEntity()));
+            await this.ArrangeAssertDbContext.SaveChangesAsync();
         }
 
 

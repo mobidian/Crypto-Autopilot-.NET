@@ -17,7 +17,11 @@ namespace CryptoAutopilot.DataFunctions.Functions.Data.Trading.Orders;
 
 public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersFunction>
 {
-    public GetFuturesOrdersFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetFuturesOrdersFunction> logger) : base(dbService, logger) { }
+    private readonly IFuturesOrdersRepository OrdersRepository;
+    public GetFuturesOrdersFunction(IFuturesOrdersRepository ordersRepository, ILoggerAdapter<GetFuturesOrdersFunction> logger) : base(logger)
+    {
+        this.OrdersRepository = ordersRepository ?? throw new ArgumentNullException(nameof(ordersRepository));
+    }
 
     
     [Function("Data/Trading/Orders")]
@@ -27,7 +31,7 @@ public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersF
         {
             if (contractName is null)
             {
-                var futuresOrders = await DbService.GetAllFuturesOrdersAsync();
+                var futuresOrders = await OrdersRepository.GetAllFuturesOrdersAsync();
 
                 var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
                 {
@@ -51,7 +55,7 @@ public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersF
             }
             else
             {
-                var futuresOrders = await DbService.GetFuturesOrdersByCurrencyPairAsync(contractName);
+                var futuresOrders = await OrdersRepository.GetFuturesOrdersByCurrencyPairAsync(contractName);
 
                 var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
                 {

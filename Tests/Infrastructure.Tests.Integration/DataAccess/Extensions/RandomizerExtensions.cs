@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
+﻿namespace Infrastructure.Tests.Integration.DataAccess.Extensions;
 
 public static class RandomizerExtensions
 {

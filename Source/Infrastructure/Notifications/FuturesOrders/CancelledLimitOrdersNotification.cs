@@ -15,12 +15,13 @@ public class CancelledLimitOrdersNotification : INotification
     public required IEnumerable<Guid> BybitIds { get; init; }
 }
 
-public class CancelledLimitOrdersNotificationHandler : AbstractNotificationHandler<CancelledLimitOrdersNotification>
+public class CancelledLimitOrdersNotificationHandler : INotificationHandler<CancelledLimitOrdersNotification>
 {
-    public CancelledLimitOrdersNotificationHandler(IFuturesTradesDBService dbService) : base(dbService) { }
+    private readonly IFuturesOrdersRepository OrdersRepository;
+    public CancelledLimitOrdersNotificationHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
 
-    public override async Task Handle(CancelledLimitOrdersNotification notification, CancellationToken cancellationToken)
+    public async Task Handle(CancelledLimitOrdersNotification notification, CancellationToken cancellationToken)
     {
-        await this.DbService.DeleteFuturesOrdersAsync(notification.BybitIds.ToArray());
+        await this.OrdersRepository.DeleteFuturesOrdersAsync(notification.BybitIds.ToArray());
     }
 }

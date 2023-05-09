@@ -41,8 +41,9 @@ public class DependencyRegistrationTests
         (typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton),
 
         (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Scoped),
-        (typeof(IFuturesTradesDBService), typeof(FuturesTradesDBService), ServiceLifetime.Scoped),
-        
+        (typeof(IFuturesOrdersRepository), typeof(FuturesOrdersRepository), ServiceLifetime.Scoped),
+        (typeof(IFuturesPositionsRepository), typeof(FuturesPositionsRepository), ServiceLifetime.Scoped),
+
         (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
         (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
 

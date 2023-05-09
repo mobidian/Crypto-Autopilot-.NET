@@ -2,14 +2,14 @@
 
 using Bybit.Net.Enums;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
-public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
+public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 {
     [Test]
     public async Task AddFuturesPosition_ShouldAddFuturesPositionAndOrders_WhenAllFuturesOrdersRequirePosition()
@@ -22,8 +22,8 @@ public class AddFuturesPositionTests : FuturesTradesDBServiceTestsBase
         await this.SUT.AddFuturesPositionAsync(position, orders);
 
         // Assert
-        this.DbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
-        this.DbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
+        this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
+        this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
     }
 
     [Test]

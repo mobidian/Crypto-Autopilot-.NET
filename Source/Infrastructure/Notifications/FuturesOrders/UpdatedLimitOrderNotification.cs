@@ -22,12 +22,13 @@ public class UpdatedLimitOrderNotification : INotification
     public required FuturesOrder UpdatedLimitOrder { get; init; }
 }
 
-public class UpdatedLimitOrderNotificationHandler : AbstractNotificationHandler<UpdatedLimitOrderNotification>
+public class UpdatedLimitOrderNotificationHandler : INotificationHandler<UpdatedLimitOrderNotification>
 {
-    public UpdatedLimitOrderNotificationHandler(IFuturesTradesDBService dbService) : base(dbService) { }
+    private readonly IFuturesOrdersRepository OrdersRepository;
+    public UpdatedLimitOrderNotificationHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
 
-    public override async Task Handle(UpdatedLimitOrderNotification notification, CancellationToken cancellationToken)
+    public async Task Handle(UpdatedLimitOrderNotification notification, CancellationToken cancellationToken)
     {
-        await this.DbService.UpdateFuturesOrderAsync(notification.BybitId, notification.UpdatedLimitOrder);
+        await this.OrdersRepository.UpdateFuturesOrderAsync(notification.BybitId, notification.UpdatedLimitOrder);
     }
 }

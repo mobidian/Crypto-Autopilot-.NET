@@ -1,4 +1,6 @@
-﻿using Application.Interfaces.Logging;
+﻿using System;
+
+using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
@@ -25,6 +27,8 @@ using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoAutopilot.Api.Endpoints;
 
@@ -38,8 +42,9 @@ public static partial class ServicesEndpointsExtensions
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
         
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
-        services.AddScoped<IFuturesTradesDBService, FuturesTradesDBService>();
-        
+        services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
+        services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
+
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
         services.AddSingleton<Func<IUpdateSubscriptionProxy>>(services => () => services.GetRequiredService<IUpdateSubscriptionProxy>());
 

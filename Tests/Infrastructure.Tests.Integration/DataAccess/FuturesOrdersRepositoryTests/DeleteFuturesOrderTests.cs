@@ -1,26 +1,26 @@
 ﻿using Application.Data.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
-public class DeleteFuturesOrderTests : FuturesTradesDBServiceTestsBase
+public class DeleteFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 {
     [Test]
     public async Task DeleteFuturesOrder_ShouldDeleteFuturesOrder_WhenFuturesOrderExists()
     {
         // Arrange
         var futuresOrder = this.FuturesOrdersGenerator.Generate();
-        await this.DbContext.FuturesOrders.AddAsync(futuresOrder.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesOrders.AddAsync(futuresOrder.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
         await this.SUT.DeleteFuturesOrdersAsync(futuresOrder.BybitID);
 
         // Assert
-        this.DbContext.FuturesOrders.Should().BeEmpty();
+        this.ArrangeAssertDbContext.FuturesOrders.Should().BeEmpty();
     }
 
     [Test]

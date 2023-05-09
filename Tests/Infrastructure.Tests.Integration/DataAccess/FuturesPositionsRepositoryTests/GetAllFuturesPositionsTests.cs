@@ -1,18 +1,18 @@
 ﻿using Application.Data.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
-public class GetAllFuturesPositionsTests : FuturesTradesDBServiceTestsBase
+public class GetAllFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
 {
     [Test]
     public async Task GetAllFuturesPositions_ShouldReturnAllFuturesPositions_WhenFuturesPositionsExist()
     {
         // Arrange
         var futuresPositions = this.FuturesPositionsGenerator.GenerateBetween(1, 5);
-        await this.DbContext.FuturesPositions.AddRangeAsync(futuresPositions.Select(x => x.ToDbEntity()));
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesPositions.AddRangeAsync(futuresPositions.Select(x => x.ToDbEntity()));
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
         var retrievedFuturesPositions = await this.SUT.GetAllFuturesPositionsAsync();

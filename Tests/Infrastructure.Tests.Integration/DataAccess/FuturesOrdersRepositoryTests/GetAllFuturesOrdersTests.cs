@@ -1,18 +1,18 @@
 ﻿using Application.Data.Mapping;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
+using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
-public class GetAllFuturesOrdersTests : FuturesTradesDBServiceTestsBase
+public class GetAllFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
 {
     [Test]
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders_WhenFuturesOrdersExist()
     {
         // Arrange
         var futuresOrders = this.FuturesOrdersGenerator.GenerateBetween(1, 5);
-        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()));
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesOrders.AddRangeAsync(futuresOrders.Select(x => x.ToDbEntity()));
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
         var retrievedFuturesOrders = await this.SUT.GetAllFuturesOrdersAsync();

@@ -29,15 +29,23 @@ public class PositionUpdatedNotification : INotification
     public IEnumerable<FuturesOrder> FuturesOrders { get; init; } = Enumerable.Empty<FuturesOrder>();
 }
 
-public class PositionUpdatedNotificationHandler : AbstractNotificationHandler<PositionUpdatedNotification>
+public class PositionUpdatedNotificationHandler : INotificationHandler<PositionUpdatedNotification>
 {
-    public PositionUpdatedNotificationHandler(IFuturesTradesDBService dbService) : base(dbService) { }
+    private readonly IFuturesOrdersRepository OrdersRepository;
+    private readonly IFuturesPositionsRepository PositionsRepository;
 
-    public override async Task Handle(PositionUpdatedNotification notification, CancellationToken cancellationToken)
+    public PositionUpdatedNotificationHandler(IFuturesOrdersRepository ordersRepository, IFuturesPositionsRepository positionsRepository)
+    {
+        this.OrdersRepository = ordersRepository;
+        this.PositionsRepository = positionsRepository;
+    }
+
+
+    public async Task Handle(PositionUpdatedNotification notification, CancellationToken cancellationToken)
     {
         if (!notification.FuturesOrders.IsNullOrEmpty())
-            await this.DbService.AddFuturesOrdersAsync(notification.FuturesOrders, notification.PositionCryptoAutopilotId);
+            await this.OrdersRepository.AddFuturesOrdersAsync(notification.FuturesOrders, notification.PositionCryptoAutopilotId);
 
-        await this.DbService.UpdateFuturesPositionAsync(notification.PositionCryptoAutopilotId, notification.UpdatedPosition);
+        await this.PositionsRepository.UpdateFuturesPositionAsync(notification.PositionCryptoAutopilotId, notification.UpdatedPosition);
     }
 }

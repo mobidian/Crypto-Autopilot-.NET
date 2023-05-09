@@ -2,14 +2,14 @@
 
 using Bybit.Net.Enums;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.PositionsTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
-public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
+public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 {
     [Test]
     public async Task UpdateFuturesPosition_ShouldUpdateFuturesPosition_WhenFuturesPositionIsValid()
@@ -28,7 +28,7 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
         await this.SUT.UpdateFuturesPositionAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
 
         // Assert
-        this.DbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
+        this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class UpdateFuturesPositionTests : FuturesTradesDBServiceTestsBase
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         await InsertRelatedPositionAndOrdersAsync(position, orders);
-        
+
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
             .Generate($"default, {PositionSide.Sell.ToRuleSetName()}");

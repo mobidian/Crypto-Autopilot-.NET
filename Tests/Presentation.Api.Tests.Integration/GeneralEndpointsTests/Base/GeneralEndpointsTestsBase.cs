@@ -70,7 +70,7 @@ public abstract class GeneralEndpointsTestsBase
     protected readonly HttpClient HttpClient;
 
     private FuturesTradingDbContext DbContext;
-    protected readonly IFuturesTradesDBService FuturesTradesDBService;
+    protected readonly IFuturesOrdersRepository OrdersRepository;
     protected readonly IStrategiesTracker StrategiesTracker;
     
     public GeneralEndpointsTestsBase()
@@ -81,7 +81,7 @@ public abstract class GeneralEndpointsTestsBase
         var optionsBuilder = new DbContextOptionsBuilder();
         optionsBuilder.UseSqlServer(this.ApiFactory.Services.GetRequiredService<IConfiguration>().GetConnectionString("TradingHistoryDB-TestDatabase"));
         this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
-        this.FuturesTradesDBService = new FuturesTradesDBService(this.DbContext);
+        this.OrdersRepository = new FuturesOrdersRepository(this.DbContext);
 
         this.StrategiesTracker = this.ApiFactory.Services.GetRequiredService<IStrategiesTracker>();
     }

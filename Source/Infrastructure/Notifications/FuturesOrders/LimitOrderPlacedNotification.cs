@@ -17,12 +17,13 @@ public class LimitOrderPlacedNotification : INotification
     public required FuturesOrder LimitOrder { get; init; }
 }
 
-public class LimitOrderPlacedNotificationHandler : AbstractNotificationHandler<LimitOrderPlacedNotification>
+public class LimitOrderPlacedNotificationHandler : INotificationHandler<LimitOrderPlacedNotification>
 {
-    public LimitOrderPlacedNotificationHandler(IFuturesTradesDBService dbService) : base(dbService) { }
+    private readonly IFuturesOrdersRepository OrdersRepository;
+    public LimitOrderPlacedNotificationHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
 
-    public override async Task Handle(LimitOrderPlacedNotification notification, CancellationToken cancellationToken)
+    public async Task Handle(LimitOrderPlacedNotification notification, CancellationToken cancellationToken)
     {
-        await this.DbService.AddFuturesOrderAsync(notification.LimitOrder);
+        await this.OrdersRepository.AddFuturesOrderAsync(notification.LimitOrder);
     }
 }

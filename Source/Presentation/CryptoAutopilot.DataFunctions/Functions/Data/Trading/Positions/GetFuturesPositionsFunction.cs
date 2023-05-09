@@ -16,7 +16,11 @@ namespace CryptoAutopilot.DataFunctions.Functions.Data.Trading.Positions;
 
 public class GetFuturesPositionsFunction : MarketDataFunctionBase<GetFuturesPositionsFunction>
 {
-    public GetFuturesPositionsFunction(IFuturesTradesDBService dbService, ILoggerAdapter<GetFuturesPositionsFunction> logger) : base(dbService, logger) { }
+    private readonly IFuturesPositionsRepository PositionsRepository;
+    public GetFuturesPositionsFunction(IFuturesPositionsRepository dbService, ILoggerAdapter<GetFuturesPositionsFunction> logger) : base(logger)
+    {
+        this.PositionsRepository = dbService ?? throw new ArgumentNullException(nameof(dbService));
+    }
 
     
     [Function("Data/Trading/Positions")]
@@ -26,7 +30,7 @@ public class GetFuturesPositionsFunction : MarketDataFunctionBase<GetFuturesPosi
         {
             if (contractName is null)
             {
-                var futuresPositions = await DbService.GetAllFuturesPositionsAsync();
+                var futuresPositions = await PositionsRepository.GetAllFuturesPositionsAsync();
                 
                 var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
                 {
@@ -45,7 +49,7 @@ public class GetFuturesPositionsFunction : MarketDataFunctionBase<GetFuturesPosi
             }
             else
             {
-                var futuresPositions = await DbService.GetFuturesPositionsByCurrencyPairAsync(contractName);
+                var futuresPositions = await PositionsRepository.GetFuturesPositionsByCurrencyPairAsync(contractName);
                 
                 var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
                 {

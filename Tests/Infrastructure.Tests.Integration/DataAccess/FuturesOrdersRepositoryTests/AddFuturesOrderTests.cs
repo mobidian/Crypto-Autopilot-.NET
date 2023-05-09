@@ -2,14 +2,14 @@
 
 using Bybit.Net.Enums;
 
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Base;
-using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.Extensions;
+using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.OrdersTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
-public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
+public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 {
     [Test]
     public async Task AddFuturesOrderWithoutPositionGuid_ShouldAddFuturesOrder_WhenOrderShouldNotPointToPosition()
@@ -21,7 +21,7 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         await this.SUT.AddFuturesOrderAsync(order);
 
         // Assert
-        this.DbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
+        this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
     }
 
     [Test]
@@ -48,14 +48,14 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesPositions.AddAsync(position.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
         await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
 
         // Assert
-        this.DbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
+        this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
     }
 
     [Test]
@@ -64,8 +64,8 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesPositions.AddAsync(position.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
@@ -85,8 +85,8 @@ public class AddFuturesOrderTests : FuturesTradesDBServiceTestsBase
         // Arrange
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Sell.ToRuleSetName()}");
-        await this.DbContext.FuturesPositions.AddAsync(position.ToDbEntity());
-        await this.DbContext.SaveChangesAsync();
+        await this.ArrangeAssertDbContext.FuturesPositions.AddAsync(position.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
         var func = async () => await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
