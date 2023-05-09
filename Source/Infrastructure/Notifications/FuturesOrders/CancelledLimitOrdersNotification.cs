@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.Interfaces.Services.DataAccess;
 
 using MediatR;
 

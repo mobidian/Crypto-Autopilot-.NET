@@ -5,7 +5,7 @@ using Bybit.Net.Enums;
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
-using Infrastructure.Services;
+using Infrastructure.Services.DataAccess;
 using Infrastructure.Tests.Integration.Common;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Common;
 using Infrastructure.Tests.Integration.FuturesTradesDBServiceTests.Extensions;

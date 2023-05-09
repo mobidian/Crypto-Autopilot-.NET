@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces.Logging;
-using Application.Interfaces.Services;
+using Application.Interfaces.Services.DataAccess;
 
 namespace CryptoAutopilot.DataFunctions.Functions.Abstract;
 

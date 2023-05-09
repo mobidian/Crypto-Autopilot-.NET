@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using Application.Interfaces.Services;
+using Application.Interfaces.Services.DataAccess;
 
 using Bybit.Net.Enums;
 
@@ -10,7 +11,7 @@ using Domain.Models;
 
 using Infrastructure;
 using Infrastructure.Database.Contexts;
-using Infrastructure.Services;
+using Infrastructure.Services.DataAccess;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

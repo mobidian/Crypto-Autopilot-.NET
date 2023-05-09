@@ -1,5 +1,5 @@
-﻿using Application.Interfaces.Services;
-using Application.Interfaces.Services.Bybit;
+﻿using Application.Interfaces.Services.Bybit;
+using Application.Interfaces.Services.DataAccess;
 
 using Bybit.Net.Clients;
 using Bybit.Net.Enums;
@@ -11,8 +11,8 @@ using CryptoExchange.Net.Objects;
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
-using Infrastructure.Services;
 using Infrastructure.Services.Bybit;
+using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;
 using Infrastructure.Tests.Integration.Common;
 

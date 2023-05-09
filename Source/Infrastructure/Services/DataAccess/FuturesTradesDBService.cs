@@ -1,5 +1,5 @@
 ﻿using Application.Data.Mapping;
-using Application.Interfaces.Services;
+using Application.Interfaces.Services.DataAccess;
 
 using Domain.Models;
 
@@ -10,7 +10,7 @@ using Infrastructure.Internal.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Services.DataAccess;
 
 public class FuturesTradesDBService : IFuturesTradesDBService
 {
@@ -19,8 +19,8 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     {
         this.DbContext = dbContext;
     }
-    
-    
+
+
     public async Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
         var entity = futuresOrder.ToDbEntity();
@@ -41,7 +41,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         if (positionId is not null)
         {
             var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstAsync();
-            
+
             foreach (var futuresOrderDbEntity in futuresOrderDbEntities)
                 futuresOrderDbEntity.PositionId = positionDbEntity.Id;
         }
@@ -59,7 +59,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .ThenByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
             .AsEnumerable();
-        
+
         return await Task.FromResult(orders);
     }
     public async Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair)
@@ -70,7 +70,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .ThenByDescending(x => x.CreateTime)
             .Select(x => x.ToDomainObject())
             .AsEnumerable();
-        
+
         return await Task.FromResult(orders);
     }
     public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
@@ -79,13 +79,13 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .Include(x => x.Position) // Include related position to be able to validate the relationship when saving the changes
             .Where(x => x.BybitID == bybitID)
             .FirstOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {bybitID}");
-        
+
         if (positionId is not null)
         {
             var positionDbEntity = await this.DbContext.FuturesPositions.Where(x => x.CryptoAutopilotId == positionId).FirstAsync();
             dbEntity.PositionId = positionDbEntity.Id;
         }
-        
+
 
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
 
@@ -111,9 +111,9 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             if (await this.DbContext.FuturesOrders.FirstOrDefaultAsync(x => x.BybitID == bybitID) is null)
                 throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
 
-        
+
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-        
+
         var orders = this.DbContext.FuturesOrders.Where(x => bybitIDs.Contains(x.BybitID));
         this.DbContext.FuturesOrders.RemoveRange(orders);
         await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
@@ -122,11 +122,11 @@ public class FuturesTradesDBService : IFuturesTradesDBService
     public async Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders)
     {
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-        
+
         var positionDbEntity = position.ToDbEntity();
         await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
         await this.DbContext.SaveChangesAsync();
-        
+
         var futuresOrderDbEntities = futuresOrders.Select(x =>
         {
             var entity = x.ToDbEntity();
@@ -142,7 +142,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .OrderBy(x => x.CurrencyPair)
             .Select(x => x.ToDomainObject())
             .AsEnumerable();
-        
+
         return await Task.FromResult(positions);
     }
     public async Task<IEnumerable<FuturesPosition>> GetFuturesPositionsByCurrencyPairAsync(string currencyPair)
@@ -152,7 +152,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .OrderBy(x => x.CurrencyPair)
             .Select(x => x.ToDomainObject())
             .AsEnumerable();
-        
+
         return await Task.FromResult(positions);
     }
     public async Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition)
@@ -163,7 +163,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
             .Include(x => x.FuturesOrders) // Include related orders to be able to validate the relationship when saving the changes
             .Where(x => x.CryptoAutopilotId == positionId)
             .FirstOrDefaultAsync() ?? throw new DbUpdateException($"Did not find a position with crypto autopilot id {positionId}");
-        
+
         positionDbEntity.CurrencyPair = updatedPosition.CurrencyPair.Name;
         positionDbEntity.Side = updatedPosition.Side;
         positionDbEntity.Margin = updatedPosition.Margin;
@@ -171,7 +171,7 @@ public class FuturesTradesDBService : IFuturesTradesDBService
         positionDbEntity.Quantity = updatedPosition.Quantity;
         positionDbEntity.EntryPrice = updatedPosition.EntryPrice;
         positionDbEntity.ExitPrice = updatedPosition.ExitPrice;
-        
+
         await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
     }
 }

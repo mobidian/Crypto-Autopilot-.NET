@@ -2,9 +2,9 @@
 
 using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
-using Application.Interfaces.Services;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
+using Application.Interfaces.Services.DataAccess;
 using Application.Interfaces.Services.General;
 
 using Bybit.Net.Clients;
@@ -22,9 +22,9 @@ using CryptoExchange.Net.Authentication;
 using Infrastructure.Database.Contexts;
 using Infrastructure.Logging;
 using Infrastructure.Proxies;
-using Infrastructure.Services;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
+using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;
 
 using Microsoft.AspNetCore.Mvc.Testing;
