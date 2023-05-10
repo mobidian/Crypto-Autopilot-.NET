@@ -9,6 +9,12 @@
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/cryptoautopilot-azure-sql-server/databases/TradingHistoryDB",
       "type": "mssql.azure",
       "connectionId": "ConnectionStrings:TradingHistoryDB"
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/CryptoAutopilot-KeyVault",
+      "type": "secrets.keyVault",
+      "connectionId": "CryptoAutopilotKeyVaultUrl"
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -16,7 +16,10 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5192",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://cryptoautopilot-keyvault.vault.azure.net/",
+        "AZURE_USERNAME": "mircea.ionescu3000@gmail.com",
+        "CryptoAutopilotKeyVaultUrl": "https://cryptoautopilot-keyvault.vault.azure.net/"
       }
     },
     "https": {
@@ -26,7 +29,10 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7196;http://localhost:5192",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://cryptoautopilot-keyvault.vault.azure.net/",
+        "AZURE_USERNAME": "mircea.ionescu3000@gmail.com",
+        "CryptoAutopilotKeyVaultUrl": "https://cryptoautopilot-keyvault.vault.azure.net/"
       }
     },
     "IIS Express": {
@@ -34,7 +40,10 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://cryptoautopilot-keyvault.vault.azure.net/",
+        "AZURE_USERNAME": "mircea.ionescu3000@gmail.com",
+        "CryptoAutopilotKeyVaultUrl": "https://cryptoautopilot-keyvault.vault.azure.net/"
       }
     }
   }

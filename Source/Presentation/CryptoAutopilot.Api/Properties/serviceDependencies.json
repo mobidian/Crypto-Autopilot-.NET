@@ -6,6 +6,10 @@
     },
     "apis1": {
       "type": "apis"
+    },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": "CryptoAutopilotKeyVaultUrl"
     }
   }
 }
