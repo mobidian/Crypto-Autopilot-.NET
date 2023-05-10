@@ -1,6 +1,4 @@
-﻿using System;
-
-using Application.Interfaces.Logging;
+﻿using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
@@ -27,8 +25,6 @@ using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoAutopilot.Api.Endpoints;
 

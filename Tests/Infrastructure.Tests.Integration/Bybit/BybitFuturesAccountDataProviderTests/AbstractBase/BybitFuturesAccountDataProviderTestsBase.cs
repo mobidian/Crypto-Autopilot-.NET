@@ -1,46 +1,29 @@
 ﻿using Application.Interfaces.Services.Bybit;
 
-using Bybit.Net.Clients;
 using Bybit.Net.Enums;
-using Bybit.Net.Objects;
 using Bybit.Net.Objects.Models;
-
-using CryptoExchange.Net.Authentication;
-
-using CryptoExchange.Net.Objects;
 
 using Domain.Models;
 
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.General;
-using Infrastructure.Tests.Integration.Common;
+using Infrastructure.Tests.Integration.Bybit.Abstract;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests.AbstractBase;
 
-public abstract class BybitFuturesAccountDataProviderTestsBase
+public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTestBase
 {
-    private readonly SecretsManager SecretsManager = new SecretsManager();
-
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("BTC", "USDT");
 
     protected readonly IBybitFuturesAccountDataProvider SUT;
     protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
     protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
 
-    public BybitFuturesAccountDataProviderTestsBase()
+    public BybitFuturesAccountDataProviderTestsBase() : base()
     {
-        var bybitClient = new BybitClient(new BybitClientOptions
-        {
-            UsdPerpetualApiOptions = new RestApiClientOptions
-            {
-                ApiCredentials = new ApiCredentials(this.SecretsManager.GetSecret("BybitTestnetApiCredentials:key"), this.SecretsManager.GetSecret("BybitTestnetApiCredentials:secret")),
-                BaseAddress = "https://api-testnet.bybit.com"
-            }
-        });
-
-        this.TradingClient = new BybitUsdFuturesTradingApiClient(bybitClient.UsdPerpetualApi.Trading);
-        this.SUT = new BybitFuturesAccountDataProvider(bybitClient.UsdPerpetualApi.Account);
-        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), bybitClient.UsdPerpetualApi.ExchangeData);
+        this.TradingClient = new BybitUsdFuturesTradingApiClient(this.BybitClient.UsdPerpetualApi.Trading);
+        this.SUT = new BybitFuturesAccountDataProvider(this.BybitClient.UsdPerpetualApi.Account);
+        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), this.BybitClient.UsdPerpetualApi.ExchangeData);
     }
 
 

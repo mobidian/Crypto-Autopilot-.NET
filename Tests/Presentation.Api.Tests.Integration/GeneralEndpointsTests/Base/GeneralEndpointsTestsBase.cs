@@ -14,7 +14,6 @@ using Infrastructure.Database.Contexts;
 using Infrastructure.Services.DataAccess;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Presentation.Api.Tests.Integration.Common;
@@ -25,6 +24,10 @@ namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
 public abstract class GeneralEndpointsTestsBase
 {
+    protected const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
+
+
+    #region Fakers
     private const int precision = 4;
 
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
@@ -62,8 +65,8 @@ public abstract class GeneralEndpointsTestsBase
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
             var parameters = new object[] { Guid.NewGuid(), new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code), f.PickRandom<KlineInterval>() };
             return (IStrategyEngine)Activator.CreateInstance(type, flags, null, parameters, null)!;
-        });
-
+        }); 
+    #endregion
 
 
     protected readonly ApiFactory ApiFactory;
@@ -79,7 +82,7 @@ public abstract class GeneralEndpointsTestsBase
         this.HttpClient = this.ApiFactory.CreateClient();
 
         var optionsBuilder = new DbContextOptionsBuilder();
-        optionsBuilder.UseSqlServer(this.ApiFactory.Services.GetRequiredService<IConfiguration>().GetConnectionString("TradingHistoryDB-TestDatabase"));
+        optionsBuilder.UseSqlServer(ConnectionString);
         this.DbContext = new FuturesTradingDbContext(optionsBuilder.Options);
         this.OrdersRepository = new FuturesOrdersRepository(this.DbContext);
 
@@ -89,7 +92,7 @@ public abstract class GeneralEndpointsTestsBase
     
 
     private Respawner DbRespawner;
-    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.DbContext.Database.GetConnectionString()!);
+    protected async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(ConnectionString);
 
 
 
@@ -98,7 +101,7 @@ public abstract class GeneralEndpointsTestsBase
     {
         await this.DbContext.Database.EnsureCreatedAsync();
 
-        this.DbRespawner = await Respawner.CreateAsync(this.DbContext.Database.GetConnectionString()!, new RespawnerOptions { CheckTemporalTables = true });
+        this.DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
         await this.ClearDatabaseAsync(); // in case the test database already exists and is populated
     }
 

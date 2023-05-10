@@ -5,7 +5,6 @@ using Bybit.Net.Enums;
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
-using Infrastructure.Tests.Integration.Common;
 using Infrastructure.Tests.Integration.DataAccess.Common;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 
@@ -15,22 +14,20 @@ namespace Infrastructure.Tests.Integration.DataAccess.Abstract;
 
 public abstract class FuturesRepositoriesTestsBase
 {
-    protected static readonly string ConnectionString = new SecretsManager().GetConnectionString("TradingHistoryDB-TestDatabase");
-    protected static FuturesTradingDbContextFactory DbContextFactory = default!;
-    protected static Respawner DbRespawner;
+    protected const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
+    protected static FuturesTradingDbContextFactory DbContextFactory = new(ConnectionString);
+    protected static Respawner DbRespawner = default!;
 
     [OneTimeSetUp]
     public static async Task OneTimeSetUp()
     {
-        DbContextFactory = new FuturesTradingDbContextFactory(ConnectionString);
-
         var dbContext = DbContextFactory.Create();
         await dbContext.Database.EnsureCreatedAsync();
 
         DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
         await DbRespawner.ResetAsync(ConnectionString); // in case the test database already exists and is populated
     }
-
+    
     [OneTimeTearDown]
     public static async Task OneTimeTearDown()
     {
@@ -43,7 +40,6 @@ public abstract class FuturesRepositoriesTestsBase
     {
         await DbRespawner.ResetAsync(ConnectionString);
     }
-
 
 
     #region Fakers

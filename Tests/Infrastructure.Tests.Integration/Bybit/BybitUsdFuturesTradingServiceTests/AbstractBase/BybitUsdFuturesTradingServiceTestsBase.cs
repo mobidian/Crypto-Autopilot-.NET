@@ -1,19 +1,13 @@
 ﻿using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.DataAccess;
 
-using Bybit.Net.Clients;
-using Bybit.Net.Objects;
-
-using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Objects;
-
 using Domain.Models;
 
 using Infrastructure.Database.Contexts;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;
-using Infrastructure.Tests.Integration.Common;
+using Infrastructure.Tests.Integration.Bybit.Abstract;
 
 using MediatR;
 
@@ -24,68 +18,57 @@ using Respawn;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
 
-public abstract class BybitUsdFuturesTradingServiceTestsBase
+public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTestBase
 {
-    private readonly SecretsManager SecretsManager = new SecretsManager();
-
+    protected readonly CurrencyPair CurrencyPair = new CurrencyPair("BTC", "USDT");
     protected readonly Faker faker = new Faker();
 
-    protected readonly BybitUsdFuturesTradingService SUT;
-    protected readonly CurrencyPair CurrencyPair = new CurrencyPair("BTC", "USDT");
     protected decimal Margin = 100;
     protected readonly decimal Leverage = 10m;
-    protected readonly IBybitFuturesAccountDataProvider FuturesAccount;
-    protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
+
+    protected readonly IBybitUsdFuturesTradingService SUT;
     protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
-    protected readonly IMediator Mediator;
+    protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
+    protected readonly IBybitFuturesAccountDataProvider FuturesAccount;
     
-    private readonly IServiceProvider Services;
+    private readonly FuturesTradingDbContext DbContext;
     private Respawner DbRespawner = default!;
     
-    public BybitUsdFuturesTradingServiceTestsBase()
+    public BybitUsdFuturesTradingServiceTestsBase() : base()
     {
         var services = new ServiceCollection();
-        services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(this.SecretsManager.GetConnectionString("TradingHistoryDB-TestDatabase")!));
+        services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(ConnectionString));
         services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
         services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
-        this.Services = services.BuildServiceProvider();
+        var serviceProvider = services.BuildServiceProvider();
 
-        
-        var bybitClient = new BybitClient(new BybitClientOptions
-        {
-            UsdPerpetualApiOptions = new RestApiClientOptions
-            {
-                ApiCredentials = new ApiCredentials(this.SecretsManager.GetSecret("BybitTestnetApiCredentials:key"), this.SecretsManager.GetSecret("BybitTestnetApiCredentials:secret")),
-                BaseAddress = "https://api-testnet.bybit.com"
-            }
-        });
+        this.FuturesAccount = new BybitFuturesAccountDataProvider(this.BybitClient.UsdPerpetualApi.Account);
+        this.TradingClient = new BybitUsdFuturesTradingApiClient(this.BybitClient.UsdPerpetualApi.Trading);
+        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), this.BybitClient.UsdPerpetualApi.ExchangeData);
 
-        this.FuturesAccount = new BybitFuturesAccountDataProvider(bybitClient.UsdPerpetualApi.Account);
-        this.TradingClient = new BybitUsdFuturesTradingApiClient(bybitClient.UsdPerpetualApi.Trading);
-        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), bybitClient.UsdPerpetualApi.ExchangeData);
+        var mediator = serviceProvider.GetRequiredService<IMediator>();    
+        this.SUT = new BybitUsdFuturesTradingService(this.CurrencyPair, this.Leverage, this.FuturesAccount, this.MarketDataProvider, this.TradingClient, mediator);
 
-        this.Mediator = this.Services.GetRequiredService<IMediator>();
-        
-        this.SUT = new BybitUsdFuturesTradingService(this.CurrencyPair, this.Leverage, this.FuturesAccount, this.MarketDataProvider, this.TradingClient, this.Mediator);
+
+        this.DbContext = serviceProvider.GetRequiredService<FuturesTradingDbContext>();
     }
 
 
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        var dbContext = this.Services.GetRequiredService<FuturesTradingDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
+        await this.DbContext.Database.EnsureCreatedAsync();
         
-        this.DbRespawner = await Respawner.CreateAsync(this.SecretsManager.GetConnectionString("TradingHistoryDB-TestDatabase")!, new RespawnerOptions { CheckTemporalTables = true });
-        await this.DbRespawner.ResetAsync(dbContext.Database.GetConnectionString()!); // in case the test database already exists and is populated
+        var connectionString = this.DbContext.Database.GetConnectionString()!;
+        this.DbRespawner = await Respawner.CreateAsync(connectionString, new RespawnerOptions { CheckTemporalTables = true });
+        await this.DbRespawner.ResetAsync(connectionString); // in case the test database already exists and is populated
     }
 
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        var dbContext = this.Services.GetRequiredService<FuturesTradingDbContext>();
-        await dbContext.Database.EnsureDeletedAsync();
+        await this.DbContext.Database.EnsureDeletedAsync();
     }
 
 
@@ -95,8 +78,6 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase
         await Task.WhenAll(this.SUT.CloseAllPositionsAsync(),
                            this.SUT.CancelAllLimitOrdersAsync());
         
-
-        var dbContext = this.Services.GetRequiredService<FuturesTradingDbContext>();
-        await this.DbRespawner.ResetAsync(dbContext.Database.GetConnectionString()!);
+        await this.DbRespawner.ResetAsync(this.DbContext.Database.GetConnectionString()!);
     }
 }

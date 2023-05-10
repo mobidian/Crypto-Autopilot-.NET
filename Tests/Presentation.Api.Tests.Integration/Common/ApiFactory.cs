@@ -12,7 +12,5 @@ public class ApiFactory : WebApplicationFactory<IApiMarker>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureLogging(logging => logging.ClearProviders());
-
-        builder.ConfigureAppConfiguration(configuration => configuration.AddUserSecrets<ApiFactory>());
     }
 }
