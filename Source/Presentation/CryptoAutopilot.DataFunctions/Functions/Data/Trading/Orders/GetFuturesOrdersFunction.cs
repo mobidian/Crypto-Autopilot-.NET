@@ -8,7 +8,6 @@ using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 using CryptoAutopilot.DataFunctions.Extensions;
 using CryptoAutopilot.DataFunctions.Functions.Abstract;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
