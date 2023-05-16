@@ -13,13 +13,13 @@ using Bybit.Net.Interfaces.Clients;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 
 using CryptoAutopilot.Api;
-using CryptoAutopilot.Api.Factories;
 using CryptoAutopilot.Api.Services;
 using CryptoAutopilot.Api.Services.Interfaces;
 
 using CryptoExchange.Net.Authentication;
 
 using Infrastructure.Database.Contexts;
+using Infrastructure.Factories;
 using Infrastructure.Logging;
 using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;

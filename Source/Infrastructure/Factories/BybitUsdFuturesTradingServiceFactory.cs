@@ -6,7 +6,9 @@ using Infrastructure.Services.Bybit;
 
 using MediatR;
 
-namespace CryptoAutopilot.Api.Factories;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Infrastructure.Factories;
 
 public class BybitUsdFuturesTradingServiceFactory
 {

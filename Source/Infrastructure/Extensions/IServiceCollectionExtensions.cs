@@ -9,14 +9,10 @@ using Bybit.Net.Clients;
 using Bybit.Net.Interfaces.Clients;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 
-using CryptoAutopilot.Api.Factories;
-using CryptoAutopilot.Api.Services;
-using CryptoAutopilot.Api.Services.Interfaces;
-
 using CryptoExchange.Net.Authentication;
 
-using Infrastructure;
 using Infrastructure.Database.Contexts;
+using Infrastructure.Factories;
 using Infrastructure.Logging;
 using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;
@@ -25,18 +21,20 @@ using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace CryptoAutopilot.Api.Endpoints;
+namespace Infrastructure.Extensions;
 
-public static partial class ServicesEndpointsExtensions
+public static class IServiceCollectionExtensions
 {
     public static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-        
+
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
-        
+
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
         services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
         services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
@@ -46,10 +44,8 @@ public static partial class ServicesEndpointsExtensions
 
         AddBybitServices(services, configuration);
         AddBybitServiceFactories(services);
-        
-        services.AddSingleton<IStrategiesTracker, StrategiesTracker>();
     }
-    
+
     private static void AddBybitServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BybitApiCredentials:key")!, configuration.GetValue<string>("BybitApiCredentials:secret")!));
@@ -65,7 +61,7 @@ public static partial class ServicesEndpointsExtensions
         services.AddSingleton<IBybitClientUsdPerpetualApiTrading>(services => services.GetRequiredService<IBybitClientUsdPerpetualApi>().Trading);
         services.AddSingleton<IBybitClientUsdPerpetualApiExchangeData>(services => services.GetRequiredService<IBybitClientUsdPerpetualApi>().ExchangeData);
         services.AddSingleton<IBybitClientUsdPerpetualApiAccount>(services => services.GetRequiredService<IBybitClientUsdPerpetualApi>().Account);
-        
+
         // bybit socket client
         services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services =>
         {
@@ -74,7 +70,7 @@ public static partial class ServicesEndpointsExtensions
             return client;
         });
         services.AddSingleton<IBybitSocketClientUsdPerpetualStreams>(services => services.GetRequiredService<IBybitSocketClient>().UsdPerpetualStreams);
-        
+
         services.AddSingleton<IBybitFuturesAccountDataProvider, BybitFuturesAccountDataProvider>();
         services.AddSingleton<IBybitUsdFuturesMarketDataProvider, BybitUsdFuturesMarketDataProvider>();
         services.AddSingleton<IBybitUsdFuturesTradingApiClient, BybitUsdFuturesTradingApiClient>();

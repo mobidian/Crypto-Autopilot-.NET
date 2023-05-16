@@ -4,6 +4,7 @@
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <UserSecretsId>cc70ef96-cb89-4307-bd53-2f7ddbc0ff83</UserSecretsId>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
@@ -19,6 +20,9 @@
     <ProjectReference Include="..\CryptoAutopilot.Contracts\CryptoAutopilot.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

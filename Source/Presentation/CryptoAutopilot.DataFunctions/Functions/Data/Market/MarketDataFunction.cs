@@ -22,7 +22,7 @@ public class GetContractHistoryFunction : TradingDataFunctionBase<GetContractHis
 
 
     [Function("Data/Market/ContractHistory")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, [FromQuery] string name, [FromQuery] int min)
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "GET")][FromQuery] HttpRequestData request, [FromQuery] string name, [FromQuery] int min)
     {
         if (!Enum.IsDefined(typeof(KlineInterval), min * 60))
         {

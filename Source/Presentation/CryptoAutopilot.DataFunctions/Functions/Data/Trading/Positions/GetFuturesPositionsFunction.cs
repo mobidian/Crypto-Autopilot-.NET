@@ -24,7 +24,7 @@ public class GetFuturesPositionsFunction : MarketDataFunctionBase<GetFuturesPosi
 
     
     [Function("Data/Trading/Positions")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get")][FromQuery] HttpRequestData request, [FromQuery] string? contractName)
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "GET")][FromQuery] HttpRequestData request, [FromQuery] string? contractName)
     {
         try
         {
