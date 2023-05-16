@@ -8,6 +8,8 @@ using CryptoExchange.Net.Authentication;
 
 using CryptoExchange.Net.Objects;
 
+using Microsoft.Extensions.Configuration;
+
 namespace Infrastructure.Tests.Integration.Bybit.Abstract;
 
 public abstract class BybitServicesTestBase
@@ -17,11 +19,16 @@ public abstract class BybitServicesTestBase
 
     protected BybitServicesTestBase()
     {
-        var testSecretsClient = new SecretClient(new Uri("https://cryptoautopilottestvault.vault.azure.net"),
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets<BybitServicesTestBase>()
+            .Build();
+
+
+        var testSecretsClient = new SecretClient(new Uri(configuration["KeyVaultConfig:Url"]!),
             new ClientSecretCredential(
-                "83f7176e-c8fc-4168-b2a8-143ba58db998",
-                "ff76a9d5-9683-4198-8023-71181db1c4dc",
-                "laL8Q~MLKdCKLD4V5OeA_VMxZuWO0iH5znXNXaUc"));
+                configuration["KeyVaultConfig:TenantId"],
+                configuration["KeyVaultConfig:ClientId"],
+                configuration["KeyVaultConfig:ClientSecretId"]));
 
         var publicKey = testSecretsClient.GetSecret("BybitApiCredentials--key").Value.Value;
         var privateKey = testSecretsClient.GetSecret("BybitApiCredentials--secret").Value.Value;
