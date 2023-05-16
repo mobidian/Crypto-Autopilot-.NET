@@ -1,4 +1,4 @@
-﻿namespace CryptoAutopilot.Api.Contracts.Responses.Common;
+﻿namespace CryptoAutopilot.Contracts.Responses.Common;
 
 public class CandlestickResponse
 {

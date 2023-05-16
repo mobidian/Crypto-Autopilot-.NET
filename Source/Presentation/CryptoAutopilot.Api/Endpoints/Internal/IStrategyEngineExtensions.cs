@@ -3,8 +3,8 @@
 using Application.Interfaces.Services;
 using Application.Interfaces.Services.General;
 
-using CryptoAutopilot.Api.Contracts.Responses.Strategies;
 using CryptoAutopilot.Api.Services.Interfaces;
+using CryptoAutopilot.Contracts.Responses.Strategies;
 
 namespace CryptoAutopilot.Api.Endpoints.Internal;
 

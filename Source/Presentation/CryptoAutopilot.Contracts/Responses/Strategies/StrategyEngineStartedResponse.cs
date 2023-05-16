@@ -1,4 +1,4 @@
-﻿namespace CryptoAutopilot.Api.Contracts.Responses.Strategies;
+﻿namespace CryptoAutopilot.Contracts.Responses.Strategies;
 
 public class StrategyEngineStartedResponse
 {

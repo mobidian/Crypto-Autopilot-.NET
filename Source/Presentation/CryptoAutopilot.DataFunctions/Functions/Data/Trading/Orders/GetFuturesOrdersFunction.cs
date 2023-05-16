@@ -3,8 +3,8 @@
 using Application.Interfaces.Logging;
 using Application.Interfaces.Services.DataAccess;
 
-using CryptoAutopilot.Api.Contracts.Responses.Common;
-using CryptoAutopilot.Api.Contracts.Responses.Data.Trading.Orders;
+using CryptoAutopilot.Contracts.Responses.Common;
+using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 using CryptoAutopilot.DataFunctions.Extensions;
 using CryptoAutopilot.DataFunctions.Functions.Abstract;
 

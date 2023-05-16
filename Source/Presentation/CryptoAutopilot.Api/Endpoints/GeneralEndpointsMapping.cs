@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces.Services;
 
-using CryptoAutopilot.Api.Contracts.Responses.Strategies;
 using CryptoAutopilot.Api.Endpoints.Internal;
 using CryptoAutopilot.Api.Services.Interfaces;
+using CryptoAutopilot.Contracts.Responses.Strategies;
 
 using Microsoft.AspNetCore.Mvc;
 

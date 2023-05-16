@@ -1,6 +1,6 @@
-﻿using CryptoAutopilot.Api.Contracts.Responses.Common;
+﻿using CryptoAutopilot.Contracts.Responses.Common;
 
-namespace CryptoAutopilot.Api.Contracts.Responses.Data.Trading.Orders;
+namespace CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 public class GetFuturesOrdersByContractNameResponse
 {

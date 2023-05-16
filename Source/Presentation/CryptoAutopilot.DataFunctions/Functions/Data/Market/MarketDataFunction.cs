@@ -5,8 +5,8 @@ using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 
-using CryptoAutopilot.Api.Contracts.Responses.Common;
-using CryptoAutopilot.Api.Contracts.Responses.Data.Market;
+using CryptoAutopilot.Contracts.Responses.Common;
+using CryptoAutopilot.Contracts.Responses.Data.Market;
 using CryptoAutopilot.DataFunctions.Extensions;
 using CryptoAutopilot.DataFunctions.Functions.Abstract;
 

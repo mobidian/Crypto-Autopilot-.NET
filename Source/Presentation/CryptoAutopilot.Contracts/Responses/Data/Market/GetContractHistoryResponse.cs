@@ -1,8 +1,8 @@
 ﻿using Bybit.Net.Enums;
 
-using CryptoAutopilot.Api.Contracts.Responses.Common;
+using CryptoAutopilot.Contracts.Responses.Common;
 
-namespace CryptoAutopilot.Api.Contracts.Responses.Data.Market;
+namespace CryptoAutopilot.Contracts.Responses.Data.Market;
 
 public class GetContractHistoryResponse
 {
