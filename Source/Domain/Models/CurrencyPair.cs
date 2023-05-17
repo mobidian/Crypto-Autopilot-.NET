@@ -6,7 +6,7 @@ using CryptoExchange.Net.CommonObjects;
 namespace Domain.Models;
 
 [DebuggerDisplay("{Name}")]
-public class CurrencyPair : ICloneable
+public class CurrencyPair
 {
     public string Name { get; }
 
@@ -24,8 +24,6 @@ public class CurrencyPair : ICloneable
     }
 
     ////
-
-    public object Clone() => this.MemberwiseClone();
 
     #region overrides
     public override string ToString() => this.Name;

@@ -2,7 +2,7 @@
 
 namespace Domain.Models;
 
-public class FuturesOrder : ICloneable
+public class FuturesOrder
 {
     public required Guid BybitID { get; init; }
     public required CurrencyPair CurrencyPair { get; init; }
@@ -17,21 +17,4 @@ public class FuturesOrder : ICloneable
     public required decimal? TakeProfit { get; init; }
     public required TimeInForce TimeInForce { get; init; }
     public required OrderStatus Status { get; init; }
-    
-    public object Clone() => new FuturesOrder
-    {
-        BybitID = this.BybitID,
-        CurrencyPair = (CurrencyPair)this.CurrencyPair.Clone(),
-        CreateTime = this.CreateTime,
-        UpdateTime = this.UpdateTime,
-        Side = this.Side,
-        PositionSide = this.PositionSide,
-        Type = this.Type,
-        Price = this.Price,
-        Quantity = this.Quantity,
-        StopLoss = this.StopLoss,
-        TakeProfit = this.TakeProfit,
-        TimeInForce = this.TimeInForce,
-        Status = this.Status
-    };
 }

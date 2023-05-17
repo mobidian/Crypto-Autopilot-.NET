@@ -4,7 +4,7 @@ using Skender.Stock.Indicators;
 
 namespace Domain.Models;
 
-public class Candlestick : IQuote, ICloneable
+public class Candlestick : IQuote
 {
     public required CurrencyPair CurrencyPair { get; init; } = default!;
 
@@ -24,16 +24,4 @@ public class Candlestick : IQuote, ICloneable
 
     [JsonIgnore]
     public bool IsDoji => this.Close == this.Open;
-
-    
-    public virtual object Clone() => new Candlestick
-    {
-        CurrencyPair = (CurrencyPair)this.CurrencyPair.Clone(),
-        Date = this.Date,
-        Open = this.Open,
-        High = this.High,
-        Low = this.Low,
-        Close = this.Close,
-        Volume = this.Volume,
-    };
 }
