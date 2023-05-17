@@ -1,7 +1,9 @@
-﻿namespace Application.Exceptions;
+﻿using Application.Interfaces.Services.Bybit;
+
+namespace Application.Exceptions;
 
 /// <summary>
-/// The exception thrown when an error within the <see cref="ICfdTradingService"/> occurs
+/// The exception thrown when an error within the <see cref="IBybitUsdFuturesTradingService"/> occurs
 /// </summary>
 public class InternalTradingServiceException : Exception
 {

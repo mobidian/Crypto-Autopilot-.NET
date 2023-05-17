@@ -1,9 +1,9 @@
 ﻿using Application.Data.Mapping;
 using Application.Interfaces.Services.DataAccess;
 
-using Domain.Models;
+using Domain.Models.Orders;
 
-using Infrastructure.Database.Contexts;
+using Infrastructure.Database;
 using Infrastructure.Internal.Extensions;
 
 using Microsoft.EntityFrameworkCore;

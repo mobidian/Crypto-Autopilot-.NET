@@ -2,9 +2,9 @@
 
 using Bybit.Net.Enums;
 
-namespace Application.Data.Entities;
+namespace Application.Data.Entities.Orders;
 
-public class FuturesOrderDbEntity : BaseEntity
+public class FuturesOrderDbEntity : DbEntityBase
 {
     public int? PositionId { get; set; }
     public virtual FuturesPositionDbEntity? Position { get; set; }

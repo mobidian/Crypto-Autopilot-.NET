@@ -1,11 +1,11 @@
-﻿using Application.Data.Entities;
+﻿using Application.Data.Entities.Orders;
 using Application.Data.Validation;
 
 using FluentValidation;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Database.Contexts;
+namespace Infrastructure.Database;
 
 public class FuturesTradingDbContext : DbContext
 {
@@ -13,8 +13,8 @@ public class FuturesTradingDbContext : DbContext
     private readonly FuturesPositionDbEntityValidator FuturesPositionValidator = new();
 
     public FuturesTradingDbContext(DbContextOptions options) : base(options) { }
-    
-    
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(FuturesTradingDbContext).Assembly, type => !type.IsInterface && !type.IsAbstract);
@@ -29,8 +29,8 @@ public class FuturesTradingDbContext : DbContext
                     .ForEach(fk => fk.DeleteBehavior = DeleteBehavior.Restrict);
     }
 
-    
-    
+
+
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         this.ValidateProperties();
@@ -49,14 +49,14 @@ public class FuturesTradingDbContext : DbContext
         this.ValidateRelationships();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
-    public Task<int> ValidateAndSaveChangesAsync(CancellationToken cancellationToken = default) => this.ValidateAndSaveChangesAsync(true, cancellationToken); 
+    public Task<int> ValidateAndSaveChangesAsync(CancellationToken cancellationToken = default) => this.ValidateAndSaveChangesAsync(true, cancellationToken);
     public Task<int> ValidateAndSaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
         this.ValidateProperties();
         this.ValidateRelationships();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
-    
+
     private void ValidateProperties()
     {
         try
@@ -64,7 +64,7 @@ public class FuturesTradingDbContext : DbContext
             var ordersEntries = this.ChangeTracker.Entries<FuturesOrderDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
             foreach (var orderEntry in ordersEntries)
                 this.FuturesOrderValidator.ValidateAndThrow(orderEntry.Entity);
-            
+
             var positionsEntries = this.ChangeTracker.Entries<FuturesPositionDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
             foreach (var positionEntry in positionsEntries)
                 this.FuturesPositionValidator.ValidateAndThrow(positionEntry.Entity);

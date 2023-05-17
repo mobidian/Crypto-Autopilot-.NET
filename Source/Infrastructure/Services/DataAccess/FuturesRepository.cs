@@ -1,4 +1,4 @@
-﻿using Infrastructure.Database.Contexts;
+﻿using Infrastructure.Database;
 
 namespace Infrastructure.Services.DataAccess;
 

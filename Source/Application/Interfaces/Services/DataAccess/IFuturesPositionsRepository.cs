@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using Domain.Models.Orders;
 
 namespace Application.Interfaces.Services.DataAccess;
 

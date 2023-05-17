@@ -2,7 +2,7 @@
 
 using Skender.Stock.Indicators;
 
-namespace Domain.Models;
+namespace Domain.Models.Common;
 
 public class Candlestick : IQuote
 {
@@ -15,7 +15,7 @@ public class Candlestick : IQuote
     public required decimal Close { get; init; }
     public required decimal Volume { get; init; }
 
-    
+
     [JsonIgnore]
     public bool IsBullish => this.Close > this.Open;
 

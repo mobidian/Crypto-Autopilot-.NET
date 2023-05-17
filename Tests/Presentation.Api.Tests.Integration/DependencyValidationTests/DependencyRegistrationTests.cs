@@ -18,7 +18,7 @@ using CryptoAutopilot.Api.Services.Interfaces;
 
 using CryptoExchange.Net.Authentication;
 
-using Infrastructure.Database.Contexts;
+using Infrastructure.Database;
 using Infrastructure.Factories;
 using Infrastructure.Logging;
 using Infrastructure.Proxies;

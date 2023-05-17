@@ -1,6 +1,8 @@
 ﻿using Bybit.Net.Enums;
 
-namespace Domain.Models;
+using Domain.Models.Common;
+
+namespace Domain.Models.Orders;
 
 public class FuturesOrder
 {

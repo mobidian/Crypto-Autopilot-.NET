@@ -1,6 +1,6 @@
 ﻿using Bybit.Net.Objects.Models;
 
-using Domain.Models;
+using Domain.Models.Common;
 
 namespace Application.Extensions.Bybit;
 

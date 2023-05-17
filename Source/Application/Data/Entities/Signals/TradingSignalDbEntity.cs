@@ -4,7 +4,7 @@ using Domain.Models.Signals;
 
 namespace Application.Data.Entities.Signals;
 
-public class TradingSignalDbEntity : BaseEntity
+public class TradingSignalDbEntity : DbEntityBase
 {
     public required string Source { get; init; }
 

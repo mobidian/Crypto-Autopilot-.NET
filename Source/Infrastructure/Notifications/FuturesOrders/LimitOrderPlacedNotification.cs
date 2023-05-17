@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Services.DataAccess;
 
-using Domain.Models;
+using Domain.Models.Orders;
 
 using MediatR;
 

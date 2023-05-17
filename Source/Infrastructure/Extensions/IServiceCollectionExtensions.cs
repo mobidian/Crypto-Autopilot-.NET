@@ -11,7 +11,7 @@ using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 
 using CryptoExchange.Net.Authentication;
 
-using Infrastructure.Database.Contexts;
+using Infrastructure.Database;
 using Infrastructure.Factories;
 using Infrastructure.Logging;
 using Infrastructure.Proxies;

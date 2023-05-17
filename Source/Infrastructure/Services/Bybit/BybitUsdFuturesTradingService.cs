@@ -7,7 +7,8 @@ using Application.Interfaces.Services.Bybit;
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 
-using Domain.Models;
+using Domain.Models.Common;
+using Domain.Models.Orders;
 
 using Infrastructure.Notifications.FuturesOrders;
 using Infrastructure.Notifications.FuturesPositions;

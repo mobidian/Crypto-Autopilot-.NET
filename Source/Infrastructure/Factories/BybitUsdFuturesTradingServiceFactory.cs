@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Services.Bybit;
 
-using Domain.Models;
+using Domain.Models.Common;
 
 using Infrastructure.Services.Bybit;
 

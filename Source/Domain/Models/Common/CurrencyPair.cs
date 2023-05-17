@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 using CryptoExchange.Net.CommonObjects;
 
-namespace Domain.Models;
+namespace Domain.Models.Common;
 
 [DebuggerDisplay("{Name}")]
 public class CurrencyPair
@@ -19,7 +19,7 @@ public class CurrencyPair
     {
         _ = Base ?? throw new ArgumentNullException(nameof(Base));
         _ = Quote ?? throw new ArgumentNullException(nameof(Quote));
-        
+
         this.Name = Base + Quote;
     }
 

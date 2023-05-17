@@ -2,7 +2,7 @@
 
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
-using Domain.Models;
+using Domain.Models.Orders;
 
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 

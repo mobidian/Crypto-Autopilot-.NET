@@ -3,7 +3,7 @@
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 
-using Domain.Models;
+using Domain.Models.Common;
 
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.General;

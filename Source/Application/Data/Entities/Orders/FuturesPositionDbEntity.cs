@@ -2,9 +2,9 @@
 
 using Bybit.Net.Enums;
 
-namespace Application.Data.Entities;
+namespace Application.Data.Entities.Orders;
 
-public class FuturesPositionDbEntity : BaseEntity
+public class FuturesPositionDbEntity : DbEntityBase
 {
     public required Guid CryptoAutopilotId { get; init; }
     public required string CurrencyPair { get; set; }
@@ -16,6 +16,6 @@ public class FuturesPositionDbEntity : BaseEntity
     public decimal? StopLoss { get; set; }
     public decimal? TakeProfit { get; set; }
     public decimal? ExitPrice { get; set; }
-    
+
     public virtual IEnumerable<FuturesOrderDbEntity>? FuturesOrders { get; set; }
 }

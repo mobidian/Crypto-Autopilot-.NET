@@ -7,10 +7,11 @@ using Bybit.Net.Enums;
 
 using CryptoAutopilot.Api.Services.Interfaces;
 
-using Domain.Models;
+using Domain.Models.Common;
+using Domain.Models.Orders;
 
 using Infrastructure;
-using Infrastructure.Database.Contexts;
+using Infrastructure.Database;
 using Infrastructure.Services.DataAccess;
 
 using Microsoft.EntityFrameworkCore;

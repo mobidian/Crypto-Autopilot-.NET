@@ -1,4 +1,4 @@
-﻿using Application.Data.Entities;
+﻿using Application.Data.Entities.Orders;
 using Application.Extensions.Bybit;
 
 using Bybit.Net.Enums;

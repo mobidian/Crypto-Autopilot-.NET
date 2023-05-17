@@ -1,9 +1,9 @@
 ﻿using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.DataAccess;
 
-using Domain.Models;
+using Domain.Models.Common;
 
-using Infrastructure.Database.Contexts;
+using Infrastructure.Database;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.DataAccess;
 using Infrastructure.Services.General;

@@ -2,9 +2,10 @@
 
 using Bybit.Net.Enums;
 
-using Domain.Models;
+using Domain.Models.Common;
+using Domain.Models.Orders;
 
-using Infrastructure.Database.Contexts;
+using Infrastructure.Database;
 using Infrastructure.Tests.Integration.DataAccess.Common;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 
