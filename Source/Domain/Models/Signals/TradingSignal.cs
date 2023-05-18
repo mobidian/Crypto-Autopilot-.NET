@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Signals;
+﻿using Domain.Models.Common;
+
+namespace Domain.Models.Signals;
 
 /// <summary>
 /// Represents a trading signal for market transactions.
@@ -17,9 +19,9 @@ public class TradingSignal
     public required string Source { get; init; }
 
     /// <summary>
-    /// Gets the contract or the financial instrument for the trading signal.
+    /// Gets the currency pair for the trading signal.
     /// </summary>
-    public required string Contract { get; init; }
+    public required CurrencyPair CurrencyPair { get; init; }
 
     /// <summary>
     /// Gets the time the trading signal was generated.

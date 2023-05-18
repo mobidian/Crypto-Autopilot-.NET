@@ -1,5 +1,6 @@
 ﻿using Application.Data.Entities.Signals;
 
+using Domain.Models.Common;
 using Domain.Models.Signals;
 
 namespace Application.Data.Mapping;
@@ -10,7 +11,7 @@ public static class TradingSignalMappingExtensions
     {
         CryptoAutopilotId = signal.CryptoAutopilotId,
         Source = signal.Source,
-        Contract = signal.Contract,
+        CurrencyPair = signal.CurrencyPair.Name,
         Time = signal.Time,
         Info = signal.Info.DeepClone(), // prevents unexpected mutations on TradingSignalDbEntity
     };
@@ -19,7 +20,7 @@ public static class TradingSignalMappingExtensions
     {
         CryptoAutopilotId = entity.CryptoAutopilotId,
         Source = entity.Source,
-        Contract = entity.Contract,
+        CurrencyPair = new CurrencyPair(entity.CurrencyPair),
         Time = entity.Time,
         Info = entity.Info.DeepClone(), // prevents unexpected mutations on TradingSignal
     };
