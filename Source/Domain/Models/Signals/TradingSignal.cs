@@ -6,6 +6,11 @@
 public class TradingSignal
 {
     /// <summary>
+    /// Gets the CryptoAutopilotId of the trading signal.
+    /// </summary>
+    public required Guid CryptoAutopilotId { get; init; }
+
+    /// <summary>
     /// Gets the source of the trading signal.
     /// This could be a specific trading algorithm, indicator or a third-party source.
     /// </summary>

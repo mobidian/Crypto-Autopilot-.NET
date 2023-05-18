@@ -8,6 +8,7 @@ public static class TradingSignalMappingExtensions
 {
     public static TradingSignalDbEntity ToDbEntity(this TradingSignal signal) => new TradingSignalDbEntity
     {
+        CryptoAutopilotId = signal.CryptoAutopilotId,
         Source = signal.Source,
         Contract = signal.Contract,
         Time = signal.Time,
@@ -16,6 +17,7 @@ public static class TradingSignalMappingExtensions
     
     public static TradingSignal ToDomainObject(this TradingSignalDbEntity entity) => new TradingSignal
     {
+        CryptoAutopilotId = entity.CryptoAutopilotId,
         Source = entity.Source,
         Contract = entity.Contract,
         Time = entity.Time,

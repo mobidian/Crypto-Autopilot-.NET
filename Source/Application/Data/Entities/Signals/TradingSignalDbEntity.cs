@@ -6,11 +6,13 @@ namespace Application.Data.Entities.Signals;
 
 public class TradingSignalDbEntity : DbEntityBase
 {
-    public required string Source { get; init; }
+    public required Guid CryptoAutopilotId { get; init; }
 
-    public required string Contract { get; init; }
+    public required string Source { get; set; }
 
-    public required DateTime Time { get; init; }
+    public required string Contract { get; set; }
 
-    public required SignalInfo Info { get; init; }
+    public required DateTime Time { get; set; }
+
+    public required SignalInfo Info { get; set; }
 }
