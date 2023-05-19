@@ -9,6 +9,9 @@ public class TradingSignalDbEntity : DbEntityBase
 {
     public int? PositionId { get; set; }
     public virtual FuturesPositionDbEntity? Position { get; set; }
+    
+    public int? OrderId { get; set; }
+    public virtual FuturesOrderDbEntity? Order { get; set; }
 
 
     public required Guid CryptoAutopilotId { get; init; }
