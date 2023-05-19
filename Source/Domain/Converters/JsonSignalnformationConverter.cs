@@ -12,6 +12,9 @@ namespace Domain.Converters;
 /// </summary>
 public class JsonSignalnformationConverter : JsonConverter<SignalInfo>
 {
+    public static readonly JsonSignalnformationConverter Empty = new(new Dictionary<string, Type>());
+
+
     private readonly IDictionary<string, Type> SignalInfoTypes;
     
     public JsonSignalnformationConverter(IDictionary<string, Type> signalInfoTypes)
