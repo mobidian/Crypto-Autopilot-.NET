@@ -1,14 +1,15 @@
 ﻿using Application.Data.Mapping;
-using Application.Interfaces.Services.DataAccess;
+using Application.Interfaces.Services.DataAccess.Repositories;
 
 using Domain.Models.Orders;
 
 using Infrastructure.Database;
 using Infrastructure.Internal.Extensions;
+using Infrastructure.Services.DataAccess.Repositories.Abstract;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.DataAccess;
+namespace Infrastructure.Services.DataAccess.Repositories;
 
 public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersRepository
 {

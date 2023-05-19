@@ -1,4 +1,5 @@
 ﻿using Application.Data.Entities.Orders;
+using Application.Data.Entities.Signals;
 using Application.Data.Validation;
 
 using FluentValidation;
@@ -98,4 +99,6 @@ public class FuturesTradingDbContext : DbContext
 
     public DbSet<FuturesOrderDbEntity> FuturesOrders { get; set; }
     public DbSet<FuturesPositionDbEntity> FuturesPositions { get; set; }
+
+    public DbSet<TradingSignalDbEntity> TradingSignals { get; set; }
 }

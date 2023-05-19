@@ -4,7 +4,7 @@ using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
-using Application.Interfaces.Services.DataAccess;
+using Application.Interfaces.Services.DataAccess.Repositories;
 using Application.Interfaces.Services.General;
 
 using Bybit.Net.Clients;
@@ -24,7 +24,7 @@ using Infrastructure.Logging;
 using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
-using Infrastructure.Services.DataAccess;
+using Infrastructure.Services.DataAccess.Repositories;
 using Infrastructure.Services.General;
 
 using Microsoft.AspNetCore.Mvc.Testing;

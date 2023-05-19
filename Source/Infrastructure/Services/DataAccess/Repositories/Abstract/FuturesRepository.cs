@@ -1,6 +1,6 @@
 ﻿using Infrastructure.Database;
 
-namespace Infrastructure.Services.DataAccess;
+namespace Infrastructure.Services.DataAccess.Repositories.Abstract;
 
 public abstract class FuturesRepository
 {

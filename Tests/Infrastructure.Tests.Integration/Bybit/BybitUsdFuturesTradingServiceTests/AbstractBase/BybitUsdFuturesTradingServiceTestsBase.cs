@@ -1,11 +1,11 @@
 ﻿using Application.Interfaces.Services.Bybit;
-using Application.Interfaces.Services.DataAccess;
+using Application.Interfaces.Services.DataAccess.Repositories;
 
 using Domain.Models.Common;
 
 using Infrastructure.Database;
 using Infrastructure.Services.Bybit;
-using Infrastructure.Services.DataAccess;
+using Infrastructure.Services.DataAccess.Repositories;
 using Infrastructure.Services.General;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
 

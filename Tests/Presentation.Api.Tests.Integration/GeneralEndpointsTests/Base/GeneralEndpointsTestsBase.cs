@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 using Application.Interfaces.Services;
-using Application.Interfaces.Services.DataAccess;
+using Application.Interfaces.Services.DataAccess.Repositories;
 
 using Bybit.Net.Enums;
 
@@ -12,7 +12,7 @@ using Domain.Models.Orders;
 
 using Infrastructure;
 using Infrastructure.Database;
-using Infrastructure.Services.DataAccess;
+using Infrastructure.Services.DataAccess.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

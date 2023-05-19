@@ -1,6 +1,7 @@
-﻿using Application.Interfaces.Services.DataAccess;
+﻿using Application.Interfaces.Services.DataAccess.Repositories;
 
 using Infrastructure.Services.DataAccess;
+using Infrastructure.Services.DataAccess.Repositories;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 
 using Microsoft.EntityFrameworkCore;
