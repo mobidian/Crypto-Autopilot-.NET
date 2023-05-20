@@ -12,11 +12,6 @@ namespace Infrastructure.Notifications.FuturesOrders;
 public class UpdatedLimitOrderNotification : INotification
 {
     /// <summary>
-    /// Gets or initializes the unique identifier given by Bybit of the limit order being updated.
-    /// </summary>
-    public required Guid BybitId { get; init; }
-
-    /// <summary>
     /// Gets or initializes the updated FuturesOrder as a limit order.
     /// </summary>
     public required FuturesOrder UpdatedLimitOrder { get; init; }
@@ -29,6 +24,6 @@ public class UpdatedLimitOrderNotificationHandler : INotificationHandler<Updated
 
     public async Task Handle(UpdatedLimitOrderNotification notification, CancellationToken cancellationToken)
     {
-        await this.OrdersRepository.UpdateFuturesOrderAsync(notification.BybitId, notification.UpdatedLimitOrder);
+        await this.OrdersRepository.UpdateFuturesOrderAsync(notification.UpdatedLimitOrder.BybitID, notification.UpdatedLimitOrder);
     }
 }

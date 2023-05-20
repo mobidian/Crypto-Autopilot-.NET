@@ -14,11 +14,6 @@ namespace Infrastructure.Notifications.FuturesPositions;
 public class PositionUpdatedNotification : INotification
 {
     /// <summary>
-    /// Gets or initializes the unique identifier given by CryptoAutopilot of the position being updated.
-    /// </summary>
-    public required Guid PositionCryptoAutopilotId { get; init; }
-
-    /// <summary>
     /// Gets or initializes the updated FuturesPosition.
     /// </summary>
     public required FuturesPosition UpdatedPosition { get; init; }
@@ -44,8 +39,8 @@ public class PositionUpdatedNotificationHandler : INotificationHandler<PositionU
     public async Task Handle(PositionUpdatedNotification notification, CancellationToken cancellationToken)
     {
         if (!notification.FuturesOrders.IsNullOrEmpty())
-            await this.OrdersRepository.AddFuturesOrdersAsync(notification.FuturesOrders, notification.PositionCryptoAutopilotId);
-
-        await this.PositionsRepository.UpdateFuturesPositionAsync(notification.PositionCryptoAutopilotId, notification.UpdatedPosition);
+            await this.OrdersRepository.AddFuturesOrdersAsync(notification.FuturesOrders, notification.UpdatedPosition.CryptoAutopilotId);
+        
+        await this.PositionsRepository.UpdateFuturesPositionAsync(notification.UpdatedPosition.CryptoAutopilotId, notification.UpdatedPosition);
     }
 }
