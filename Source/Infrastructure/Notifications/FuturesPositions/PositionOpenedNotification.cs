@@ -22,10 +22,10 @@ public class PositionOpenedNotification : INotification
     public required IEnumerable<FuturesOrder> FuturesOrders { get; init; }
 }
 
-public class PositionNotificationHandler : INotificationHandler<PositionOpenedNotification>
+public class PositionOpenedNotificationHandler : INotificationHandler<PositionOpenedNotification>
 {
     private readonly IFuturesPositionsRepository PositionsRepository;
-    public PositionNotificationHandler(IFuturesPositionsRepository positionsRepository) => this.PositionsRepository = positionsRepository;
+    public PositionOpenedNotificationHandler(IFuturesPositionsRepository positionsRepository) => this.PositionsRepository = positionsRepository;
 
     public async Task Handle(PositionOpenedNotification notification, CancellationToken cancellationToken)
     {
