@@ -5,7 +5,6 @@ using Application.Extensions.Bybit;
 using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
-using Bybit.Net.Objects.Models;
 
 using Domain.Models.Common;
 using Domain.Models.Orders;
@@ -89,9 +88,8 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         var bybitPosition = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, positionSide);
 
-        var cryptoAutopilotId = Guid.NewGuid();
         var order = bybitOrder.ToDomainObject(positionSide);
-        var position = bybitPosition!.ToDomainObject(cryptoAutopilotId);
+        var position = bybitPosition!.ToDomainObject(Guid.NewGuid());
 
 
         var existed = this.positions.ContainsKey(positionSide);
@@ -109,7 +107,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         {
             await this.Mediator.Publish(new PositionUpdatedNotification
             {
-                PositionCryptoAutopilotId = cryptoAutopilotId,
                 UpdatedPosition = position,
                 FuturesOrders = new[] { order },
             });
@@ -142,7 +139,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         await this.Mediator.Publish(new PositionUpdatedNotification
         {
-            PositionCryptoAutopilotId = cryptoAutopilotId,
             UpdatedPosition = updatedPosition
         });
         
@@ -170,7 +166,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         await this.Mediator.Publish(new PositionUpdatedNotification
         {
-            PositionCryptoAutopilotId = cryptoAutopilotId,
             UpdatedPosition = position,
             FuturesOrders = new[] { order }
         });
@@ -243,7 +238,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         await this.Mediator.Publish(new UpdatedLimitOrderNotification
         {
-            BybitId = updatedOrder.BybitID,
             UpdatedLimitOrder = updatedOrder
         });
 
