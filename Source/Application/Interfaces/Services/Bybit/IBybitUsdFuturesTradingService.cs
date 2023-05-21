@@ -1,7 +1,7 @@
 ﻿using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 namespace Application.Interfaces.Services.Bybit;
 

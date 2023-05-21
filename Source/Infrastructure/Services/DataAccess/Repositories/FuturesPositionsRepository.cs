@@ -1,7 +1,7 @@
 ﻿using Application.Data.Mapping;
 using Application.Interfaces.Services.DataAccess.Repositories;
 
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 using Infrastructure.Database;
 using Infrastructure.Services.DataAccess.Repositories.Abstract;

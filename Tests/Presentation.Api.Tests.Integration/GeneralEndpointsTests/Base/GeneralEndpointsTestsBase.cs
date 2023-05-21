@@ -8,7 +8,7 @@ using Bybit.Net.Enums;
 using CryptoAutopilot.Api.Services.Interfaces;
 
 using Domain.Models.Common;
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 using Infrastructure;
 using Infrastructure.Database;

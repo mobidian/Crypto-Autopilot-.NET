@@ -1,4 +1,4 @@
-﻿using Domain.Models.Orders;
+﻿using Domain.Models.Futures;
 
 namespace Application.Interfaces.Services.DataAccess.Repositories;
 

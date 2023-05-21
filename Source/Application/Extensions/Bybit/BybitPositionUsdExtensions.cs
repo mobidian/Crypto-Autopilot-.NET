@@ -1,6 +1,6 @@
 ﻿using Bybit.Net.Objects.Models;
 
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 namespace Application.Extensions.Bybit;
 

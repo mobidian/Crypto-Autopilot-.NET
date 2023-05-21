@@ -19,6 +19,8 @@ using CryptoAutopilot.Api.Services.Interfaces;
 
 using CryptoExchange.Net.Authentication;
 
+using Domain.PipelineBehaviors;
+
 using Infrastructure.Database;
 using Infrastructure.Factories;
 using Infrastructure.Logging;
@@ -29,6 +31,8 @@ using Infrastructure.Services.DataAccess.Repositories;
 using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
 
+using MediatR;
+
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,49 +40,62 @@ namespace Presentation.Api.Tests.Integration.DependencyValidationTests;
 
 public class DependencyRegistrationTests
 {
-    private readonly List<(Type? serviceType, Type? implementationType, ServiceLifetime? lifetime)> RequiredDescriptors = new()
+    private List<(Type? serviceType, Type? implementationType, ServiceLifetime? lifetime)> RequiredDescriptors = new();
+
+
+    [OneTimeSetUp]
+    public void AddServices()
     {
-        #region AddServices
-        (typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>), ServiceLifetime.Singleton),
-        (typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton),
-        
-        (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Scoped),
-        (typeof(IFuturesOrdersRepository), typeof(FuturesOrdersRepository), ServiceLifetime.Scoped),
-        (typeof(IFuturesPositionsRepository), typeof(FuturesPositionsRepository), ServiceLifetime.Scoped),
-        #region AddDataAccessServices
-        (typeof(IFuturesOperationsService), typeof(FuturesOperationsService), ServiceLifetime.Scoped),
-	    #endregion
+        this.RequiredDescriptors.Add((typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton));
 
-        (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
-        (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),
+        // AddMediatR
+        // AddValidatorsFromAssemblyContaining<IDomainMarker>
+        this.RequiredDescriptors.Add((typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>), ServiceLifetime.Transient));
 
-        
-        #region AddBybitServices
-        (typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton),
+        this.RequiredDescriptors.Add((typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Scoped));
+        this.AddRepositories();
+        this.AddDataAccessServices();
 
-        (typeof(IBybitClient), typeof(BybitClient), ServiceLifetime.Singleton),
-        (typeof(IBybitClientUsdPerpetualApi), typeof(BybitClientUsdPerpetualApi), ServiceLifetime.Singleton),
-        (typeof(IBybitClientUsdPerpetualApiTrading), typeof(BybitClientUsdPerpetualApiTrading), ServiceLifetime.Singleton),
-        (typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton),
-        (typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton),
+        this.RequiredDescriptors.Add((typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton));
         
-        (typeof(IBybitSocketClient), typeof(BybitSocketClient), ServiceLifetime.Singleton),
-        (typeof(IBybitSocketClientUsdPerpetualStreams), typeof(BybitSocketClientUsdPerpetualStreams), ServiceLifetime.Singleton),
-        
-        (typeof(IBybitFuturesAccountDataProvider), typeof(BybitFuturesAccountDataProvider), ServiceLifetime.Singleton),
-        (typeof(IBybitUsdFuturesMarketDataProvider), typeof(BybitUsdFuturesMarketDataProvider), ServiceLifetime.Singleton),
-        (typeof(IBybitUsdFuturesTradingApiClient), typeof(BybitUsdFuturesTradingApiClient), ServiceLifetime.Singleton),
-        (typeof(IBybitUsdPerpetualKlinesMonitor), typeof(BybitUsdPerpetualKlinesMonitor), ServiceLifetime.Singleton),
-        #endregion
-        
-        #region AddBybitServiceFactories
-        (typeof(BybitUsdFuturesTradingServiceFactory), typeof(BybitUsdFuturesTradingServiceFactory), ServiceLifetime.Singleton),
-        #endregion
+        this.AddBybitServices();
+        this.AddBybitServiceFactories();
 
+        this.RequiredDescriptors.Add((typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton));
+    }
+    private void AddRepositories()
+    {
+        this.RequiredDescriptors.Add((typeof(IFuturesOrdersRepository), typeof(FuturesOrdersRepository), ServiceLifetime.Scoped));
+        this.RequiredDescriptors.Add((typeof(IFuturesPositionsRepository), typeof(FuturesPositionsRepository), ServiceLifetime.Scoped));
+    }
+    private void AddDataAccessServices()
+    {
+        this.RequiredDescriptors.Add((typeof(IFuturesOperationsService), typeof(FuturesOperationsService), ServiceLifetime.Scoped));
+    }
+    private void AddBybitServices()
+    {
+        this.RequiredDescriptors.Add((typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton));
 
-        (typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton),
-        #endregion
-    };
+        this.RequiredDescriptors.Add((typeof(IBybitClient), typeof(BybitClient), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApi), typeof(BybitClientUsdPerpetualApi), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApiTrading), typeof(BybitClientUsdPerpetualApiTrading), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
+        
+        this.RequiredDescriptors.Add((typeof(IBybitSocketClient), typeof(BybitSocketClient), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitSocketClientUsdPerpetualStreams), typeof(BybitSocketClientUsdPerpetualStreams), ServiceLifetime.Singleton));
+        
+        this.RequiredDescriptors.Add((typeof(IBybitFuturesAccountDataProvider), typeof(BybitFuturesAccountDataProvider), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitUsdFuturesMarketDataProvider), typeof(BybitUsdFuturesMarketDataProvider), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitUsdFuturesTradingApiClient), typeof(BybitUsdFuturesTradingApiClient), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitUsdPerpetualKlinesMonitor), typeof(BybitUsdPerpetualKlinesMonitor), ServiceLifetime.Singleton));
+    }
+    private void AddBybitServiceFactories()
+    {
+        this.RequiredDescriptors.Add((typeof(BybitUsdFuturesTradingServiceFactory), typeof(BybitUsdFuturesTradingServiceFactory), ServiceLifetime.Singleton));
+    }
 
 
     [Test]

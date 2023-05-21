@@ -1,6 +1,6 @@
 ﻿using Bybit.Net.Enums;
 
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
 

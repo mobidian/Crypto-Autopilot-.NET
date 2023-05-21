@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces.Services.DataAccess.Repositories;
 using Application.Interfaces.Services.DataAccess.Services;
 
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 using Infrastructure.Database;
 using Infrastructure.Internal.Extensions;

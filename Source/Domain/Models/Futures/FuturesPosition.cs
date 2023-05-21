@@ -2,7 +2,7 @@
 
 using Domain.Models.Common;
 
-namespace Domain.Models.Orders;
+namespace Domain.Models.Futures;
 
 public class FuturesPosition
 {

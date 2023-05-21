@@ -3,7 +3,7 @@
 using Bybit.Net.Enums;
 
 using Domain.Models.Common;
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 using Domain.Models.Signals;
 
 using Infrastructure.Tests.Integration.AbstractBases;

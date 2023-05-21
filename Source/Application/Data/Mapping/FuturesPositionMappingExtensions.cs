@@ -1,6 +1,6 @@
 ﻿using Application.Data.Entities.Orders;
 
-using Domain.Models.Orders;
+using Domain.Models.Futures;
 
 namespace Application.Data.Mapping;
 
