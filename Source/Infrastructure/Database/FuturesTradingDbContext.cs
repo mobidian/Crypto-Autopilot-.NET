@@ -42,22 +42,6 @@ public class FuturesTradingDbContext : DbContext
         this.ValidateProperties();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
-
-    public int ValidateAndSaveChanges() => this.ValidateAndSaveChanges(true);
-    public int ValidateAndSaveChanges(bool acceptAllChangesOnSuccess)
-    {
-        this.ValidateProperties();
-        this.ValidateRelationships();
-        return base.SaveChanges(acceptAllChangesOnSuccess);
-    }
-    public Task<int> ValidateAndSaveChangesAsync(CancellationToken cancellationToken = default) => this.ValidateAndSaveChangesAsync(true, cancellationToken);
-    public Task<int> ValidateAndSaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-    {
-        this.ValidateProperties();
-        this.ValidateRelationships();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
-
     private void ValidateProperties()
     {
         try
@@ -65,32 +49,14 @@ public class FuturesTradingDbContext : DbContext
             var ordersEntries = this.ChangeTracker.Entries<FuturesOrderDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
             foreach (var orderEntry in ordersEntries)
                 this.FuturesOrderValidator.ValidateAndThrow(orderEntry.Entity);
-
+            
             var positionsEntries = this.ChangeTracker.Entries<FuturesPositionDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
             foreach (var positionEntry in positionsEntries)
                 this.FuturesPositionValidator.ValidateAndThrow(positionEntry.Entity);
         }
         catch (Exception exception)
         {
-            var message = "An error occurred while validating properties of the entities. The database update operation cannot be performed.";
-            throw new DbUpdateException(message, exception);
-        }
-    }
-    private void ValidateRelationships()
-    {
-        try
-        {
-            var ordersEntries = this.ChangeTracker.Entries<FuturesOrderDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-            foreach (var orderEntry in ordersEntries)
-                this.FuturesOrderValidator.Validate(orderEntry.Entity, options => options.IncludeRuleSets("CheckFkRelationships").ThrowOnFailures());
-
-            var positionsEntries = this.ChangeTracker.Entries<FuturesPositionDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-            foreach (var positionEntry in positionsEntries)
-                this.FuturesPositionValidator.Validate(positionEntry.Entity, options => options.IncludeRuleSets("CheckFkRelationships").ThrowOnFailures());
-        }
-        catch (Exception exception)
-        {
-            var message = "An error occurred while validating relationships between entities. The database update operation cannot be performed.";
+            var message = "An error occurred while validating the entities. The database update operation cannot be performed.";
             throw new DbUpdateException(message, exception);
         }
     }
