@@ -12,7 +12,8 @@ public class FuturesTradingDbContext : DbContext
 {
     private readonly FuturesOrderDbEntityValidator FuturesOrderValidator = new();
     private readonly FuturesPositionDbEntityValidator FuturesPositionValidator = new();
-
+    private readonly TradingSignalDbEntityValidator TradingSignalValidator = new();
+    
     public FuturesTradingDbContext(DbContextOptions options) : base(options) { }
 
 
@@ -34,25 +35,22 @@ public class FuturesTradingDbContext : DbContext
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
-        this.ValidateProperties();
+        this.ValidateEntriesProperties();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        this.ValidateProperties();
+        this.ValidateEntriesProperties();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
-    private void ValidateProperties()
+    #region Validation enforcing methods
+    private void ValidateEntriesProperties()
     {
         try
         {
-            var ordersEntries = this.ChangeTracker.Entries<FuturesOrderDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-            foreach (var orderEntry in ordersEntries)
-                this.FuturesOrderValidator.ValidateAndThrow(orderEntry.Entity);
-            
-            var positionsEntries = this.ChangeTracker.Entries<FuturesPositionDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-            foreach (var positionEntry in positionsEntries)
-                this.FuturesPositionValidator.ValidateAndThrow(positionEntry.Entity);
+            this.ValidateOrderEntries();
+            this.ValidatePositionEntries();
+            this.ValidateTradingSignalEntries();
         }
         catch (Exception exception)
         {
@@ -60,7 +58,25 @@ public class FuturesTradingDbContext : DbContext
             throw new DbUpdateException(message, exception);
         }
     }
-
+    private void ValidateOrderEntries()
+    {
+        var ordersEntries = this.ChangeTracker.Entries<FuturesOrderDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
+        foreach (var orderEntry in ordersEntries)
+            this.FuturesOrderValidator.ValidateAndThrow(orderEntry.Entity);
+    }
+    private void ValidatePositionEntries()
+    {
+        var positionsEntries = this.ChangeTracker.Entries<FuturesPositionDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
+        foreach (var positionEntry in positionsEntries)
+            this.FuturesPositionValidator.ValidateAndThrow(positionEntry.Entity);
+    }
+    private void ValidateTradingSignalEntries()
+    {
+        var signalsEntries = this.ChangeTracker.Entries<TradingSignalDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
+        foreach (var signalsEntry in signalsEntries)
+            this.TradingSignalValidator.ValidateAndThrow(signalsEntry.Entity);
+    } 
+    #endregion
 
 
     public DbSet<FuturesOrderDbEntity> FuturesOrders { get; set; }
