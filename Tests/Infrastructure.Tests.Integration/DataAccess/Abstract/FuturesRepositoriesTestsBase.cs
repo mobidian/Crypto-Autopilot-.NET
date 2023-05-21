@@ -4,8 +4,8 @@ using Bybit.Net.Enums;
 
 using Domain.Models.Common;
 using Domain.Models.Orders;
+using Domain.Models.Signals;
 
-using Infrastructure.Database;
 using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 
