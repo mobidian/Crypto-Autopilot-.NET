@@ -19,22 +19,16 @@ public class TradingSignalsRepository : ITradingSignalsRepository
     }
 
 
-    public async Task<bool> AddAsync(TradingSignal tradingSignal, Guid? bybitOrderId = null, Guid? positionCryptoAutopilotId = null)
+    public async Task<bool> AddAsync(TradingSignal tradingSignal)
     {
         var entity = tradingSignal.ToDbEntity();
-        if (bybitOrderId is not null)
-        {
-            var orderDbEntity = await this.DbContext.FuturesOrders.FirstAsync(x => x.BybitID == bybitOrderId);
-            entity.OrderId = orderDbEntity.Id;
-        }
-        if (positionCryptoAutopilotId is not null)
-        {
-            var positionDbEntity = await this.DbContext.FuturesPositions.FirstAsync(x => x.CryptoAutopilotId == positionCryptoAutopilotId);
-            entity.PositionId = positionDbEntity.Id;
-        }
-
-
         await this.DbContext.TradingSignals.AddAsync(entity);
+        return await this.DbContext.SaveChangesAsync() == 1;
+    }
+    public async Task<bool> AddAsync(IEnumerable<TradingSignal> tradingSignals)
+    {
+        var entities = tradingSignals.Select(x => x.ToDbEntity());
+        await this.DbContext.TradingSignals.AddRangeAsync(entities);
         return await this.DbContext.SaveChangesAsync() == 1;
     }
 
@@ -43,14 +37,9 @@ public class TradingSignalsRepository : ITradingSignalsRepository
         var entity = await this.DbContext.TradingSignals.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotId);
         return entity?.ToDomainObject();
     }
-    public Task<IEnumerable<TradingSignal>> GetByContractAsync(string contract)
+    public Task<IEnumerable<TradingSignal>> GetAllWithContractAsync(string contract)
     {
         var entities = this.DbContext.TradingSignals.Where(x => x.CurrencyPair == contract).AsEnumerable();
-        return Task.FromResult(entities.Select(x => x.ToDomainObject()));
-    }
-    public Task<IEnumerable<TradingSignal>> GetByContractWithInfoTypeAsync<TSignalInfo>(string contract) where TSignalInfo : SignalInfo
-    {
-        var entities = this.DbContext.TradingSignals.Where(x => x.CurrencyPair == contract).AsEnumerable().Where(x => x.Info is TSignalInfo);
         return Task.FromResult(entities.Select(x => x.ToDomainObject()));
     }
     public Task<IEnumerable<TradingSignal>> GetAllAsync()
@@ -58,25 +47,11 @@ public class TradingSignalsRepository : ITradingSignalsRepository
         var signals = this.DbContext.TradingSignals.AsEnumerable().Select(x => x.ToDomainObject());
         return Task.FromResult(signals);
     }
-    public Task<IEnumerable<TradingSignal>> GetAllWithInfoTypeAsync<TSignalInfo>() where TSignalInfo : SignalInfo
-    {
-        var entities = this.DbContext.TradingSignals.AsEnumerable().Where(x => x.Info is TSignalInfo);
-        return Task.FromResult(entities.Select(x => x.ToDomainObject()));
-    }
 
-    public async Task<bool> UpdateAsync(Guid cryptoAutopilotId, TradingSignal updatedSignal, Guid? bybitOrderId = null, Guid? positionCryptoAutopilotId = null)
+    public async Task<bool> UpdateAsync(TradingSignal updatedSignal)
     {
-        var entity = await this.DbContext.TradingSignals.FirstOrDefaultAsync(x => x.CryptoAutopilotId ==  cryptoAutopilotId) ?? throw new DbUpdateException($"Could not find futures order with cryptoAutopilotId == {cryptoAutopilotId}");
-        if (bybitOrderId is not null)
-        {
-            var orderDbEntity = await this.DbContext.FuturesOrders.FirstAsync(x => x.BybitID == bybitOrderId);
-            entity.OrderId = orderDbEntity.Id;
-        }
-        if (positionCryptoAutopilotId is not null)
-        {
-            var positionDbEntity = await this.DbContext.FuturesPositions.FirstAsync(x => x.CryptoAutopilotId == positionCryptoAutopilotId);
-            entity.PositionId = positionDbEntity.Id;
-        }
+        var cryptoAutopilotId = updatedSignal.CryptoAutopilotId;
+        var entity = await this.DbContext.TradingSignals.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotId) ?? throw new DbUpdateException($"Could not find futures order with cryptoAutopilotId == {cryptoAutopilotId}");
 
         entity.Source = updatedSignal.Source;
         entity.CurrencyPair = updatedSignal.CurrencyPair.Name;
@@ -90,7 +65,7 @@ public class TradingSignalsRepository : ITradingSignalsRepository
     {
         foreach (var cryptoAutopilotId in cryptoAutopilotIds)
             if (await this.DbContext.TradingSignals.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotId) is null)
-                throw new DbUpdateException($"No order with bybitID {cryptoAutopilotId} was found in the database");
+                throw new DbUpdateException($"No trading sigal with with cryptoAutopilotId '{cryptoAutopilotId}' was found in the database");
         
         var orders = this.DbContext.TradingSignals.Where(x => cryptoAutopilotIds.Contains(x.CryptoAutopilotId));
         this.DbContext.TradingSignals.RemoveRange(orders);
