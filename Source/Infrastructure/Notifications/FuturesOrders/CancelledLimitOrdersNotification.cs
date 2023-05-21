@@ -12,7 +12,7 @@ public class CancelledLimitOrdersNotification : INotification
     /// <summary>
     /// Gets or initializes the unique identifier given by Bybit of the canceled Bybit limit order.
     /// </summary>
-    public required IEnumerable<Guid> BybitIds { get; init; }
+    public required Guid[] BybitIds { get; init; }
 }
 
 public class CancelledLimitOrdersNotificationHandler : INotificationHandler<CancelledLimitOrdersNotification>
