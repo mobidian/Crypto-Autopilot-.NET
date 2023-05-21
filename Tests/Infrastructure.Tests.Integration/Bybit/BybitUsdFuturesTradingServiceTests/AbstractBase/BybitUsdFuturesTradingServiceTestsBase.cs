@@ -1,19 +1,17 @@
 ﻿using Application.Interfaces.Services.Bybit;
-using Application.Interfaces.Services.DataAccess.Repositories;
-using Application.Interfaces.Services.DataAccess.Services;
 
 using Domain.Models.Common;
 
 using Infrastructure.Database;
+using Infrastructure.Extensions;
 using Infrastructure.Services.Bybit;
-using Infrastructure.Services.DataAccess.Repositories;
-using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Respawn;
@@ -39,16 +37,13 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
     public BybitUsdFuturesTradingServiceTestsBase() : base()
     {
         var services = new ServiceCollection();
-        services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(ConnectionString));
-        services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
-        services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
-        services.AddScoped<IFuturesOperationsService, FuturesOperationsService>(services =>
-        {
-            var dbContext = services.GetRequiredService<FuturesTradingDbContext>();
-            return new FuturesOperationsService(dbContext, new FuturesPositionsRepository(dbContext), new FuturesOrdersRepository(dbContext));
-        });
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
+        var configuration = new ConfigurationManager();
+
+        configuration.AddJsonFile("testsettings.json", optional: false);
+        services.AddServices(configuration);
+        
         var serviceProvider = services.BuildServiceProvider();
+
 
         this.FuturesAccount = new BybitFuturesAccountDataProvider(this.BybitClient.UsdPerpetualApi.Account);
         this.TradingClient = new BybitUsdFuturesTradingApiClient(this.BybitClient.UsdPerpetualApi.Trading);

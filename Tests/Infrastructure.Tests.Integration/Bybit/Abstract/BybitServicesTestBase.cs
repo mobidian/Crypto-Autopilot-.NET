@@ -14,7 +14,6 @@ namespace Infrastructure.Tests.Integration.Bybit.Abstract;
 
 public abstract class BybitServicesTestBase
 {
-    protected const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
     protected readonly BybitClient BybitClient;
 
     protected BybitServicesTestBase()
