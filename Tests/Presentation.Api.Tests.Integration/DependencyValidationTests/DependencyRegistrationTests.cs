@@ -5,6 +5,7 @@ using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.DataAccess.Repositories;
+using Application.Interfaces.Services.DataAccess.Services;
 using Application.Interfaces.Services.General;
 
 using Bybit.Net.Clients;
@@ -25,6 +26,7 @@ using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
 using Infrastructure.Services.DataAccess.Repositories;
+using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
 
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -39,10 +41,13 @@ public class DependencyRegistrationTests
         #region AddServices
         (typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>), ServiceLifetime.Singleton),
         (typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton),
-
+        
         (typeof(FuturesTradingDbContext), typeof(FuturesTradingDbContext), ServiceLifetime.Scoped),
         (typeof(IFuturesOrdersRepository), typeof(FuturesOrdersRepository), ServiceLifetime.Scoped),
         (typeof(IFuturesPositionsRepository), typeof(FuturesPositionsRepository), ServiceLifetime.Scoped),
+        #region AddDataAccessServices
+        (typeof(IFuturesOperationsService), typeof(FuturesOperationsService), ServiceLifetime.Scoped),
+	    #endregion
 
         (typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton),
         (typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton),

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.DataAccess.Repositories;
+﻿using Application.Interfaces.Services.DataAccess.Services;
 
 using Domain.Models.Orders;
 
@@ -24,11 +24,19 @@ public class PositionOpenedNotification : INotification
 
 public class PositionOpenedNotificationHandler : INotificationHandler<PositionOpenedNotification>
 {
-    private readonly IFuturesPositionsRepository PositionsRepository;
-    public PositionOpenedNotificationHandler(IFuturesPositionsRepository positionsRepository) => this.PositionsRepository = positionsRepository;
+    private readonly IFuturesOperationsService FuturesOperationsService;
 
+    public PositionOpenedNotificationHandler(IFuturesOperationsService futuresOperationsService)
+    {
+        this.FuturesOperationsService = futuresOperationsService;
+    }
+
+    
     public async Task Handle(PositionOpenedNotification notification, CancellationToken cancellationToken)
     {
-        await this.PositionsRepository.AddFuturesPositionAsync(notification.Position, notification.FuturesOrders);
+        var position = notification.Position;
+        var orders = notification.FuturesOrders;
+
+        await this.FuturesOperationsService.AddFuturesPositionAndOrdersAsync(position, orders);
     }
 }

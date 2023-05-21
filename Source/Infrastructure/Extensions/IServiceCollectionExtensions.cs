@@ -3,6 +3,7 @@ using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.DataAccess.Repositories;
+using Application.Interfaces.Services.DataAccess.Services;
 using Application.Interfaces.Services.General;
 
 using Bybit.Net.Clients;
@@ -18,6 +19,7 @@ using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
 using Infrastructure.Services.DataAccess.Repositories;
+using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
 
 using Microsoft.EntityFrameworkCore;
@@ -38,15 +40,24 @@ public static class IServiceCollectionExtensions
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
         services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
         services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
+        services.AddDataAccessServices();
 
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
         services.AddSingleton<Func<IUpdateSubscriptionProxy>>(services => () => services.GetRequiredService<IUpdateSubscriptionProxy>());
-
-        AddBybitServices(services, configuration);
-        AddBybitServiceFactories(services);
+        
+        services.AddBybitServices(configuration);
+        services.AddBybitServiceFactories();
     }
-
-    private static void AddBybitServices(IServiceCollection services, IConfiguration configuration)
+    
+    private static void AddDataAccessServices(this IServiceCollection services)
+    {
+        services.AddScoped<IFuturesOperationsService, FuturesOperationsService>(services =>
+        {
+            var dbContext = services.GetRequiredService<FuturesTradingDbContext>();
+            return new FuturesOperationsService(dbContext, new FuturesPositionsRepository(dbContext), new FuturesOrdersRepository(dbContext));
+        });
+    }
+    private static void AddBybitServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BybitApiCredentials:key")!, configuration.GetValue<string>("BybitApiCredentials:secret")!));
 
@@ -76,7 +87,7 @@ public static class IServiceCollectionExtensions
         services.AddSingleton<IBybitUsdFuturesTradingApiClient, BybitUsdFuturesTradingApiClient>();
         services.AddSingleton<IBybitUsdPerpetualKlinesMonitor, BybitUsdPerpetualKlinesMonitor>();
     }
-    private static void AddBybitServiceFactories(IServiceCollection services)
+    private static void AddBybitServiceFactories(this IServiceCollection services)
     {
         services.AddSingleton<BybitUsdFuturesTradingServiceFactory>();
     }

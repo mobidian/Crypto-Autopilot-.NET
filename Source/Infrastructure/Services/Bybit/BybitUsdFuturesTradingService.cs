@@ -108,7 +108,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
             await this.Mediator.Publish(new PositionUpdatedNotification
             {
                 UpdatedPosition = position,
-                FuturesOrders = new[] { order },
+                NewFuturesOrders = new[] { order },
             });
         }
         
@@ -167,7 +167,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         await this.Mediator.Publish(new PositionUpdatedNotification
         {
             UpdatedPosition = position,
-            FuturesOrders = new[] { order }
+            NewFuturesOrders = new[] { order }
         });
         
         this.positions.Remove(positionSide);
@@ -254,7 +254,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     
     public async Task CancelLimitOrdersAsync(params Guid[] bybitIds)
     {
-        var existingIds = bybitIds.Where(this.limitOrders.ContainsKey);
+        var existingIds = bybitIds.Where(this.limitOrders.ContainsKey).ToArray();
         await Parallel.ForEachAsync(existingIds, async (bybitId, _) =>
         {
             await this.TradingClient.CancelOrderAsync(this.CurrencyPair.Name, bybitId.ToString());
@@ -263,7 +263,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         await this.Mediator.Publish(new CancelledLimitOrdersNotification
         {
-            BybitIds = bybitIds
+            BybitIds = existingIds
         });
     }
 
