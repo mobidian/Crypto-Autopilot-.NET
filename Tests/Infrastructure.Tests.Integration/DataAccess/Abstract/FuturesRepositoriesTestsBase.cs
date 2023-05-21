@@ -6,43 +6,13 @@ using Domain.Models.Common;
 using Domain.Models.Orders;
 
 using Infrastructure.Database;
-using Infrastructure.Tests.Integration.DataAccess.Common;
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
-
-using Respawn;
 
 namespace Infrastructure.Tests.Integration.DataAccess.Abstract;
 
-public abstract class FuturesRepositoriesTestsBase
+public abstract class FuturesRepositoriesTestsBase : DatabaseIntegrationTestBase
 {
-    protected const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
-    protected static FuturesTradingDbContextFactory DbContextFactory = new(ConnectionString);
-    protected static Respawner DbRespawner = default!;
-
-    [OneTimeSetUp]
-    public static async Task OneTimeSetUp()
-    {
-        var dbContext = DbContextFactory.Create();
-        await dbContext.Database.EnsureCreatedAsync();
-
-        DbRespawner = await Respawner.CreateAsync(ConnectionString, new RespawnerOptions { CheckTemporalTables = true });
-        await DbRespawner.ResetAsync(ConnectionString); // in case the test database already exists and is populated
-    }
-    
-    [OneTimeTearDown]
-    public static async Task OneTimeTearDown()
-    {
-        var dbContext = DbContextFactory.Create();
-        await dbContext.Database.EnsureDeletedAsync();
-    }
-
-    [TearDown]
-    public virtual async Task TearDown()
-    {
-        await DbRespawner.ResetAsync(ConnectionString);
-    }
-
-
     #region Fakers
     private const int decimals = 4;
 
@@ -112,7 +82,6 @@ public abstract class FuturesRepositoriesTestsBase
     #endregion
 
 
-    protected FuturesTradingDbContext ArrangeAssertDbContext = default!;
     protected async Task InsertRelatedPositionAndOrdersAsync(FuturesPosition position, IEnumerable<FuturesOrder> orders)
     {
         using var transaction = await this.ArrangeAssertDbContext.Database.BeginTransactionAsync();

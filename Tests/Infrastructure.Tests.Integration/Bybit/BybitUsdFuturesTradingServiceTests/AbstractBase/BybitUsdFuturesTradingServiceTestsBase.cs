@@ -1,11 +1,13 @@
 ﻿using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.DataAccess.Repositories;
+using Application.Interfaces.Services.DataAccess.Services;
 
 using Domain.Models.Common;
 
 using Infrastructure.Database;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.DataAccess.Repositories;
+using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
 
@@ -40,6 +42,11 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(ConnectionString));
         services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
         services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
+        services.AddScoped<IFuturesOperationsService, FuturesOperationsService>(services =>
+        {
+            var dbContext = services.GetRequiredService<FuturesTradingDbContext>();
+            return new FuturesOperationsService(dbContext, new FuturesPositionsRepository(dbContext), new FuturesOrdersRepository(dbContext));
+        });
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
         var serviceProvider = services.BuildServiceProvider();
 
