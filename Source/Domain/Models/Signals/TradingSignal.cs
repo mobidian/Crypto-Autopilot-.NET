@@ -31,5 +31,5 @@ public class TradingSignal
     /// <summary>
     /// Gets the information of the signal. The information is subject to polymorphism as it varies based on signal type.
     /// </summary>
-    public required SignalInfo Info { get; init; }
+    public required string Info { get; init; }
 }
