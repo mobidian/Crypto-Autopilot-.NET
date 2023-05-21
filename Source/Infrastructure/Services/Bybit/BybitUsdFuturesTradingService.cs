@@ -43,7 +43,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     //// //// ////
     
     
-    private readonly IDictionary<PositionSide, FuturesPosition> positions = new Dictionary<PositionSide, FuturesPosition>();
+    private readonly IDictionary<PositionSide, FuturesPosition> positions = new ConcurrentDictionary<PositionSide, FuturesPosition>();
     public FuturesPosition? LongPosition
     {
         get
