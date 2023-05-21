@@ -4,7 +4,6 @@ using Application.Interfaces.Services.DataAccess.Repositories;
 using Domain.Models.Orders;
 
 using Infrastructure.Database;
-using Infrastructure.Internal.Extensions;
 using Infrastructure.Services.DataAccess.Repositories.Abstract;
 
 using Microsoft.EntityFrameworkCore;
@@ -25,10 +24,8 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
             entity.PositionId = positionDbEntity.Id;
         }
 
-        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-
         await this.DbContext.FuturesOrders.AddAsync(entity);
-        await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
+        await this.DbContext.SaveChangesAsync();
     }
     public async Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
     {
@@ -42,10 +39,14 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         }
 
 
-        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
-        await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
+        await this.DbContext.SaveChangesAsync();
+    }
+
+    public async Task<FuturesOrder?> GetFuturesOrderByBybitId(Guid bybitID)
+    {
+        var positionDbEntity = await this.DbContext.FuturesOrders.FirstOrDefaultAsync(x => x.BybitID == bybitID);
+        return positionDbEntity?.ToDomainObject();
     }
     public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
     {
@@ -68,10 +69,10 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
 
         return await Task.FromResult(orders);
     }
+
     public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
         var dbEntity = await this.DbContext.FuturesOrders
-            .Include(x => x.Position) // Include related position to be able to validate the relationship when saving the changes
             .Where(x => x.BybitID == bybitID)
             .FirstOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {bybitID}");
 
@@ -81,8 +82,6 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
             dbEntity.PositionId = positionDbEntity.Id;
         }
 
-
-        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
 
         dbEntity.CurrencyPair = updatedFuturesOrder.CurrencyPair.Name;
         dbEntity.BybitID = updatedFuturesOrder.BybitID;
@@ -98,19 +97,17 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         dbEntity.TimeInForce = updatedFuturesOrder.TimeInForce;
         dbEntity.Status = updatedFuturesOrder.Status;
 
-        await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
+        await this.DbContext.SaveChangesAsync();
     }
+
     public async Task DeleteFuturesOrdersAsync(params Guid[] bybitIDs)
     {
         foreach (var bybitID in bybitIDs)
             if (await this.DbContext.FuturesOrders.FirstOrDefaultAsync(x => x.BybitID == bybitID) is null)
                 throw new DbUpdateException($"No order with bybitID {bybitID} was found in the database");
 
-
-        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-
         var orders = this.DbContext.FuturesOrders.Where(x => bybitIDs.Contains(x.BybitID));
         this.DbContext.FuturesOrders.RemoveRange(orders);
-        await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
+        await this.DbContext.SaveChangesAsync();
     }
 }

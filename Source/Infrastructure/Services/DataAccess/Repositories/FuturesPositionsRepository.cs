@@ -4,7 +4,6 @@ using Application.Interfaces.Services.DataAccess.Repositories;
 using Domain.Models.Orders;
 
 using Infrastructure.Database;
-using Infrastructure.Internal.Extensions;
 using Infrastructure.Services.DataAccess.Repositories.Abstract;
 
 using Microsoft.EntityFrameworkCore;
@@ -16,22 +15,23 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
     public FuturesPositionsRepository(FuturesTradingDbContext dbContext) : base(dbContext) { }
 
 
-    public async Task AddFuturesPositionAsync(FuturesPosition position, IEnumerable<FuturesOrder> futuresOrders)
+    public async Task AddFuturesPositionAsync(FuturesPosition position)
     {
-        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-
         var positionDbEntity = position.ToDbEntity();
         await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
         await this.DbContext.SaveChangesAsync();
-
-        var futuresOrderDbEntities = futuresOrders.Select(x =>
-        {
-            var entity = x.ToDbEntity();
-            entity.PositionId = positionDbEntity.Id;
-            return entity;
-        });
-        await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
-        await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
+    }
+    public async Task AddFuturesPositionsAsync(IEnumerable<FuturesPosition> positions)
+    {
+        var positionsDbEntities = positions.Select(x => x.ToDbEntity());
+        await this.DbContext.FuturesPositions.AddRangeAsync(positionsDbEntities);
+        await this.DbContext.SaveChangesAsync();
+    }
+    
+    public async Task<FuturesPosition?> GetFuturesOrderByCryptoAutopilotId(Guid cryptoAutopilotId)
+    {
+        var positionDbEntity = await this.DbContext.FuturesPositions.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotId);
+        return positionDbEntity?.ToDomainObject();
     }
     public async Task<IEnumerable<FuturesPosition>> GetAllFuturesPositionsAsync()
     {
@@ -52,10 +52,9 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
 
         return await Task.FromResult(positions);
     }
+
     public async Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition)
     {
-        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-
         var positionDbEntity = await this.DbContext.FuturesPositions
             .Include(x => x.FuturesOrders) // Include related orders to be able to validate the relationship when saving the changes
             .Where(x => x.CryptoAutopilotId == positionId)
@@ -69,6 +68,17 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
         positionDbEntity.EntryPrice = updatedPosition.EntryPrice;
         positionDbEntity.ExitPrice = updatedPosition.ExitPrice;
 
-        await this.DbContext.ValidateAndSaveChangesAsync(); // validates the relationships as well
+        await this.DbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteFuturesPositionsAsync(params Guid[] cryptoAutopilotIDs)
+    {
+        foreach (var cryptoAutopilotID in cryptoAutopilotIDs)
+            if (await this.DbContext.FuturesPositions.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotID) is null)
+                throw new DbUpdateException($"No order with bybitID {cryptoAutopilotID} was found in the database");
+
+        var orders = this.DbContext.FuturesPositions.Where(x => cryptoAutopilotIDs.Contains(x.CryptoAutopilotId));
+        this.DbContext.FuturesPositions.RemoveRange(orders);
+        await this.DbContext.SaveChangesAsync();
     }
 }
