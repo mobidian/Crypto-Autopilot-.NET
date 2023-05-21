@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Logging;
+﻿using Application;
+using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
@@ -12,6 +13,11 @@ using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 
 using CryptoExchange.Net.Authentication;
 
+using Domain;
+using Domain.PipelineBehaviors;
+
+using FluentValidation;
+
 using Infrastructure.Database;
 using Infrastructure.Factories;
 using Infrastructure.Logging;
@@ -21,6 +27,8 @@ using Infrastructure.Services.Bybit.Monitors;
 using Infrastructure.Services.DataAccess.Repositories;
 using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
+
+using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,12 +42,13 @@ public static class IServiceCollectionExtensions
     {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IInfrastructureMarker>());
+        
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(IDomainMarker).Assembly, typeof(IApplicationMarker).Assembly, typeof(IInfrastructureMarker).Assembly));
+        services.AddValidatorsFromAssemblyContaining<IDomainMarker>();
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
-        services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
-        services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
+        services.AddRepositories();
         services.AddDataAccessServices();
 
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
@@ -49,6 +58,11 @@ public static class IServiceCollectionExtensions
         services.AddBybitServiceFactories();
     }
     
+    private static void AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
+        services.AddScoped<IFuturesPositionsRepository, FuturesPositionsRepository>();
+    }
     private static void AddDataAccessServices(this IServiceCollection services)
     {
         services.AddScoped<IFuturesOperationsService, FuturesOperationsService>(services =>
