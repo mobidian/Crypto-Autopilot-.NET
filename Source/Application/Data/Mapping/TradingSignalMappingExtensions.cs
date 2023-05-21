@@ -13,7 +13,7 @@ public static class TradingSignalMappingExtensions
         Source = signal.Source,
         CurrencyPair = signal.CurrencyPair.Name,
         Time = signal.Time,
-        Info = signal.Info.DeepClone(), // prevents unexpected mutations on TradingSignalDbEntity
+        Info = signal.Info,
     };
     
     public static TradingSignal ToDomainObject(this TradingSignalDbEntity entity) => new TradingSignal
@@ -22,6 +22,6 @@ public static class TradingSignalMappingExtensions
         Source = entity.Source,
         CurrencyPair = new CurrencyPair(entity.CurrencyPair),
         Time = entity.Time,
-        Info = entity.Info.DeepClone(), // prevents unexpected mutations on TradingSignal
+        Info = entity.Info,
     };
 }
