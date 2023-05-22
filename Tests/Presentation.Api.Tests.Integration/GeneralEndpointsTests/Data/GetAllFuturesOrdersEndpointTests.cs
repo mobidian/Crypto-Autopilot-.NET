@@ -1,17 +1,28 @@
 ﻿using System.Net.Http.Json;
 
+using Bogus;
+
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 using Domain.Models.Futures;
 
+using FluentAssertions;
+
+using Presentation.Api.Tests.Integration.Common;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
+
+using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
-[Ignore("Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
 public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
 {
-    [Test]
+    public GetAllFuturesOrdersEndpointTests(ApiFactory apiFactory, DatabaseFixture databaseFixture) : base(apiFactory, databaseFixture)
+    {
+    }
+
+
+    [Fact(Skip = "Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
     public async Task GetAllFuturesOrdersEndpoint_ShouldReturnAllFurutresOrders_WhenFurutresOrdersAreInTheDatabase()
     {
         // Arrange
@@ -28,8 +39,8 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
         response!.FuturesOrders.Should().BeEquivalentTo(futuresOrders);
     }
-    
-    [Test]
+
+    [Fact(Skip = "Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
     public async Task GetAllFuturesOrdersEndpoint_ShouldReturnEmptyEnumerable_WhenNoFurutresOrdersAreInTheDatabase()
     {
         // Act

@@ -3,14 +3,23 @@ using System.Net.Http.Json;
 
 using CryptoAutopilot.Contracts.Responses.Strategies;
 
+using FluentAssertions;
+
+using Presentation.Api.Tests.Integration.Common;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
+
+using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Strategies;
 
 public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
 {
-    [Test]
-    [Ignore("Temporarily ignored because there are no defined IStrategyEngine implementations in the infrastructure layer")]
+    public GetStrategyEngineByGuidEndpointTests(ApiFactory apiFactory, DatabaseFixture databaseFixture) : base(apiFactory, databaseFixture)
+    {
+    }
+
+
+    [Fact(Skip = "Temporarily ignored because there are no defined IStrategyEngine implementations in the infrastructure layer")]
     public async Task GetStrategyEngineByGuidEndpoint_ShouldReturnStrategyEngine_WhenStrategyEngineWithSpecifiedGuidExists()
     {
         // Arrange
@@ -28,7 +37,7 @@ public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
         response.IsRunning.Should().Be(engines[i].IsRunning());
     }
 
-    [Test]
+    [Fact]
     public async Task GetStrategyEngineByGuidEndpoint_ShouldReturnNotFound_WhenNoStrategyEngineWithSpecifiedGuidExists()
     {
         // Act

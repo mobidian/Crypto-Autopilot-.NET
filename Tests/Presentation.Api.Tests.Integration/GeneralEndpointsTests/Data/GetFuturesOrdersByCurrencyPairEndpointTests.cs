@@ -1,18 +1,29 @@
 ﻿using System.Net.Http.Json;
 
+using Bogus;
+
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 using Domain.Models.Common;
 using Domain.Models.Futures;
 
+using FluentAssertions;
+
+using Presentation.Api.Tests.Integration.Common;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
+
+using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Data;
 
-[Ignore("Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
 public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTestsBase
 {
-    [Test]
+    public GetFuturesOrdersByCurrencyPairEndpointTests(ApiFactory apiFactory, DatabaseFixture databaseFixture) : base(apiFactory, databaseFixture)
+    {
+    }
+
+
+    [Fact(Skip = "Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
     public async Task GetFuturesOrdersByCurrencyPairEndpoint_ShouldReturnFuturesOrdersWithCurrencyPair_WhenFuturesOrdersWithCurrencyPairAreInTheDatabase()
     {
         // Arrange
@@ -38,7 +49,7 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         response!.FuturesOrders.Should().BeEquivalentTo(matchingFuturesOrders);
     }
 
-    [Test]
+    [Fact(Skip = "Endpoints functionality has been moved to Azure Functions\nTests are no longer applicable as they test the old endpoint implementation")]
     public async Task GetFuturesOrdersByCurrencyPairEndpoint_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersWithCurrencyPairAreInTheDatabase()
     {
         // Arrange

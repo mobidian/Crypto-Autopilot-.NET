@@ -2,14 +2,23 @@
 
 using CryptoAutopilot.Contracts.Responses.Strategies;
 
+using FluentAssertions;
+
+using Presentation.Api.Tests.Integration.Common;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
+
+using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Strategies;
 
 public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
 {
-    [Test]
-    [Ignore("Temporarily ignored because there are no defined IStrategyEngine implementations in the infrastructure layer")]
+    public GetAllStrategyEnginesEndpointTests(ApiFactory apiFactory, DatabaseFixture databaseFixture) : base(apiFactory, databaseFixture)
+    {
+    }
+
+
+    [Fact(Skip = "Temporarily ignored because there are no defined IStrategyEngine implementations in the infrastructure layer")]
     public async Task GetAllStrategyEnginesEndpoint_ShouldReturnAllStrategyEngines_WhenStrategyEnginesExist()
     {
         // Arrange
@@ -28,8 +37,8 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
             IsRunning = engine.IsRunning(),
         }));
     }
-    
-    [Test]
+        
+    [Fact]
     public async Task GetAllStrategyEnginesEndpoint_ShouldReturnEmptyEnumerable_WhenNoStrategyEnginesExist()
     {
         // Act

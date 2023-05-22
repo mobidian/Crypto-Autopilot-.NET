@@ -36,15 +36,15 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
+using Xunit;
+
 namespace Presentation.Api.Tests.Integration.DependencyValidationTests;
 
 public class DependencyRegistrationTests
 {
-    private List<(Type? serviceType, Type? implementationType, ServiceLifetime? lifetime)> RequiredDescriptors = new();
+    private readonly List<(Type? serviceType, Type? implementationType, ServiceLifetime? lifetime)> RequiredDescriptors = new();
 
-
-    [OneTimeSetUp]
-    public void AddServices()
+    public DependencyRegistrationTests()
     {
         this.RequiredDescriptors.Add((typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IDateTimeProvider), typeof(DateTimeProvider), ServiceLifetime.Singleton));
@@ -59,21 +59,24 @@ public class DependencyRegistrationTests
 
         this.RequiredDescriptors.Add((typeof(IUpdateSubscriptionProxy), typeof(UpdateSubscriptionProxy), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(Func<IUpdateSubscriptionProxy>), typeof(Func<IUpdateSubscriptionProxy>), ServiceLifetime.Singleton));
-        
+
         this.AddBybitServices();
         this.AddBybitServiceFactories();
 
         this.RequiredDescriptors.Add((typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton));
     }
+    
     private void AddRepositories()
     {
         this.RequiredDescriptors.Add((typeof(IFuturesOrdersRepository), typeof(FuturesOrdersRepository), ServiceLifetime.Scoped));
         this.RequiredDescriptors.Add((typeof(IFuturesPositionsRepository), typeof(FuturesPositionsRepository), ServiceLifetime.Scoped));
     }
+    
     private void AddDataAccessServices()
     {
         this.RequiredDescriptors.Add((typeof(IFuturesOperationsService), typeof(FuturesOperationsService), ServiceLifetime.Scoped));
     }
+    
     private void AddBybitServices()
     {
         this.RequiredDescriptors.Add((typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton));
@@ -98,7 +101,7 @@ public class DependencyRegistrationTests
     }
 
 
-    [Test]
+    [Fact]
     public void RegistrationValidation()
     {
         var app = new WebApplicationFactory<IApiMarker>()
@@ -111,7 +114,7 @@ public class DependencyRegistrationTests
                 if (!res.Success)
                     Assert.Fail(res.Message);
 
-                Assert.Pass();
+                // Assert.Pass();
             }));
         
         app.CreateClient(); // triggers the building of the application
