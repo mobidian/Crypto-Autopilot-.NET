@@ -26,7 +26,7 @@ public abstract class GeneralEndpointsTestsBase : FakersClass, IClassFixture<Api
         this.ApiFactory = apiFactory;
         this.HttpClient = this.ApiFactory.CreateClient();
         
-        this.OrdersRepository = new FuturesOrdersRepository(databaseFixture.DbContext);
+        this.OrdersRepository = new FuturesOrdersRepository(databaseFixture.DbContextFactory.Create());
         this.StrategiesTracker = this.ApiFactory.Services.GetRequiredService<IStrategiesTracker>();
     }
 }

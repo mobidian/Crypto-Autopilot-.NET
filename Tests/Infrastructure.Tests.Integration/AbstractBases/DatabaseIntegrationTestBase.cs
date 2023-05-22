@@ -5,19 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 using Respawn;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.AbstractBases;
 
-public class DatabaseIntegrationTestBase
+public class DatabaseIntegrationTestBase : IAsyncLifetime
 {
-    protected const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
-    protected static FuturesTradingDbContextFactory DbContextFactory = new(ConnectionString);
-    protected static Respawner DbRespawner = default!;
-
-    protected FuturesTradingDbContext ArrangeAssertDbContext = default!;
+    private const string ConnectionString = """Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
+    public FuturesTradingDbContextFactory DbContextFactory = new(ConnectionString);
+    private static Respawner DbRespawner = default!;
 
 
-    [OneTimeSetUp]
-    public static async Task OneTimeSetUp()
+    public async Task InitializeAsync()
     {
         var dbContext = DbContextFactory.Create();
         await dbContext.Database.EnsureCreatedAsync();
@@ -26,12 +25,26 @@ public class DatabaseIntegrationTestBase
         await DbRespawner.ResetAsync(ConnectionString); // in case the test database already exists and is populated
     }
 
-    [OneTimeTearDown]
-    public static async Task OneTimeTearDown()
+    public async Task DisposeAsync()
     {
         var dbContext = DbContextFactory.Create();
         await dbContext.Database.EnsureDeletedAsync();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    protected FuturesTradingDbContext ArrangeAssertDbContext = default!;
 
 
     [SetUp]
