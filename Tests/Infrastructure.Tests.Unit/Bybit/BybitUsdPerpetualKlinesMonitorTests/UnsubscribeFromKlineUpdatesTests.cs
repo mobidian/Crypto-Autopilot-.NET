@@ -1,10 +1,16 @@
-﻿using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+﻿using FluentAssertions;
+
+using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+
+using NSubstitute;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests;
 
 public class UnsubscribeFromKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTestsBase
 {
-    [Test]
+    [Fact]
     public async Task UnsubscribeFromKlineUpdatesAsync_ShouldUnsubscribesFromKlineUpdates_WhenSubscribed()
     {
         // Arrange
@@ -21,7 +27,7 @@ public class UnsubscribeFromKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTe
         this.SubscriptionsDictionary.Should().ContainKeys(contracts.Except(new[] { contractToRemove }));
     }
 
-    [Test]
+    [Fact]
     public async Task UnsubscribeFromKlineUpdatesAsync_ShouldThrow_WhenNotSubscribed()
     {
         // Arrange

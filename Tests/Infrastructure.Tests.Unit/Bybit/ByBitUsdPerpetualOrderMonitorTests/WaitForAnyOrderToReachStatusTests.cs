@@ -2,13 +2,17 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
 using Infrastructure.Tests.Unit.Bybit.ByBitUsdPerpetualOrderMonitorTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Unit.Bybit.ByBitUsdPerpetualOrderMonitorTests;
 
 public class WaitForAnyOrderToReachStatusTests : ByBitUsdPerpetualOrderMonitorTestsBase
 {
-    [Test]
+    [Fact]
     public async Task WaitForAnyOrderToReachStatusAsync_ShouldWaitForAnyOrderStatusToReachSpecifiedStatus_WhenSubscribed()
     {
         // Arrange
@@ -40,7 +44,7 @@ public class WaitForAnyOrderToReachStatusTests : ByBitUsdPerpetualOrderMonitorTe
         taskCompletedAfterFinalStatus.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public async Task WaitForAnyOrderToReachStatusAsync_ShouldThrow_WhenNotSubscribed()
     {
         // Arrange

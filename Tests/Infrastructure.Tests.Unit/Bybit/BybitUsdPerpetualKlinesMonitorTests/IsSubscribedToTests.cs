@@ -1,10 +1,14 @@
-﻿using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+﻿using FluentAssertions;
+
+using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests;
 
 public class IsSubscribedToTests : BybitUsdPerpetualKlinesMonitorTestsBase
 {
-    [Test]
+    [Fact]
     public void IsSubscribedTo_ShouldReturnTrue_WhenSubscribed()
     {
         // Arrange
@@ -19,7 +23,7 @@ public class IsSubscribedToTests : BybitUsdPerpetualKlinesMonitorTestsBase
         subscribed.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public async Task IsSubscribedTo_ShouldReturnFalse_WhenUnsubscribedAfterBeeingSubscribed()
     {
         // Arrange
@@ -38,7 +42,7 @@ public class IsSubscribedToTests : BybitUsdPerpetualKlinesMonitorTestsBase
         subscribed.Should().BeFalse();
     }
 
-    [Test]
+    [Fact]
     public void IsSubscribedTo_ShouldReturnFalse_WhenNotSubscribed()
     {
         // Arrange

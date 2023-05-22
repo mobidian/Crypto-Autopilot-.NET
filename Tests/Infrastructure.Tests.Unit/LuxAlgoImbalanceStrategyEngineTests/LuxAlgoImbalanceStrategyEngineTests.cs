@@ -1,4 +1,6 @@
-﻿using Bybit.Net.Enums;
+﻿using Bogus;
+
+using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 
 using Domain.Models.Common;
@@ -7,11 +9,15 @@ using Infrastructure.Services.Trading.LuxAlgoImbalance.Enums;
 using Infrastructure.Services.Trading.LuxAlgoImbalance.Models;
 using Infrastructure.Tests.Unit.LuxAlgoImbalanceStrategyEngineTests.AbstractBase;
 
+using NSubstitute;
+
+using Xunit;
+
 namespace Infrastructure.Tests.Unit.LuxAlgoImbalanceStrategyEngineTests;
 
 public class LuxAlgoImbalanceStrategyEngineTests : LuxAlgoImbalanceStrategyEngineTestsBase
 {
-    [Test]
+    [Fact]
     public async Task TakeActionAsync_ShouldPlaceLimitOrder_WhenSignalingFairValueGap()
     {
         // Arrange

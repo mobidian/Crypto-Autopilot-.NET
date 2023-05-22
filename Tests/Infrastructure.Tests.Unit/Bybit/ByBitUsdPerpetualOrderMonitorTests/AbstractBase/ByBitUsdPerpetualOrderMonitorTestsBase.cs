@@ -10,10 +10,10 @@ using CryptoExchange.Net.Sockets;
 
 using Infrastructure.Services.Bybit.Monitors;
 
+using NSubstitute;
+
 namespace Infrastructure.Tests.Unit.Bybit.ByBitUsdPerpetualOrderMonitorTests.AbstractBase;
 
-[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-[Parallelizable(ParallelScope.All)]
 public abstract class ByBitUsdPerpetualOrderMonitorTestsBase
 {
     protected readonly ByBitUsdPerpetualOrderMonitor SUT;

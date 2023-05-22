@@ -1,10 +1,16 @@
-﻿using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+﻿using FluentAssertions;
+
+using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+
+using NSubstitute;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests;
 
 public class SubscribeToKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTestsBase
 {
-    [Test]
+    [Fact]
     public async Task SubscribeToKlineUpdatesAsync_ShouldSubscribeToKlineUpdates_WhenNotSubscribed()
     {
         // Arrange
@@ -18,7 +24,7 @@ public class SubscribeToKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTestsB
         this.SubscriptionsDictionary.Keys.AsEnumerable().Should().BeEquivalentTo(contracts);
     }
 
-    [Test]
+    [Fact]
     public async Task SubscribeToKlineUpdatesAsync_ShouldNotSubscribeToKlineUpdates_WhenAlreadySubscribed()
     {
         // Arrange

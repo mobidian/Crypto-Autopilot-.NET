@@ -1,12 +1,18 @@
 ﻿using Application.Exceptions;
 
+using FluentAssertions;
+
 using Infrastructure.Tests.Unit.Bybit.ByBitUsdPerpetualOrderMonitorTests.AbstractBase;
+
+using NSubstitute;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Unit.Bybit.ByBitUsdPerpetualOrderMonitorTests;
 
 public class UnsubscribeFromOrderUpdatesTests : ByBitUsdPerpetualOrderMonitorTestsBase
 {
-    [Test]
+    [Fact]
     public async Task UnsubscribeFromOrderUpdatesAsync_ShouldUnsubscribeFromOrderUpdates_WhenSubscribed()
     {
         // Arrange
@@ -20,7 +26,7 @@ public class UnsubscribeFromOrderUpdatesTests : ByBitUsdPerpetualOrderMonitorTes
         await this.UsdPerpetualStreams.UnsubscribeAsync(Arg.Is<int>(id => id == this.UpdateSubscriptionCallResult.Data.Id));
     }
 
-    [Test]
+    [Fact]
     public async Task UnsubscribeFromKlineUpdatesAsync_ShouldThrow_WhenNotSubscribed()
     {
         // Act

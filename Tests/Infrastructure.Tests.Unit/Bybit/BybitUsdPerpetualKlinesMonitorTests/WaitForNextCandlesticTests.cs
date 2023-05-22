@@ -3,15 +3,20 @@ using Bybit.Net.Objects.Models.Socket;
 
 using CryptoExchange.Net.Sockets;
 
+using FluentAssertions;
 using FluentAssertions.Extensions;
 
 using Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests.AbstractBase;
+
+using NSubstitute;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Unit.Bybit.BybitUsdPerpetualKlinesMonitorTests;
 
 public class WaitForNextCandlesticTests : BybitUsdPerpetualKlinesMonitorTestsBase
 {
-    [Test]
+    [Fact]
     public async Task WaitForNextCandlestickAsync_ShouldWaitForNewCandlestick_WhenSubscribed()
     {
         // Arrange
@@ -48,7 +53,7 @@ public class WaitForNextCandlesticTests : BybitUsdPerpetualKlinesMonitorTestsBas
         taskCompletedAfterNewCandlestickUpdate.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public async Task WaitForNextCandlestickAsync_ShouldWaitForNewCandlestick_WhenSubscribedAndTheFirstUpdateIsTheNewCandleUpdate()
     {
         // Arrange
