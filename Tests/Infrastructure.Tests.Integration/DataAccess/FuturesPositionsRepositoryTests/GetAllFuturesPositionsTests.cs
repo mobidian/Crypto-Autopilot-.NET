@@ -4,7 +4,7 @@ using Bogus;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Xunit;

@@ -2,7 +2,7 @@
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Xunit;

@@ -7,8 +7,8 @@ using Domain.Models.Common;
 using Infrastructure.Extensions;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.General;
-using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using MediatR;
 

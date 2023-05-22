@@ -4,9 +4,8 @@ using Domain.Models.Futures;
 
 using Infrastructure.Database;
 using Infrastructure.Internal.Extensions;
-using Infrastructure.Tests.Integration.AbstractBases;
-using Infrastructure.Tests.Integration.Common;
-using Infrastructure.Tests.Integration.DataAccess.Common;
+using Infrastructure.Tests.Integration.Common.Fakers;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using Microsoft.EntityFrameworkCore;
 

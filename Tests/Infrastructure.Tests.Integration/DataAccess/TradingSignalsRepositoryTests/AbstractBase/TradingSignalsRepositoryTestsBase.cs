@@ -1,10 +1,7 @@
 ﻿using Application.Interfaces.Services.DataAccess.Repositories;
 
-using Domain.Models.Common;
-using Domain.Models.Signals;
-
 using Infrastructure.Services.DataAccess.Repositories;
-using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 
 namespace Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;

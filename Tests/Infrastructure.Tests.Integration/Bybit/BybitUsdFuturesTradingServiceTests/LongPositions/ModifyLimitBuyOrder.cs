@@ -4,8 +4,8 @@ using Bybit.Net.Enums;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

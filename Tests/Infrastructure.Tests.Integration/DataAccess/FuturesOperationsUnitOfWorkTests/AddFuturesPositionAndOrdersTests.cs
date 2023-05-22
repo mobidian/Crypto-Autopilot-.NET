@@ -4,7 +4,7 @@ using Bybit.Net.Enums;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests.AbstractBase;
 

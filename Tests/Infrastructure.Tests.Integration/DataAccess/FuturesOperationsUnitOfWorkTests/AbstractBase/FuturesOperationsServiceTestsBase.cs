@@ -2,7 +2,7 @@
 
 using Infrastructure.Services.DataAccess.Repositories;
 using Infrastructure.Services.DataAccess.Services;
-using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests.AbstractBase;
