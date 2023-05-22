@@ -1,14 +1,14 @@
-﻿using Application.Data.Entities.Orders;
+﻿using Bybit.Net.Enums;
 
-using Bybit.Net.Enums;
+using Domain.Models.Futures;
 
 using FluentValidation;
 
-namespace Application.Data.Validation;
+namespace Domain.Validation;
 
-public class FuturesOrderDbEntityValidator : AbstractValidator<FuturesOrderDbEntity>
+public class FuturesOrderValidator : AbstractValidator<FuturesOrder>
 {
-    public FuturesOrderDbEntityValidator()
+    public FuturesOrderValidator()
     {
         this.RuleFor(order => order.BybitID).NotEqual(Guid.Empty);
         this.RuleFor(order => order.CurrencyPair).NotEqual(string.Empty);

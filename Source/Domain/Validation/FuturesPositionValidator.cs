@@ -1,12 +1,12 @@
-﻿using Application.Data.Entities.Orders;
+﻿using Domain.Models.Futures;
 
 using FluentValidation;
 
-namespace Application.Data.Validation;
+namespace Domain.Validation;
 
-public class FuturesPositionDbEntityValidator : AbstractValidator<FuturesPositionDbEntity>
+public class FuturesPositionValidator : AbstractValidator<FuturesPosition>
 {
-    public FuturesPositionDbEntityValidator()
+    public FuturesPositionValidator()
     {
         this.RuleFor(position => position.CryptoAutopilotId).NotEqual(Guid.Empty);
         this.RuleFor(position => position.CurrencyPair).NotEqual(string.Empty);
