@@ -2,16 +2,26 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
 public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 {
-    [Test]
+    public UpdateFuturesPositionTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task UpdateFuturesPosition_ShouldUpdateFuturesPosition_WhenFuturesPositionIsValid()
     {
         // Arrange
@@ -31,7 +41,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
     }
 
-    [Test]
+    [Fact]
     public async Task UpdateFuturesPosition_ShouldThrow_WhenFuturesPositionSideDoesNotMatchTheOldFuturesPositionSideAndThePositionAlreadyHasOrdersPointingToIt()
     {
         // Arrange

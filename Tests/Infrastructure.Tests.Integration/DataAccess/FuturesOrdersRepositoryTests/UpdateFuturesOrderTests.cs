@@ -2,16 +2,26 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
 public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 {
-    [Test]
+    public UpdateFuturesOrderTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldUpdateFuturesOrder_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
@@ -30,7 +40,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
     }
 
-    [Test]
+    [Fact]
     public async Task UpdateFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition()
     {
         // Arrange
@@ -56,7 +66,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldUpdateFuturesOrder_WhenOrderRequiresPosition()
     {
         // Arrange
@@ -75,7 +85,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedOrder);
     }
 
-    [Test]
+    [Fact]
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
@@ -102,7 +112,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenTheOrderPositionSideDoesNotMatchThePositionSide()
     {
         // Arrange
@@ -126,7 +136,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task UpdateFuturesOrderWithPositionGuid_ShouldThrow_WhenThePositionSideDoesNotMatchTheOldPositionSideAndItIsAlreadyPointingToSomePosition()
     {
         // Arrange

@@ -2,16 +2,27 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.LongPositions;
 
 public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
 {
-    [TestCase(-300, 300, Description = "Both StopLoss and TakeProfit specified")]
-    [TestCase(-300, null, Description = "Only StopLoss specified")]
-    [TestCase(null, 300, Description = "Only TakeProfit specified")]
-    [TestCase(null, null, Description = "Neither StopLoss nor TakeProfit specified")]
+    public OpenLongPositionTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Theory]
+    [InlineData(-300, 300)] // Both StopLoss and TakeProfit specified
+    [InlineData(-300, null)] // Only StopLoss specified
+    [InlineData(null, 300)] // Only TakeProfit specified
+    [InlineData(null, null)] // Neither StopLoss nor TakeProfit specified
     public async Task OpenPosition_ShouldOpenLongPosition_WhenLongPositionDoesNotExist(int? stopLossOffset, int? takeProfitOffset)
     {
         // Arrange
@@ -39,7 +50,7 @@ public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
         position!.StopLossTakeProfitMode.Should().Be(StopLossTakeProfitMode.Full);
     }
 
-    [Test]
+    [Fact]
     public async Task OpenPosition_ShouldThrow_WhenTradingStopParametersAreIncorrect()
     {
         // Arrange

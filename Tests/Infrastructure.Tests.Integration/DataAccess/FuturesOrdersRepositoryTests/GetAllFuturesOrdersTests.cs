@@ -1,12 +1,24 @@
 ﻿using Application.Data.Mapping;
 
+using Bogus;
+
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
 public class GetAllFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
 {
-    [Test]
+    public GetAllFuturesOrdersTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task GetAllFuturesOrders_ShouldReturnAllFuturesOrders_WhenFuturesOrdersExist()
     {
         // Arrange
@@ -21,7 +33,7 @@ public class GetAllFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
         futuresOrders.ForEach(x => retrievedFuturesOrders.Should().ContainEquivalentOf(x));
     }
 
-    [Test]
+    [Fact]
     public async Task GetAllFuturesOrders_ShouldReturnEmptyEnumerable_WhenNoFuturesOrdersExist()
     {
         // Act

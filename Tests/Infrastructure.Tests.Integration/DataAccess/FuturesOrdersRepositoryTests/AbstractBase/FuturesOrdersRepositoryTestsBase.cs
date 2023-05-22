@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Services.DataAccess.Repositories;
 
 using Infrastructure.Services.DataAccess.Repositories;
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
@@ -9,12 +10,8 @@ public abstract class FuturesOrdersRepositoryTestsBase : FuturesRepositoriesTest
 {
     protected IFuturesOrdersRepository SUT;
 
-
-    [SetUp]
-    public override async Task SetUp()
+    protected FuturesOrdersRepositoryTestsBase(DatabaseFixture databaseFixture) : base(databaseFixture)
     {
-        await base.SetUp(); // initializes this.ArrangeAssertDbContext
-
-        this.SUT = new FuturesOrdersRepository(DbContextFactory.Create());
+        this.SUT = new FuturesOrdersRepository(this.DbContextFactory.Create());
     }
 }

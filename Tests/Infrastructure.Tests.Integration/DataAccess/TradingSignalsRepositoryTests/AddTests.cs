@@ -1,15 +1,25 @@
 ﻿using Application.Data.Mapping;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests;
 
 public class AddTests : TradingSignalsRepositoryTestsBase
 {
-    [Test]
+    public AddTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task Add_ShouldAddSignal_WhenSignalDoesNotExist()
     {
         // Arrange
@@ -23,7 +33,7 @@ public class AddTests : TradingSignalsRepositoryTestsBase
         this.ArrangeAssertDbContext.TradingSignals.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(new[] { tradingSignal });
     }
 
-    [Test]
+    [Fact]
     public async Task Add_ShouldThrow_WhenSignalWithCryptoAutopilotIdAlreadyExists()
     {
         // Arrange

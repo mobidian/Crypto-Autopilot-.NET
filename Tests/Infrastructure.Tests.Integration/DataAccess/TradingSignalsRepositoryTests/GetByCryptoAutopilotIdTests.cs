@@ -1,10 +1,20 @@
-﻿using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
+﻿using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests;
 
 public class GetByCryptoAutopilotIdTests : TradingSignalsRepositoryTestsBase
 {
-    [Test]
+    public GetByCryptoAutopilotIdTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task GetByCryptoAutopilotId_ShouldReturnTradingSignalWithMatchingCryptoAutopilotId_WhenItExists()
     {
         // Arrange
@@ -21,7 +31,7 @@ public class GetByCryptoAutopilotIdTests : TradingSignalsRepositoryTestsBase
         retrievedTradingSignal.Should().BeEquivalentTo(tradingSignal);
     }
     
-    [Test]
+    [Fact]
     public async Task GetByCryptoAutopilotId_ShouldReturnNull_WhenTradingSignalWithMatchingCryptoAutopilotIdDoesNotExist()
     {
         // Arrange

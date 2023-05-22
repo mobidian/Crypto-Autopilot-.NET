@@ -2,16 +2,26 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests;
 
 public class AddFuturesPositionAndOrdersTests : FuturesOperationsServiceTestsBase
 {
-    [Test]
+    public AddFuturesPositionAndOrdersTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task AddFuturesPosition_ShouldAddFuturesPositionAndOrders_WhenAllFuturesOrdersRequirePosition()
     {
         // Arrange
@@ -26,7 +36,7 @@ public class AddFuturesPositionAndOrdersTests : FuturesOperationsServiceTestsBas
         this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesPosition_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition()
     {
         // Arrange
@@ -48,7 +58,7 @@ public class AddFuturesPositionAndOrdersTests : FuturesOperationsServiceTestsBas
                 .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "A limit order which has not been filled must not point to a position.");
     }
     
-    [Test]
+    [Fact]
     public async Task AddFuturesPosition_ShouldThrow_WhenThePositionSideOfAnyOrderDoesNotMatchTheSideOfThePosition()
     {
         // Arrange

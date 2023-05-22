@@ -2,15 +2,26 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.ShortPositions;
 
 public class ModifyTradingStopOnShort : BybitUsdFuturesTradingServiceTestsBase
 {
-    [TestCase(-100, 100, Description = "Both StopLoss and TakeProfit specified")]
-    [TestCase(-100, 0, Description = "Only StopLoss specified")]
-    [TestCase(0, 100, Description = "Only TakeProfit specified")]
+    public ModifyTradingStopOnShort(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Theory]
+    [InlineData(-100, 100)] // Both StopLoss and TakeProfit specified
+    [InlineData(-100, 0)] // Only StopLoss specified
+    [InlineData(0, 100)] // Only TakeProfit specified
     public async Task ModifyTradingStop_ShouldModifyTradingStop_WhenShortPositionExists(int newStopLossOffset, int newTakeProfitOffset)
     {
         // Arrange
@@ -35,7 +46,7 @@ public class ModifyTradingStopOnShort : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.ShortPosition!.TakeProfit.Should().Be(newTakeProfit);
     }
 
-    [Test]
+    [Fact]
     public async Task ModifyTradingStop_ShouldThrow_WhenShortPositionDoesNotExist()
     {
         // Arrange

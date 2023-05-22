@@ -2,16 +2,26 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
 public class AddFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
 {
-    [Test]
+    public AddFuturesOrdersTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task AddFuturesOrdersWithoutPositionGuid_ShouldAddFuturesOrders_WhenAllOrdersShouldNotPointToPosition()
     {
         // Arrange
@@ -24,7 +34,7 @@ public class AddFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrdersWithoutPositionGuid_ShouldThrow_WhenAnyFuturesOrderRequiresPosition()
     {
         // Arrange
@@ -43,7 +53,7 @@ public class AddFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrders_WhenAllFuturesOrdersRequirePosition()
     {
         // Arrange
@@ -59,7 +69,7 @@ public class AddFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition()
     {
         // Arrange
@@ -84,7 +94,7 @@ public class AddFuturesOrdersTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrder_ShouldThrow_WhenThePositionSideOfAnyOrderDoesNotMatchThePositionSide()
     {
         // Arrange

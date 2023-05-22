@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Tests.Integration.DataAccess.Extensions;
+﻿using Bogus;
+
+namespace Infrastructure.Tests.Integration.DataAccess.Extensions;
 
 public static class RandomizerExtensions
 {

@@ -2,16 +2,27 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.LongPositions;
 
 public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
 {
-    [TestCase(-300, 300, Description = "Both StopLoss and TakeProfit specified")]
-    [TestCase(-300, null, Description = "Only StopLoss specified")]
-    [TestCase(null, 300, Description = "Only TakeProfit specified")]
-    [TestCase(null, null, Description = "Neither StopLoss nor TakeProfit specified")]
+    public PlaceLimitBuyOrderTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Theory]
+    [InlineData(-300, 300)] // Both StopLoss and TakeProfit specified
+    [InlineData(-300, null)] // Only StopLoss specified
+    [InlineData(null, 300)] // Only TakeProfit specified
+    [InlineData(null, null)] // Neither StopLoss nor TakeProfit specified
     public async Task PlaceLimitOrder_ShouldPlaceBuyLimitOrder_WhenNoBuyLimitOrderExists(int? stopLossOffset, int? takeProfitOffset)
     {
         // Arrange
@@ -42,7 +53,7 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
         order.TakeProfitTriggerType.Should().Be(takeProfitOffset.HasValue ? tradingStopTriggerType : TriggerType.Unknown);
     }
 
-    [Test]
+    [Fact]
     public async Task PlaceLimitOrder_ShouldThrow_WhenLimitPriceIsIncorrect()
     {
         // Arrange
@@ -59,7 +70,7 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
     }
 
-    [Test]
+    [Fact]
     public async Task PlaceLimitOrder_ShouldThrow_WhenTradingStopParametersAreIncorrect()
     {
         // Arrange

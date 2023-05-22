@@ -2,17 +2,27 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
 public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 {
-    [Test]
+    public AddFuturesPositionTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task AddFuturesPosition_ShouldAddFuturesPosition_WhenFuturesPositionIsValid()
     {
         // Arrange
@@ -25,7 +35,7 @@ public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesPosition_ShouldThrow_WhenFuturesPositionIsInvalid()
     {
         // Arrange
@@ -42,7 +52,7 @@ public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
                 .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "'Leverage' must be greater than or equal to '1'.");
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesPosition_ShouldThrow_WhenCryptoAutopilotIdAlreadyExistsInTheDatabase()
     {
         // Arrange

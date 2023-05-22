@@ -2,16 +2,26 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
 public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 {
-    [Test]
+    public AddFuturesOrderTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task AddFuturesOrderWithoutPositionGuid_ShouldAddFuturesOrder_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
@@ -24,7 +34,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrderWithoutPositionGuid_ShouldThrow_WhenOrderRequiresPosition()
     {
         // Arrange
@@ -42,7 +52,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrder_WhenOrderRequiresPosition()
     {
         // Arrange
@@ -58,7 +68,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenOrderShouldNotPointToPosition()
     {
         // Arrange
@@ -79,7 +89,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenTheOrderPositionSideDoesNotMatchTheSideOfThePosition()
     {
         // Arrange

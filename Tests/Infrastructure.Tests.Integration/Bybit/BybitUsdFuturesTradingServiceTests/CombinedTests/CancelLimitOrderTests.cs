@@ -2,14 +2,25 @@
 
 using Domain.Models.Futures;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.CombinedTests;
 
 public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
 {
-    [TestCase(OrderSide.Buy, -500)]
-    [TestCase(OrderSide.Sell, 500)]
+    public CancelLimitOrderTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Theory]
+    [InlineData(OrderSide.Buy, -500)]
+    [InlineData(OrderSide.Sell, 500)]
     public async Task CancelLimitOrder_ShouldCancelLimitOrder_WhenLimitOrderExists(OrderSide orderSide, decimal limitPriceOffset)
     {
         // Arrange
@@ -27,7 +38,7 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.LimitOrders.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public async Task CancelLimitOrders_ShouldCancelOnlySpecifiedOrders_WhenMultipleLimitOrdersExist()
     {
         // Arrange
@@ -53,7 +64,7 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
     }
 
 
-    [Test]
+    [Fact]
     public async Task CancelAllLimitOrdersAsync_ShouldCancelAllLimitOrders()
     {
         // Arrange

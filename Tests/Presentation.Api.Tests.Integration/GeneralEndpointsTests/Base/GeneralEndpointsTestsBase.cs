@@ -12,8 +12,7 @@ using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
-[Collection(nameof(DatabaseFixture))]
-public abstract class GeneralEndpointsTestsBase : FakersClass, IClassFixture<ApiFactory>
+public abstract class GeneralEndpointsTestsBase : FakersClass, IClassFixture<DatabaseFixture>, IClassFixture<ApiFactory>
 {
     protected readonly ApiFactory ApiFactory;
     protected readonly HttpClient HttpClient;

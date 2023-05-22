@@ -9,9 +9,11 @@ using Infrastructure.Services.Bybit;
 using Infrastructure.Services.General;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
 
+using Xunit;
+
 namespace Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests.AbstractBase;
 
-public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTestBase
+public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTestBase, IAsyncLifetime
 {
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("BTC", "USDT");
 
@@ -31,10 +33,13 @@ public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTe
 
 
     private readonly List<BybitUsdPerpetualOrder> Orders = new();
+    
+    public async Task InitializeAsync()
+    {
+        await Task.CompletedTask;
+    }
 
-
-    [TearDown]
-    public async Task TearDown()
+    public async Task DisposeAsync()
     {
         await Parallel.ForEachAsync(this.Orders, async (order, _) => await this.TradingClient.CloseOrderAsync(order));
         this.Orders.Clear();

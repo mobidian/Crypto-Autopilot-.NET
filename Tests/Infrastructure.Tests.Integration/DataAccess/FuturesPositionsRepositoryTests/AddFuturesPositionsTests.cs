@@ -2,18 +2,27 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Microsoft.Data.SqlClient;
-
 using Microsoft.EntityFrameworkCore;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
 public class AddFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
 {
-    [Test]
+    public AddFuturesPositionsTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task AddFuturesPositions_ShouldAddFuturesPositions_WhenFuturesPositionsAreValid()
     {
         // Arrange
@@ -26,7 +35,7 @@ public class AddFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesPositions.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(positions);
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesPositions_ShouldThrow_WhenAnyFuturesPositionIsInvalid()
     {
         // Arrange
@@ -44,7 +53,7 @@ public class AddFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
                 .WithInnerExceptionExactly<FluentValidation.ValidationException>();
     }
 
-    [Test]
+    [Fact]
     public async Task AddFuturesPositions_ShouldThrow_WhenCryptoAutopilotIdAlreadyExistsInTheDatabase()
     {
         // Arrange

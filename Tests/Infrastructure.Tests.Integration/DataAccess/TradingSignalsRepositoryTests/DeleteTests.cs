@@ -1,12 +1,21 @@
-﻿using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
+﻿using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
+using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests;
 
 public class DeleteTests : TradingSignalsRepositoryTestsBase
 {
-    [Test]
+    public DeleteTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+    [Fact]
     public async Task Delete_ShouldDeleteTradingSignal_WhenTradingSignalWithCryptoAutopilotIdExists()
     {
         // Arrange
@@ -20,7 +29,7 @@ public class DeleteTests : TradingSignalsRepositoryTestsBase
         result.Should().BeTrue();
     }
     
-    [Test]
+    [Fact]
     public async Task Delete_ShouldTHrow_WhenTradingSignalWithCryptoAutopilotIdDoesNotExist()
     {
         // Arrange

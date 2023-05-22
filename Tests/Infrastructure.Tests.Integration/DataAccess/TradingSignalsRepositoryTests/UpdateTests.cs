@@ -1,14 +1,24 @@
 ﻿using Application.Data.Mapping;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests;
 
 public class UpdateTests : TradingSignalsRepositoryTestsBase
 {
-    [Test]
+    public UpdateTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task Update_ShouldUpdateTradingSignal_WhenTradingSignalExistsAndUpdatedSignalIsValid()
     {
         // Arrange
@@ -24,7 +34,7 @@ public class UpdateTests : TradingSignalsRepositoryTestsBase
         this.ArrangeAssertDbContext.TradingSignals.Single().ToDomainObject().Should().BeEquivalentTo(updatedSignal);
     }
     
-    [Test]
+    [Fact]
     public async Task Update_ShouldUpdateTradingSignal_WhenTradingSignalDoesNotExist()
     {
         // Arrange

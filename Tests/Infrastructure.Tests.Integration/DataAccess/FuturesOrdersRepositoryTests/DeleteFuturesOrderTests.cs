@@ -1,14 +1,24 @@
 ﻿using Application.Data.Mapping;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests;
 
 public class DeleteFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 {
-    [Test]
+    public DeleteFuturesOrderTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task DeleteFuturesOrder_ShouldDeleteFuturesOrder_WhenFuturesOrderExists()
     {
         // Arrange
@@ -23,7 +33,7 @@ public class DeleteFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         this.ArrangeAssertDbContext.FuturesOrders.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public async Task DeleteFuturesOrder_ShouldThrow_WhenFuturesOrderDoesNotExist()
     {
         // Arrange

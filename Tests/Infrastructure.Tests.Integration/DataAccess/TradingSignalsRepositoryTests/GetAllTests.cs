@@ -1,12 +1,22 @@
 ﻿using Domain.Models.Signals;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests;
 
 public class GetAllTests : TradingSignalsRepositoryTestsBase
 {
-    [Test]
+    public GetAllTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task GetAll_ShouldReturnAllTradingSignals_WhenTradingSignalsExist()
     {
         // Arrange
@@ -20,7 +30,7 @@ public class GetAllTests : TradingSignalsRepositoryTestsBase
         retrievedTradingSignals.Should().BeEquivalentTo(tradingSignals);
     }
     
-    [Test]
+    [Fact]
     public async Task GetAll_ShouldReturnEmptyEnumerable_WhenTradingNoSignalsExist()
     {
         // Act

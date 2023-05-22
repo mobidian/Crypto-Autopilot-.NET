@@ -1,12 +1,22 @@
 ﻿using Application.Data.Mapping;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests;
 
 public class GetFuturesPositionsByCurrencyPairTests : FuturesPositionsRepositoryTestsBase
 {
-    [Test]
+    public GetFuturesPositionsByCurrencyPairTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task GetFuturesPositionsByCurrencyPair_ShouldReturnAllFuturesPositionsWithCurrencyPair_WhenFuturesPositionsWithCurrencyPairExist()
     {
         // Arrange
@@ -31,7 +41,7 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesPositionsRepository
         retrievedFuturesPositions.Should().BeEquivalentTo(futuresPositions);
     }
 
-    [Test]
+    [Fact]
     public async Task GetFuturesPositionsByCurrencyPair_ShouldReturnEmptyEnumerable_WhenNoFuturesPositionsWithCurrencyPairExist()
     {
         // Arrange

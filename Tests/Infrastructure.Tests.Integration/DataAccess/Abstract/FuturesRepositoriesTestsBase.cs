@@ -1,91 +1,49 @@
 ﻿using Application.Data.Mapping;
 
-using Bybit.Net.Enums;
-
-using Domain.Models.Common;
 using Domain.Models.Futures;
-using Domain.Models.Signals;
 
+using Infrastructure.Database;
+using Infrastructure.Internal.Extensions;
 using Infrastructure.Tests.Integration.AbstractBases;
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
+using Infrastructure.Tests.Integration.Common;
+using Infrastructure.Tests.Integration.DataAccess.Common;
+
+using Microsoft.EntityFrameworkCore;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.Abstract;
 
-public abstract class FuturesRepositoriesTestsBase : DatabaseIntegrationTestBase
+[Collection(nameof(DatabaseFixture))]
+public abstract class FuturesRepositoriesTestsBase : FuturesDataFakersClass, IAsyncLifetime
 {
-    #region Fakers
-    private const int decimals = 4;
+    protected readonly FuturesTradingDbContextFactory DbContextFactory;
+    protected readonly Func<Task> ClearDatabaseAsyncFunc;
 
+    protected FuturesRepositoriesTestsBase(DatabaseFixture databaseFixture)
+    {
+        this.DbContextFactory = databaseFixture.DbContextFactory;
+        this.ClearDatabaseAsyncFunc = databaseFixture.ClearDatabaseAsync;
+    }
 
-    protected readonly Faker Faker = new Faker();
+    
+    protected FuturesTradingDbContext ArrangeAssertDbContext = default!;
+    public virtual async Task InitializeAsync()
+    {
+        this.ArrangeAssertDbContext = this.DbContextFactory.Create();
+        this.ArrangeAssertDbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking; // ensures the reads return the values from the database and NOT from memory
 
-    protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
-        .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
-
-    protected readonly Faker<FuturesPosition> FuturesPositionsGenerator = new Faker<FuturesPosition>()
-        .RuleFor(p => p.CryptoAutopilotId, f => Guid.NewGuid())
-        .RuleFor(p => p.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
-        .RuleFor(p => p.Margin, f => f.Random.Decimal(1, 1000, decimals))
-        .RuleFor(p => p.Leverage, f => f.Random.Decimal(1, 100, decimals))
-        .RuleFor(p => p.EntryPrice, f => f.Random.Decimal(5000, 15000, decimals))
-        .RuleFor(p => p.Quantity, (_, p) => Math.Round(p.Margin * p.Leverage / p.EntryPrice, decimals))
-        .RuleSet(PositionSide.Buy.ToRuleSetName(), set =>
-        {
-            set.RuleFor(p => p.Side, PositionSide.Buy);
-            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice + 3000, decimals));
-        })
-        .RuleSet(PositionSide.Sell.ToRuleSetName(), set =>
-        {
-            set.RuleFor(p => p.Side, PositionSide.Sell);
-            set.RuleFor(p => p.ExitPrice, (f, p) => f.Random.Decimal(p.EntryPrice, p.EntryPrice - 3000, decimals));
-        });
-
-    protected readonly Faker<FuturesOrder> FuturesOrdersGenerator = new Faker<FuturesOrder>()
-        .RuleFor(o => o.BybitID, f => Guid.NewGuid())
-        .RuleFor(o => o.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
-        .RuleFor(o => o.CreateTime, f => f.Date.Past(1))
-        .RuleFor(o => o.UpdateTime, (f, p) => p.CreateTime.AddHours(f.Random.Int(0, 12)))
-        .RuleFor(o => o.Price, f => f.Random.Decimal(5000, 15000, decimals))
-        .RuleFor(o => o.Quantity, f => f.Random.Decimal(100, 300, decimals))
-        .RuleFor(o => o.Status, OrderStatus.Created)
-        .RuleSet(OrderType.Limit.ToRuleSetName(), set =>
-        {
-            set.RuleFor(o => o.Type, OrderType.Limit);
-            set.RuleFor(o => o.TimeInForce, TimeInForce.GoodTillCanceled);
-        })
-        .RuleSet(OrderType.Market.ToRuleSetName(), set =>
-        {
-            set.RuleFor(o => o.Type, OrderType.Market);
-            set.RuleFor(o => o.TimeInForce, TimeInForce.ImmediateOrCancel);
-        })
-        .RuleSet(OrderStatus.Filled.ToRuleSetName(), set => set.RuleFor(o => o.Status, OrderStatus.Filled))
-        .RuleSet(OrderSide.Buy.ToRuleSetName(), set =>
-        {
-            set.RuleFor(o => o.Side, f => OrderSide.Buy);
-            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000, decimals));
-            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000, decimals));
-        })
-        .RuleSet(OrderSide.Sell.ToRuleSetName(), set =>
-        {
-            set.RuleFor(o => o.Side, f => OrderSide.Sell);
-            set.RuleFor(o => o.StopLoss, (f, p) => f.Random.Decimal(p.Price, p.Price + 3000, decimals));
-            set.RuleFor(o => o.TakeProfit, (f, p) => f.Random.Decimal(p.Price, p.Price - 3000, decimals));
-        })
-        .RuleSet(PositionSide.Buy.ToRuleSetName(), set =>
-        {
-            set.RuleFor(o => o.PositionSide, f => PositionSide.Buy);
-        })
-        .RuleSet(PositionSide.Sell.ToRuleSetName(), set =>
-        {
-            set.RuleFor(o => o.PositionSide, f => PositionSide.Sell);
-        });
-    #endregion
+        await Task.CompletedTask;
+    }
+    public virtual async Task DisposeAsync()
+    {
+        await this.ClearDatabaseAsyncFunc.Invoke();
+    }
 
 
     protected async Task InsertRelatedPositionAndOrdersAsync(FuturesPosition position, IEnumerable<FuturesOrder> orders)
     {
-        using var transaction = await this.ArrangeAssertDbContext.Database.BeginTransactionAsync();
-
+        using var _ = await this.ArrangeAssertDbContext.Database.BeginTransactionalOperationAsync();
 
         var positionDbEntity = position.ToDbEntity();
         await this.ArrangeAssertDbContext.FuturesPositions.AddAsync(positionDbEntity);
@@ -99,8 +57,5 @@ public abstract class FuturesRepositoriesTestsBase : DatabaseIntegrationTestBase
         });
         await this.ArrangeAssertDbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
         await this.ArrangeAssertDbContext.SaveChangesAsync();
-
-
-        await transaction.CommitAsync();
     }
 }

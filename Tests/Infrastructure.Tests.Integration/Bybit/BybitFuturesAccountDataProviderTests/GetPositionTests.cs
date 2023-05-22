@@ -2,15 +2,19 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
 using Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitFuturesAccountDataProviderTests;
 
 public class GetPositionTests : BybitFuturesAccountDataProviderTestsBase
 {
-    [Test]
-    [TestCase(OrderSide.Buy)]
-    [TestCase(OrderSide.Sell)]
+    [Theory]
+    [InlineData(OrderSide.Buy)]
+    [InlineData(OrderSide.Sell)]
     public async Task GetPositionAsync_ShouldReturnPosition_WhenPositionExists(OrderSide entryOrderSide)
     {
         // Arrange
@@ -39,7 +43,7 @@ public class GetPositionTests : BybitFuturesAccountDataProviderTestsBase
         position!.TakeProfit.Should().Be(takeProfit);
     }
 
-    [Test]
+    [Fact]
     public async Task GetPositionAsync_ShouldReturnNull_WhenPositionDoesNotExist()
     {
         // Act

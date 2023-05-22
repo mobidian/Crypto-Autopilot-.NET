@@ -6,14 +6,8 @@ namespace Infrastructure.Tests.Integration.DataAccess.Common;
 
 public class FuturesTradingDbContextFactory
 {
-    private readonly string ConnectionString;
-    public FuturesTradingDbContextFactory(string connectionString) => this.ConnectionString = connectionString;
+    private readonly DbContextOptions Options;
+    public FuturesTradingDbContextFactory(DbContextOptions options) => this.Options = options;
 
-    public FuturesTradingDbContext Create()
-    {
-        var optionsBuilder = new DbContextOptionsBuilder();
-        optionsBuilder.UseSqlServer(this.ConnectionString);
-
-        return new FuturesTradingDbContext(optionsBuilder.Options);
-    }
+    public FuturesTradingDbContext Create() => new FuturesTradingDbContext(this.Options);
 }

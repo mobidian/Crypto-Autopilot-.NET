@@ -2,13 +2,23 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.ShortPositions;
 
 public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
 {
-    [Test]
+    public ModifyLimitSellOrder(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Fact]
     public async Task ModifyLimitOrder_ShouldModifySellOrder_WhenSellOrderExists()
     {
         // Arrange
@@ -49,7 +59,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         orderFromApi.TakeProfitTriggerType.Should().Be(newTradingStopTriggerType);
     }
 
-    [Test]
+    [Fact]
     public async Task ModifyLimitOrder_ShouldThrow_WhenNewLimitPriceIsIncorrect()
     {
         // Arrange
@@ -76,7 +86,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
     }
 
-    [Test]
+    [Fact]
     public async Task ModifyLimitOrder_ShouldThrow_WhenNewTradingStopParametersAreIncorrect()
     {
         // Arrange
@@ -103,7 +113,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
     }
 
-    [Test]
+    [Fact]
     public async Task ModifyLimitOrder_ShouldThrow_WhenLimitSellOrderDoesNotExist()
     {
         // Arrange

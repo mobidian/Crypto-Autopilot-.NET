@@ -2,14 +2,25 @@
 
 using Bybit.Net.Enums;
 
+using FluentAssertions;
+
+using Infrastructure.Tests.Integration.AbstractBases;
 using Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.AbstractBase;
+
+using Xunit;
 
 namespace Infrastructure.Tests.Integration.Bybit.BybitUsdFuturesTradingServiceTests.CombinedTests;
 
 public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
 {
-    [TestCase(PositionSide.Buy, -300, 300)]
-    [TestCase(PositionSide.Sell, 300, -300)]
+    public ClosePositionTests(DatabaseFixture databaseFixture) : base(databaseFixture)
+    {
+    }
+
+
+    [Theory]
+    [InlineData(PositionSide.Buy, -300, 300)]
+    [InlineData(PositionSide.Sell, 300, -300)]
     public async Task ClosePosition_ShouldClosePosition_WhenPositionExists(PositionSide positionSide, decimal stopLossOffset, decimal takeProfitOffset)
     {
         // Arrange
@@ -29,9 +40,10 @@ public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
         var position = positionSide == PositionSide.Buy ? this.SUT.LongPosition : this.SUT.ShortPosition;
         position.Should().BeNull();
     }
-    
-    [TestCase(PositionSide.Buy, "No open Buy position was found")]
-    [TestCase(PositionSide.Sell, "No open Sell position was found")]
+
+    [Theory]
+    [InlineData(PositionSide.Buy, "No open Buy position was found")]
+    [InlineData(PositionSide.Sell, "No open Sell position was found")]
     public async Task ClosePosition_ShouldThrow_WhenPositionDoesNotExist(PositionSide positionSide, string expectedErrorMessage)
     {
         // Act
@@ -41,7 +53,7 @@ public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
         await func.Should().ThrowExactlyAsync<InvalidOrderException>(expectedErrorMessage);
     }
     
-    [Test]
+    [Fact]
     public async Task CloseAllPositionsAsync_ShouldCloseAllOpenPositions()
     {
         // Arrange
