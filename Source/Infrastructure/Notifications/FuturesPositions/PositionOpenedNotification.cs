@@ -1,6 +1,4 @@
-﻿using Application.Interfaces.Services.DataAccess.Services;
-
-using Domain.Models.Futures;
+﻿using Domain.Models.Futures;
 
 using MediatR;
 

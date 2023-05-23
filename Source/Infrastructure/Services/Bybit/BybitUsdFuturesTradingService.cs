@@ -11,7 +11,6 @@ using Domain.Models.Common;
 using Domain.Models.Futures;
 
 using Infrastructure.Notifications.FuturesOrders;
-using Infrastructure.Notifications.FuturesPositions;
 
 using MediatR;
 
@@ -106,7 +105,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         }
         else
         {
-            await this.Mediator.Publish(new PositionUpdatedNotification
+            await this.Mediator.Send(new UpdatePositionCommand
             {
                 UpdatedPosition = position,
                 NewFuturesOrders = new[] { order },
@@ -138,7 +137,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         this.positions[positionSide] = updatedPosition;
 
-        await this.Mediator.Publish(new PositionUpdatedNotification
+        await this.Mediator.Send(new UpdatePositionCommand
         {
             UpdatedPosition = updatedPosition
         });
@@ -164,8 +163,8 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         var cryptoAutopilotId = this.positions[positionSide].CryptoAutopilotId;
         var order = bybitOrder.ToDomainObject(positionSide);
         position.ExitPrice = bybitOrder.Price;
-
-        await this.Mediator.Publish(new PositionUpdatedNotification
+        
+        await this.Mediator.Send(new UpdatePositionCommand
         {
             UpdatedPosition = position,
             NewFuturesOrders = new[] { order }
