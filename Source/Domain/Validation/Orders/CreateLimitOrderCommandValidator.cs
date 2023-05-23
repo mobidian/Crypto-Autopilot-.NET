@@ -13,7 +13,8 @@ public class CreateLimitOrderCommandValidator : AbstractValidator<CreateLimitOrd
     public CreateLimitOrderCommandValidator()
     {
         this.RuleFor(command => command.LimitOrder).SetValidator(OrderValidator);
-
+        
         this.RuleFor(command => command.LimitOrder.Type).Equal(OrderType.Limit);
+        this.RuleFor(command => command.LimitOrder.Status).NotEqual(OrderStatus.Filled);
     }
 }
