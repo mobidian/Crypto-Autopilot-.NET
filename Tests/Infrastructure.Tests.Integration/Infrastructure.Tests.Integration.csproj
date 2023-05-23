@@ -39,8 +39,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="BusinessLogic\Commands\OrdersTests\" />
-  </ItemGroup>
-
 </Project>
