@@ -21,22 +21,3 @@ public class PositionOpenedNotification : INotification
     /// </summary>
     public required IEnumerable<FuturesOrder> FuturesOrders { get; init; }
 }
-
-public class PositionOpenedNotificationHandler : INotificationHandler<PositionOpenedNotification>
-{
-    private readonly IFuturesOperationsService FuturesOperationsService;
-
-    public PositionOpenedNotificationHandler(IFuturesOperationsService futuresOperationsService)
-    {
-        this.FuturesOperationsService = futuresOperationsService;
-    }
-
-    
-    public async Task Handle(PositionOpenedNotification notification, CancellationToken cancellationToken)
-    {
-        var position = notification.Position;
-        var orders = notification.FuturesOrders;
-
-        await this.FuturesOperationsService.AddFuturesPositionAndOrdersAsync(position, orders);
-    }
-}

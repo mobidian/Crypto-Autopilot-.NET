@@ -6,6 +6,7 @@ using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 
+using Domain.Commands.Positions;
 using Domain.Models.Common;
 using Domain.Models.Futures;
 
@@ -97,7 +98,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         if (!existed)
         {
-            await this.Mediator.Publish(new PositionOpenedNotification
+            await this.Mediator.Send(new CreatePositionCommand
             {
                 Position = position,
                 FuturesOrders = new[] { order },
