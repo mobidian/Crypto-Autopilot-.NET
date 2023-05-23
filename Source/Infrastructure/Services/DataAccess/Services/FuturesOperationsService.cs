@@ -38,7 +38,7 @@ public class FuturesOperationsService : IFuturesOperationsService
         
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
         await this.PositionsRepository.UpdateFuturesPositionAsync(positionCryptoAutopilotId, updatedPosition);
-        if(newOrders.IsNullOrEmpty())
+        if (!newOrders.IsNullOrEmpty())
             await this.OrdersRepository.AddFuturesOrdersAsync(newOrders, positionCryptoAutopilotId);
     }
 }
