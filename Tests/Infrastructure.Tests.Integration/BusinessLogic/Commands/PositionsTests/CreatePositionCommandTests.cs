@@ -25,7 +25,7 @@ public class CreatePositionCommandTests : CommandsTestsBase
     
     
     [Theory]
-    [ClassData(typeof(ValidCreatePositionCommandsGenerator))]
+    [ClassData(typeof(ValidPositionAndOrdersGenerator))]
     public async Task CreatePositionCommand_ShouldCreateFuturesPositionAndOrders_WhenCommandIsValid(FuturesPosition position, List<FuturesOrder> orders)
     {
         // Arrange
@@ -44,7 +44,7 @@ public class CreatePositionCommandTests : CommandsTestsBase
     }
 
     [Theory]
-    [ClassData(typeof(ValidCreatePositionCommandsGenerator))]
+    [ClassData(typeof(ValidPositionAndOrdersGenerator))]
     public async Task CreatePositionCommand_ShouldThrow_WhenAnyFuturesOrderDoesNotRequirePosition(FuturesPosition position, List<FuturesOrder> orders)
     {
         // Arrange
@@ -69,7 +69,7 @@ public class CreatePositionCommandTests : CommandsTestsBase
     }
 
     [Theory]
-    [ClassData(typeof(ValidCreatePositionCommandsGenerator))]
+    [ClassData(typeof(ValidPositionAndOrdersGenerator))]
     public async Task CreatePositionCommand_ShouldThrow_WhenThePositionSideOfAnyOrderDoesNotMatchTheSideOfThePosition(FuturesPosition position, List<FuturesOrder> orders)
     {
         // Arrange

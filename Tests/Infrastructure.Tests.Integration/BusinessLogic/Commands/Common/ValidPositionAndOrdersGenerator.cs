@@ -2,7 +2,6 @@
 
 using Bybit.Net.Enums;
 
-using Domain.Commands.Positions;
 using Domain.Models.Futures;
 
 using Infrastructure.Tests.Integration.Common.Fakers;
@@ -12,15 +11,15 @@ namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
 
 /// <summary>
 /// <para>
-/// Generates a set of valid <see cref="CreatePositionCommand"/> instances for use in test scenarios.
-/// This class inherits from the <see cref="FuturesDataFakersClass"/> and implements <see cref="IEnumerable{T}"/> to provide a collection of valid commands.
+/// Generates a set of valid <see cref="FuturesPosition"/> instances along with their related <see cref="FuturesOrder"/> collections for use in test scenarios.
+/// This class inherits from the <see cref="FuturesDataFakersClass"/> and implements <see cref="IEnumerable{T}"/> to provide a collection of valid futures positions and their associated futures orders.
 /// </para>
 /// <para>
-/// All combinations of position sides and order sides are generated, 
-/// however the <see cref="FuturesPosition.Side"/> always matches the <see cref="FuturesOrder.Side"/>, seeing as otherwise the combination wouldn't be valid.
+/// All combinations of position sides and order sides are generated,
+/// however, the <see cref="FuturesPosition.Side"/> always matches the <see cref="FuturesOrder.Side"/>, seeing as otherwise the combination wouldn't be valid.
 /// </para>
 /// </summary>
-public class ValidCreatePositionCommandsGenerator : FuturesDataFakersClass, IEnumerable<object[]>
+public class ValidPositionAndOrdersGenerator : FuturesDataFakersClass, IEnumerable<object[]>
 {
     private readonly string marketOrderRule = OrderType.Market.ToRuleSetName();
     private readonly string limitFilledRule = $"{OrderType.Limit.ToRuleSetName()}, {OrderStatus.Filled.ToRuleSetName()}";
