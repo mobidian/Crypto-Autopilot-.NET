@@ -65,7 +65,7 @@ public class CreatePositionCommandTests : CommandsTestsBase
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<FluentValidation.ValidationException>())
-            .And.Errors.Single(x => x.ErrorMessage == "A limit order which has not been filled must not point to a position.");
+            .And.Errors.Should().ContainSingle(x => x.ErrorMessage == "A limit order which has not been filled must not point to a position.");
     }
 
     [Theory]
@@ -91,6 +91,6 @@ public class CreatePositionCommandTests : CommandsTestsBase
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<FluentValidation.ValidationException>())
-            .And.Errors.Single(x => x.ErrorMessage == "The position side must match the position side of the related orders.");
+            .And.Errors.Should().ContainSingle(x => x.ErrorMessage == "The position side must match the position side of the related orders.");
     }
 }
