@@ -19,25 +19,19 @@ public abstract class FuturesRepositoriesTestsBase : FuturesDataFakersClass, IAs
     protected readonly FuturesTradingDbContextFactory DbContextFactory;
     protected readonly Func<Task> ClearDatabaseAsyncFunc;
 
+    protected FuturesTradingDbContext ArrangeAssertDbContext;
+
     protected FuturesRepositoriesTestsBase(DatabaseFixture databaseFixture)
     {
         this.DbContextFactory = databaseFixture.DbContextFactory;
         this.ClearDatabaseAsyncFunc = databaseFixture.ClearDatabaseAsync;
+        
+        this.ArrangeAssertDbContext = this.DbContextFactory.CreateNoTrackingContext();
     }
-
     
-    protected FuturesTradingDbContext ArrangeAssertDbContext = default!;
-    public virtual async Task InitializeAsync()
-    {
-        this.ArrangeAssertDbContext = this.DbContextFactory.Create();
-        this.ArrangeAssertDbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking; // ensures the reads return the values from the database and NOT from memory
 
-        await Task.CompletedTask;
-    }
-    public virtual async Task DisposeAsync()
-    {
-        await this.ClearDatabaseAsyncFunc.Invoke();
-    }
+    public virtual async Task InitializeAsync() => await Task.CompletedTask;
+    public virtual async Task DisposeAsync() => await this.ClearDatabaseAsyncFunc.Invoke();
 
 
     protected async Task InsertRelatedPositionAndOrdersAsync(FuturesPosition position, IEnumerable<FuturesOrder> orders)

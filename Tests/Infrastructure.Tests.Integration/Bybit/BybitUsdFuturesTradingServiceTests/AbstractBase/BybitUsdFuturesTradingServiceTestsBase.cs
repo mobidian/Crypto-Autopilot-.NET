@@ -37,7 +37,7 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
 
     public BybitUsdFuturesTradingServiceTestsBase(DatabaseFixture databaseFixture) : base()
     {
-        var serviceProvider = this.BuildServiceProvider(databaseFixture);
+        var serviceProvider = this.BuildServiceProvider(databaseFixture.ConnectionString);
 
         this.FuturesAccount = new BybitFuturesAccountDataProvider(this.BybitClient.UsdPerpetualApi.Account);
         this.TradingClient = new BybitUsdFuturesTradingApiClient(this.BybitClient.UsdPerpetualApi.Trading);
@@ -49,13 +49,13 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
 
         this.ClearDatabaseAsyncFunc = databaseFixture.ClearDatabaseAsync;
     }
-    private ServiceProvider BuildServiceProvider(DatabaseFixture databaseFixture)
+    private ServiceProvider BuildServiceProvider(string connectionString)
     {
         var services = new ServiceCollection();
 
         var configuration = new ConfigurationManager();
         configuration.AddJsonFile("testsettings.json", optional: false);
-        configuration["ConnectionStrings:TradingHistoryDB"] = databaseFixture.ConnectionString;
+        configuration["ConnectionStrings:TradingHistoryDB"] = connectionString;
 
         services.AddServices(configuration);
         return services.BuildServiceProvider();

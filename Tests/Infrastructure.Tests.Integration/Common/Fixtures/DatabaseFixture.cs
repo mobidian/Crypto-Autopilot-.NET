@@ -9,6 +9,12 @@ using Xunit;
 
 namespace Infrastructure.Tests.Integration.Common.Fixtures;
 
+[CollectionDefinition(nameof(DatabaseFixture))]
+public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
+{
+}
+
+
 public class DatabaseFixture : IAsyncLifetime
 {
     public string ConnectionString { get; private set; } = default!;
@@ -42,9 +48,4 @@ public class DatabaseFixture : IAsyncLifetime
         var dbContext = this.DbContextFactory.Create();
         await dbContext.Database.EnsureDeletedAsync();
     }
-}
-
-[CollectionDefinition(nameof(DatabaseFixture))]
-public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
-{
 }

@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\Common\" />
+    <Folder Include="BusinessLogic\Commands\OrdersTests\" />
   </ItemGroup>
 
 </Project>
