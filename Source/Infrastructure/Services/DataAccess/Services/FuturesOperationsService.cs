@@ -3,8 +3,8 @@ using Application.Interfaces.Services.DataAccess.Services;
 
 using Domain.Models.Futures;
 
-using Infrastructure.Database;
 using Infrastructure.Internal.Extensions;
+using Infrastructure.Services.DataAccess.Database;
 
 using Microsoft.IdentityModel.Tokens;
 

@@ -6,14 +6,14 @@ using FluentValidation;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Database;
+namespace Infrastructure.Services.DataAccess.Database;
 
 public class FuturesTradingDbContext : DbContext
 {
     private readonly FuturesOrderDbEntityValidator FuturesOrderValidator = new();
     private readonly FuturesPositionDbEntityValidator FuturesPositionValidator = new();
     private readonly TradingSignalDbEntityValidator TradingSignalValidator = new();
-    
+
     public FuturesTradingDbContext(DbContextOptions options) : base(options) { }
 
 
@@ -75,7 +75,7 @@ public class FuturesTradingDbContext : DbContext
         var signalsEntries = this.ChangeTracker.Entries<TradingSignalDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
         foreach (var signalsEntry in signalsEntries)
             this.TradingSignalValidator.ValidateAndThrow(signalsEntry.Entity);
-    } 
+    }
     #endregion
 
 

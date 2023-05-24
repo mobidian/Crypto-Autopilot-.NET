@@ -3,7 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Database.Configurations;
+namespace Infrastructure.Services.DataAccess.Database.Configurations;
 
 public class TradingSignalDbEntityConfiguration : IEntityTypeConfiguration<TradingSignalDbEntity>
 {
@@ -13,7 +13,7 @@ public class TradingSignalDbEntityConfiguration : IEntityTypeConfiguration<Tradi
     {
         builder.Property(x => x.CurrencyPair).HasColumnName("Currency Pair").HasMaxLength(32);
 
-        
+
         builder.HasIndex(x => x.CryptoAutopilotId).IsUnique();
     }
 }

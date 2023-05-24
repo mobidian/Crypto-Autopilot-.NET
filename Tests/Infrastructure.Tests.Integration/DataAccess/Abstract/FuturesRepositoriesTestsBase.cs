@@ -2,8 +2,8 @@
 
 using Domain.Models.Futures;
 
-using Infrastructure.Database;
 using Infrastructure.Internal.Extensions;
+using Infrastructure.Services.DataAccess.Database;
 using Infrastructure.Tests.Integration.Common.Fakers;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 

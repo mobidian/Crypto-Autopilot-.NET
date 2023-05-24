@@ -3,7 +3,7 @@ using Application.Interfaces.Services.DataAccess.Repositories;
 
 using Domain.Models.Signals;
 
-using Infrastructure.Database;
+using Infrastructure.Services.DataAccess.Database;
 
 using Microsoft.EntityFrameworkCore;
 

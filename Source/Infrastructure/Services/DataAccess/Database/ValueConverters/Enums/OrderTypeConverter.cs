@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.Database.ValueConverters.Enums;
+namespace Infrastructure.Services.DataAccess.Database.ValueConverters.Enums;
 
 public class OrderTypeConverter : ValueConverter<OrderType, string>
 {

@@ -1,4 +1,4 @@
-﻿using Infrastructure.Database;
+﻿using Infrastructure.Services.DataAccess.Database;
 
 namespace Infrastructure.Services.DataAccess.Repositories.Abstract;
 

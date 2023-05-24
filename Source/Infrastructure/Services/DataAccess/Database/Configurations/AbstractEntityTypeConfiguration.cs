@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Database.Configurations;
+namespace Infrastructure.Services.DataAccess.Database.Configurations;
 
 public abstract class AbstractEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : class
 {

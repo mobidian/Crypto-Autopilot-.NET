@@ -2,12 +2,12 @@
 
 using Bybit.Net.Enums;
 
-using Infrastructure.Database.ValueConverters.Enums;
+using Infrastructure.Services.DataAccess.Database.ValueConverters.Enums;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Database.Configurations;
+namespace Infrastructure.Services.DataAccess.Database.Configurations;
 
 public class FuturesOrderDbEntityConfiguration : AbstractEntityTypeConfiguration<FuturesOrderDbEntity>
 {

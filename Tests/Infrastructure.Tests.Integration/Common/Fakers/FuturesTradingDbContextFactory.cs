@@ -1,4 +1,4 @@
-﻿using Infrastructure.Database;
+﻿using Infrastructure.Services.DataAccess.Database;
 
 using Microsoft.EntityFrameworkCore;
 
