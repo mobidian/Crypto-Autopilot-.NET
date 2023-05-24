@@ -4,7 +4,7 @@ using Domain.Commands.Orders;
 
 using MediatR;
 
-namespace Application.CommandHandlers.LimitOrders;
+namespace Application.CommandHandlers.Orders;
 
 public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Unit>
 {

@@ -2,7 +2,7 @@
 
 using FluentValidation;
 
-namespace Domain.Validation.Orders;
+namespace Domain.Validation.Commands.Orders;
 
 public class DeleteOrdersCommandValidator : AbstractValidator<DeleteOrdersCommand>
 {

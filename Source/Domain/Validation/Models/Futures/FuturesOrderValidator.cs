@@ -4,7 +4,7 @@ using Domain.Models.Futures;
 
 using FluentValidation;
 
-namespace Domain.Validation;
+namespace Domain.Validation.Models.Futures;
 
 public class FuturesOrderValidator : AbstractValidator<FuturesOrder>
 {

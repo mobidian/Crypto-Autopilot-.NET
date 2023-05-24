@@ -1,10 +1,11 @@
 ﻿using Bybit.Net.Enums;
 
 using Domain.Commands.Orders;
+using Domain.Validation.Models.Futures;
 
 using FluentValidation;
 
-namespace Domain.Validation.Orders;
+namespace Domain.Validation.Commands.Orders;
 
 public class CreateLimitOrderCommandValidator : AbstractValidator<CreateLimitOrderCommand>
 {

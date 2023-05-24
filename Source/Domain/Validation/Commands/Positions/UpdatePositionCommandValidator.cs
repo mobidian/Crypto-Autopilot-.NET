@@ -1,8 +1,9 @@
 ﻿using Domain.Commands.Positions;
+using Domain.Validation.Models.Futures;
 
 using FluentValidation;
 
-namespace Domain.Validation.Positions;
+namespace Domain.Validation.Commands.Positions;
 
 public class UpdatePositionCommandValidator : AbstractValidator<UpdatePositionCommand>
 {
@@ -17,7 +18,7 @@ public class UpdatePositionCommandValidator : AbstractValidator<UpdatePositionCo
         this.RuleForEach(command => command.NewFuturesOrders).SetValidator(OrderValidator);
         this.RuleFor(command => command.UpdatedPosition).SetValidator(PositionValidator);
 
-        
+
         this.RuleFor(command => command)
             .Must(command => command.NewFuturesOrders.All(order => order.PositionSide == command.UpdatedPosition.Side))
             .WithMessage("The position side must match the position side of the related orders.");

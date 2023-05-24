@@ -2,7 +2,7 @@
 
 using Bybit.Net.Enums;
 
-namespace Application.Data.Entities.Orders;
+namespace Application.Data.Entities.Futures;
 
 public class FuturesPositionDbEntity : DbEntityBase
 {

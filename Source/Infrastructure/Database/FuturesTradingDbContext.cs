@@ -1,4 +1,4 @@
-﻿using Application.Data.Entities.Orders;
+﻿using Application.Data.Entities.Futures;
 using Application.Data.Entities.Signals;
 using Application.Data.Validation;
 

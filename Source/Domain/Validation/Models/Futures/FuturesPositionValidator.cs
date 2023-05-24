@@ -2,7 +2,7 @@
 
 using FluentValidation;
 
-namespace Domain.Validation;
+namespace Domain.Validation.Models.Futures;
 
 public class FuturesPositionValidator : AbstractValidator<FuturesPosition>
 {

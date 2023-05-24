@@ -1,10 +1,11 @@
 ﻿using Bybit.Net.Enums;
 
 using Domain.Commands.Orders;
+using Domain.Validation.Models.Futures;
 
 using FluentValidation;
 
-namespace Domain.Validation.Orders;
+namespace Domain.Validation.Commands.Orders;
 
 public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
 {
@@ -18,9 +19,9 @@ public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
 
         this.RuleFor(command => command.FuturesPositionId)
             .NotNull()
-            .When(command => command.UpdatedOrder.Type == OrderType.Market || (command.UpdatedOrder.Type == OrderType.Limit && command.UpdatedOrder.Status == OrderStatus.Filled))
+            .When(command => command.UpdatedOrder.Type == OrderType.Market || command.UpdatedOrder.Type == OrderType.Limit && command.UpdatedOrder.Status == OrderStatus.Filled)
             .WithMessage("The FuturesPositionId can't be null when the updated order is a position opening order.");
-        
+
         this.RuleFor(command => command.FuturesPositionId)
             .Null()
             .When(command => command.UpdatedOrder.Type == OrderType.Limit && command.UpdatedOrder.Status == OrderStatus.Created)
