@@ -1,23 +1,24 @@
-﻿using Bybit.Net.Enums;
-
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
-
-namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+﻿namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
 
 public class PositionOpeningOrdersGenerator : AbstractFuturesDataGenerator
 {
+    private static readonly List<string> ruleSets =
+        positionSideRules.SelectMany(
+            positionSideRule => orderSideRules.SelectMany(
+                orderSideRule => new[]
+                {
+                    $"{marketOrderRule}, {orderSideRule}, {positionSideRule}",
+                    $"{limitFilledRule}, {orderSideRule}, {positionSideRule}"
+                })).ToList();
+
+    public static IEnumerable<object[]> GetRuleSetsAsObjectArrays() => ruleSets.Select(ruleSet => new[] { ruleSet });
+    
+
     public override IEnumerator<object[]> GetEnumerator()
     {
-        foreach (var positionSideRule in positionSideRules)
+        foreach (var ruleSet in ruleSets)
         {
-            foreach (var orderSideRule in orderSideRules)
-            {
-                var order1 = this.FuturesOrdersGenerator.Generate($"default, {marketOrderRule}, {orderSideRule}, {positionSideRule}");
-                var order2 = this.FuturesOrdersGenerator.Generate($"default, {limitFilledRule}, {orderSideRule}, {positionSideRule}");
-                
-                yield return new object[] { order1 };
-                yield return new object[] { order2 };
-            }
+            yield return new[] { this.FuturesOrdersGenerator.Generate($"default, {ruleSet}") };
         }
     }
 }

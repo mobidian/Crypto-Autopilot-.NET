@@ -1,20 +1,20 @@
-﻿using Bybit.Net.Enums;
-
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
-
-namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+﻿namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
 
 public class LimitOrdersGenerator : AbstractFuturesDataGenerator
 {
+    private static readonly List<string> ruleSets =
+        positionSideRules.SelectMany(
+            positionSideRule => orderSideRules.Select(
+                orderSideRule => $"{limitOrderNotFilledRule}, {orderSideRule}, {positionSideRule}")).ToList();
+    
+    public static IEnumerable<object[]> GetRuleSetsAsObjectArrays() => ruleSets.Select(ruleSet => new[] { ruleSet });
+
+
     public override IEnumerator<object[]> GetEnumerator()
     {
-        foreach (var positionSideRule in positionSideRules)
+        foreach (var ruleSet in ruleSets)
         {
-            foreach (var orderSideRule in orderSideRules)
-            {
-                var order = this.FuturesOrdersGenerator.Generate($"default, {limitOrderNotFilledRule}, {orderSideRule}, {positionSideRule}");
-                yield return new object[] { order };
-            }
+            yield return new[] { this.FuturesOrdersGenerator.Generate($"default, {ruleSet}") };
         }
     }
 }
