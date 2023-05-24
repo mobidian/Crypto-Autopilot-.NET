@@ -13,10 +13,11 @@ public class CreatePositionCommandValidator : AbstractValidator<CreatePositionCo
 
     public CreatePositionCommandValidator()
     {
-        this.RuleFor(command => command.FuturesOrders).Must(orders => orders.All(x => OrderValidator.Validate(x).IsValid));
-        this.RuleFor(command => command.Position).SetValidator(PositionValidator);
-        
         this.RuleFor(command => command.Position).NotNull();
+        this.RuleForEach(command => command.FuturesOrders).NotNull();
+
+        this.RuleForEach(command => command.FuturesOrders).SetValidator(OrderValidator);
+        this.RuleFor(command => command.Position).SetValidator(PositionValidator);
         
         this.RuleFor(command => command)
             .Must(command => command.FuturesOrders.All(order => order.PositionSide == command.Position.Side))
