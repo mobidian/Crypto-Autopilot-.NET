@@ -15,7 +15,7 @@ public class UpdateOrderCommand : IRequest<Unit>
     public required FuturesOrder UpdatedOrder { get; init; }
 
     /// <summary>
-    /// Gets or initializes the position related to the UpdatedOrder.
+    /// Gets or initializes the CryptoAutopilotId of the position related to the UpdatedOrder.
     /// </summary>
-    public FuturesPosition? FuturesPosition { get; init; }
+    public Guid? FuturesPositionId { get; init; }
 }
