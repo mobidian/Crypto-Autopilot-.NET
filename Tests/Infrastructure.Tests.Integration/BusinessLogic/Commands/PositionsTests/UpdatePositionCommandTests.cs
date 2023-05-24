@@ -84,9 +84,7 @@ public class UpdatePositionCommandTests : CommandsTestsBase
 
         
         // Assert
-        var allOrders = orders.ToList();
-        newFuturesOrders.ForEach(allOrders.Add);
-        this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(allOrders);
+        this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders.Concat(newFuturesOrders));
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
     }
 
