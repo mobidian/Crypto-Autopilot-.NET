@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Tests.Integration.Common.Fakers;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 using Respawn;
 
@@ -17,19 +16,15 @@ public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
 
 public class DatabaseFixture : IAsyncLifetime
 {
-    public string ConnectionString { get; private set; } = default!;
+    public string ConnectionString { get; } = $"""Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase-{Guid.NewGuid()};Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
     public FuturesTradingDbContextFactory DbContextFactory { get; private set; } = default!;
 
     private Respawner DbRespawner = default!;
     public async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
 
-
+    
     public async Task InitializeAsync()
     {
-        var configuration = new ConfigurationManager();
-        configuration.AddJsonFile("testsettings.json", optional: false);
-        this.ConnectionString = configuration.GetConnectionString("TradingHistoryDB")!.Replace("Initial Catalog=TradingHistoryDB-TestDatabase;", $"Initial Catalog=TradingHistoryDB-TestDatabase-{Guid.NewGuid()};");
-
         var options = new DbContextOptionsBuilder().UseSqlServer(this.ConnectionString).Options;
         this.DbContextFactory = new FuturesTradingDbContextFactory(options);
 
