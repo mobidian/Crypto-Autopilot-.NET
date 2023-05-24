@@ -32,22 +32,25 @@ public class FuturesTradingDbContext : DbContext
     }
 
 
-
+    
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
-        this.ValidateEntriesProperties();
+        this.ValidateEntries();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        this.ValidateEntriesProperties();
+        this.ValidateEntries();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
     #region Validation enforcing methods
-    private void ValidateEntriesProperties()
+    private void ValidateEntries()
     {
         try
         {
+            this.ValidateUpdatedOrders();
+            this.ValidateUpdatedPositions();
+
             this.ValidateOrderEntries();
             this.ValidatePositionEntries();
             this.ValidateTradingSignalEntries();
@@ -56,6 +59,36 @@ public class FuturesTradingDbContext : DbContext
         {
             var message = "An error occurred while validating the entities. The database update operation cannot be performed.";
             throw new DbUpdateException(message, exception);
+        }
+    }
+    private void ValidateUpdatedOrders()
+    {
+        var updatedOrders = this.ChangeTracker
+                        .Entries<FuturesOrderDbEntity>()
+                        .Where(x => x.State == EntityState.Modified)
+                        .Select(x => x.Entity);
+        
+        foreach (var order in updatedOrders)
+        {
+            var position = this.FuturesPositions.Find(order.PositionId);
+            
+            if (position is not null && position.Side != order.PositionSide)
+                throw new DbUpdateException($"The new order position side property value does not match the side property value of the related position.");
+        }
+    }
+    private void ValidateUpdatedPositions()
+    {
+        var updatedPositions = this.ChangeTracker
+                        .Entries<FuturesPositionDbEntity>()
+                        .Where(x => x.State == EntityState.Modified)
+                        .Select(x => x.Entity);
+        
+        foreach (var position in updatedPositions)
+        {
+            var order = position.FuturesOrders!.FirstOrDefault();
+
+            if (order is not null && position.Side != order.PositionSide)
+                throw new DbUpdateException($"The new position side property value does not match the position side property value of the related orders.");
         }
     }
     private void ValidateOrderEntries()

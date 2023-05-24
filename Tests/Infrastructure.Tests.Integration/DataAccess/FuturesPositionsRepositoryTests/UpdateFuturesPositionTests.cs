@@ -57,12 +57,12 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         // Act
         var func = async () => await this.SUT.UpdateFuturesPositionAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
 
-
+        
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<DbUpdateException>()
-            .WithMessage("An error occurred while validating relationships between entities. The database update operation cannot be performed."))
-                .WithInnerExceptionExactly<FluentValidation.ValidationException>()
-                .And.Errors.Should().ContainSingle(error => error.ErrorMessage == "An order which points to a position must have the appropriate value for the PositionSide property.");
+            .WithMessage("An error occurred while validating the entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<DbUpdateException>()
+                .WithMessage("The new position side property value does not match the position side property value of the related orders.");
     }
 }

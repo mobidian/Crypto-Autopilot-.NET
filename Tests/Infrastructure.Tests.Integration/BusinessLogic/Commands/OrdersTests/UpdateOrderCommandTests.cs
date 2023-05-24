@@ -79,7 +79,7 @@ public class UpdateOrderCommandTests : CommandsTestsBase
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
     }
 
-
+    
     [Theory]
     [MemberData(nameof(LimitOrdersGenerator.GetRuleSetsAsObjectArrays), MemberType = typeof(LimitOrdersGenerator))]
     public async Task UpdateOrderCommand_ShouldThrow_WhenNewOrderIsLimitAndPositionIdIsSpecified(string ruleSet)
@@ -107,7 +107,6 @@ public class UpdateOrderCommandTests : CommandsTestsBase
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>())
             .And.Errors.Single().ErrorMessage.Should().Be("The FuturesPositionId must be null when the updated order isn't a position opening order.");
     }
-
 
     [Theory]
     [ClassData(typeof(ValidPositionAndOrdersGenerator))]
