@@ -6,10 +6,10 @@ using MediatR;
 
 namespace Application.CommandHandlers.LimitOrders;
 
-public class DeleteLimitOrdersFromDatabaseCommandHandler : IRequestHandler<DeleteOrdersCommand, Unit>
+public class DeleteOrdersCommandHandler : IRequestHandler<DeleteOrdersCommand, Unit>
 {
     private readonly IFuturesOrdersRepository OrdersRepository;
-    public DeleteLimitOrdersFromDatabaseCommandHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
+    public DeleteOrdersCommandHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
 
     public async Task<Unit> Handle(DeleteOrdersCommand request, CancellationToken cancellationToken)
     {
