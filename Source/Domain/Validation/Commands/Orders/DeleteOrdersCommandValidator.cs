@@ -8,7 +8,7 @@ public class DeleteOrdersCommandValidator : AbstractValidator<DeleteOrdersComman
 {
     public DeleteOrdersCommandValidator()
     {
-        this.RuleFor(x => x.BybitIds).NotNull().NotEmpty();
+        this.RuleFor(x => x.BybitIds).NotNull();
         this.RuleFor(x => x.BybitIds).Must(bybitIds => bybitIds.All(x => x != Guid.Empty));
     }
 }
