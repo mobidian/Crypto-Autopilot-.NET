@@ -22,15 +22,21 @@ public class GetContractHistoryFunction : TradingDataFunctionBase<GetContractHis
 
 
     [Function("Data/Market/ContractHistory")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "GET")][FromQuery] HttpRequestData request, [FromQuery] string name, [FromQuery] int min)
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "GET")][FromQuery] HttpRequestData request, [FromQuery] string? name, [FromQuery] int? min)
     {
+        if (name is null || min is null)
+        {
+            var badRequestResponse = request.CreateResponse(HttpStatusCode.BadRequest);
+            await badRequestResponse.WriteStringAsync("Contract name and timeframe are required");
+            return badRequestResponse;
+        }
+
         if (!Enum.IsDefined(typeof(KlineInterval), min * 60))
         {
             var badRequestResponse = request.CreateResponse(HttpStatusCode.BadRequest);
             await badRequestResponse.WriteStringAsync($"There is no defined {min} minutes timeframe");
             return badRequestResponse;
         }
-
 
         var timeframe = (KlineInterval)(min * 60);
         var klines = await this.MarketDataProvider.GetAllCandlesticksAsync(name, timeframe);
