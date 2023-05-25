@@ -1,47 +1,34 @@
-﻿using Azure.Identity;
+﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 
-using Bybit.Net.Clients;
-using Bybit.Net.Objects;
-
-using CryptoExchange.Net.Authentication;
-
-using CryptoExchange.Net.Objects;
-
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Tests.Integration.Bybit.Abstract;
 
 public abstract class BybitServicesTestBase
 {
-    protected readonly BybitClient BybitClient;
-
+    protected readonly ConfigurationManager Configuration;
+    protected readonly IServiceCollection Services;
+    
     protected BybitServicesTestBase()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<BybitServicesTestBase>()
-            .Build();
+        this.Services = new ServiceCollection();
 
 
-        var testSecretsClient = new SecretClient(new Uri(configuration["KeyVaultConfig:Url"]!),
+        var configuration = new ConfigurationManager();
+        configuration.AddJsonFile("appsettings.test.json", optional: false);
+        configuration.AddUserSecrets<BybitServicesTestBase>();
+
+        configuration.AddAzureKeyVault(
+            new SecretClient(new Uri(configuration["KeyVaultConfig:Url"]!),
             new ClientSecretCredential(
                 configuration["KeyVaultConfig:TenantId"],
                 configuration["KeyVaultConfig:ClientId"],
-                configuration["KeyVaultConfig:ClientSecretId"]));
-
-        var publicKey = testSecretsClient.GetSecret("BybitApiCredentials--key").Value.Value;
-        var privateKey = testSecretsClient.GetSecret("BybitApiCredentials--secret").Value.Value;
-
-
-        var options = new BybitClientOptions
-        {
-            UsdPerpetualApiOptions = new RestApiClientOptions
-            {
-                ApiCredentials = new ApiCredentials(publicKey, privateKey),
-                BaseAddress = "https://api-testnet.bybit.com"
-            }
-        };
+                configuration["KeyVaultConfig:ClientSecretId"])),
+            new AzureKeyVaultConfigurationOptions());
         
-        this.BybitClient = new BybitClient(options);
+        this.Configuration = configuration;
     }
 }

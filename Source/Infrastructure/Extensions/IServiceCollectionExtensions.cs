@@ -10,8 +10,10 @@ using Application.Interfaces.Services.General;
 using Bybit.Net.Clients;
 using Bybit.Net.Interfaces.Clients;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
+using Bybit.Net.Objects;
 
 using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Objects;
 
 using Domain;
 using Domain.PipelineBehaviors;
@@ -46,7 +48,7 @@ public static class IServiceCollectionExtensions
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(IDomainMarker).Assembly, typeof(IApplicationMarker).Assembly, typeof(IInfrastructureMarker).Assembly));
         services.AddValidatorsFromAssemblyContaining<IDomainMarker>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-
+        
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
         services.AddRepositories();
         services.AddDataAccessServices();
@@ -73,12 +75,20 @@ public static class IServiceCollectionExtensions
     }
     private static void AddBybitServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<ApiCredentials>(_ => new ApiCredentials(configuration.GetValue<string>("BybitApiCredentials:key")!, configuration.GetValue<string>("BybitApiCredentials:secret")!));
-
+        services.AddSingleton<ApiCredentials>(_ => new ApiCredentials(configuration["Bybit:ApiCredentials:Key"]!, configuration["Bybit:ApiCredentials:Secret"]!));
+        
         // bybit client
         services.AddSingleton<IBybitClient, BybitClient>(services =>
         {
-            var client = new BybitClient();
+            var options = new BybitClientOptions
+            {
+                UsdPerpetualApiOptions = new RestApiClientOptions
+                {
+                    BaseAddress = configuration["Bybit:UsdPerpetualApiOptions:BaseAddress"]!,
+                },
+            };
+            
+            var client = new BybitClient(options);
             client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return client;
         });
@@ -90,7 +100,15 @@ public static class IServiceCollectionExtensions
         // bybit socket client
         services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services =>
         {
-            var client = new BybitSocketClient();
+            var options = new BybitSocketClientOptions
+            {
+                UsdPerpetualStreamsOptions = new BybitSocketApiClientOptions
+                {
+                    BaseAddress = configuration["Bybit:UsdPerpetualStreamsOptions:BaseAddress"]!,
+                },
+            };
+
+            var client = new BybitSocketClient(options);
             client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
             return client;
         });

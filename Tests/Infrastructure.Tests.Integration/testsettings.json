@@ -1,5 +1,0 @@
-﻿{
-  "ConnectionStrings": {
-    "TradingHistoryDB": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase;Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
-  }
-}

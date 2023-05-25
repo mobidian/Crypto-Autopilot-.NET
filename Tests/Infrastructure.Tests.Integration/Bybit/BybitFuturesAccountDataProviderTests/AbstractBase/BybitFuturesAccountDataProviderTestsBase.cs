@@ -5,9 +5,10 @@ using Bybit.Net.Objects.Models;
 
 using Domain.Models.Common;
 
-using Infrastructure.Services.Bybit;
-using Infrastructure.Services.General;
+using Infrastructure.Extensions;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
+
+using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
 
@@ -20,12 +21,15 @@ public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTe
     protected readonly IBybitFuturesAccountDataProvider SUT;
     protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
     protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
-
+    
     public BybitFuturesAccountDataProviderTestsBase() : base()
     {
-        this.TradingClient = new BybitUsdFuturesTradingApiClient(this.BybitClient.UsdPerpetualApi.Trading);
-        this.SUT = new BybitFuturesAccountDataProvider(this.BybitClient.UsdPerpetualApi.Account);
-        this.MarketDataProvider = new BybitUsdFuturesMarketDataProvider(new DateTimeProvider(), this.BybitClient.UsdPerpetualApi.ExchangeData);
+        this.Services.AddServices(this.Configuration);
+        var serviceProvider = this.Services.BuildServiceProvider();
+        
+        this.SUT = serviceProvider.GetRequiredService<IBybitFuturesAccountDataProvider>();
+        this.TradingClient = serviceProvider.GetRequiredService<IBybitUsdFuturesTradingApiClient>();
+        this.MarketDataProvider = serviceProvider.GetRequiredService<IBybitUsdFuturesMarketDataProvider>();
     }
 
 
@@ -33,12 +37,11 @@ public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTe
 
 
     private readonly List<BybitUsdPerpetualOrder> Orders = new();
-    
+
     public async Task InitializeAsync()
     {
         await Task.CompletedTask;
     }
-
     public async Task DisposeAsync()
     {
         await Parallel.ForEachAsync(this.Orders, async (order, _) => await this.TradingClient.CloseOrderAsync(order));
