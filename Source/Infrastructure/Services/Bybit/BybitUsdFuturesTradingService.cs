@@ -235,7 +235,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         this.limitOrders[bybitId] = updatedOrder;
         
-        await this.Mediator.Publish(new UpdateOrderCommand
+        await this.Mediator.Send(new UpdateOrderCommand
         {
             UpdatedOrder = updatedOrder
         });
@@ -260,7 +260,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
             this.limitOrders.Remove(bybitId);
         });
         
-        await this.Mediator.Publish(new DeleteOrdersCommand
+        await this.Mediator.Send(new DeleteOrdersCommand
         {
             BybitIds = existingIds
         });
