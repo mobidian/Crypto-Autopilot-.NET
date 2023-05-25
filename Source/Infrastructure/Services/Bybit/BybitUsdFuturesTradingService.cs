@@ -6,11 +6,10 @@ using Application.Interfaces.Services.Bybit;
 
 using Bybit.Net.Enums;
 
+using Domain.Commands.Orders;
 using Domain.Commands.Positions;
 using Domain.Models.Common;
 using Domain.Models.Futures;
-
-using Infrastructure.Notifications.FuturesOrders;
 
 using MediatR;
 
@@ -203,7 +202,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         var order = bybitOrder.ToDomainObject(orderSide.ToPositionSide());
         this.limitOrders[Guid.Parse(bybitOrder.Id)] = order;
 
-        await this.Mediator.Publish(new LimitOrderPlacedNotification
+        await this.Mediator.Send(new CreateLimitOrderCommand
         {
             LimitOrder = order
         });
@@ -236,9 +235,9 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         
         this.limitOrders[bybitId] = updatedOrder;
         
-        await this.Mediator.Publish(new UpdatedLimitOrderNotification
+        await this.Mediator.Publish(new UpdateOrderCommand
         {
-            UpdatedLimitOrder = updatedOrder
+            UpdatedOrder = updatedOrder
         });
 
         return updatedOrder;
@@ -261,7 +260,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
             this.limitOrders.Remove(bybitId);
         });
         
-        await this.Mediator.Publish(new CancelledLimitOrdersNotification
+        await this.Mediator.Publish(new DeleteOrdersCommand
         {
             BybitIds = existingIds
         });

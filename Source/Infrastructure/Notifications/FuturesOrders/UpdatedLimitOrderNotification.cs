@@ -17,13 +17,3 @@ public class UpdatedLimitOrderNotification : INotification
     public required FuturesOrder UpdatedLimitOrder { get; init; }
 }
 
-public class UpdatedLimitOrderNotificationHandler : INotificationHandler<UpdatedLimitOrderNotification>
-{
-    private readonly IFuturesOrdersRepository OrdersRepository;
-    public UpdatedLimitOrderNotificationHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
-
-    public async Task Handle(UpdatedLimitOrderNotification notification, CancellationToken cancellationToken)
-    {
-        await this.OrdersRepository.UpdateFuturesOrderAsync(notification.UpdatedLimitOrder.BybitID, notification.UpdatedLimitOrder);
-    }
-}

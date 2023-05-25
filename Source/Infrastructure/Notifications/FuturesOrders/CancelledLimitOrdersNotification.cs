@@ -14,14 +14,3 @@ public class CancelledLimitOrdersNotification : INotification
     /// </summary>
     public required Guid[] BybitIds { get; init; }
 }
-
-public class CancelledLimitOrdersNotificationHandler : INotificationHandler<CancelledLimitOrdersNotification>
-{
-    private readonly IFuturesOrdersRepository OrdersRepository;
-    public CancelledLimitOrdersNotificationHandler(IFuturesOrdersRepository ordersRepository) => this.OrdersRepository = ordersRepository;
-
-    public async Task Handle(CancelledLimitOrdersNotification notification, CancellationToken cancellationToken)
-    {
-        await this.OrdersRepository.DeleteFuturesOrdersAsync(notification.BybitIds.ToArray());
-    }
-}
