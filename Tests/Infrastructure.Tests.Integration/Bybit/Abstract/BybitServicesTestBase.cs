@@ -1,6 +1,4 @@
-﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+﻿using Infrastructure.Extensions;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,21 +12,15 @@ public abstract class BybitServicesTestBase
     
     protected BybitServicesTestBase()
     {
-        this.Services = new ServiceCollection();
-
-
+        var services = new ServiceCollection();
         var configuration = new ConfigurationManager();
+
         configuration.AddJsonFile("appsettings.test.json", optional: false);
         configuration.AddUserSecrets<BybitServicesTestBase>();
-
-        configuration.AddAzureKeyVault(
-            new SecretClient(new Uri(configuration["KeyVaultConfig:Url"]!),
-            new ClientSecretCredential(
-                configuration["KeyVaultConfig:TenantId"],
-                configuration["KeyVaultConfig:ClientId"],
-                configuration["KeyVaultConfig:ClientSecretId"])),
-            new AzureKeyVaultConfigurationOptions());
+        configuration.AddAzureKeyVault();
         
+
+        this.Services = services;
         this.Configuration = configuration;
     }
 }
