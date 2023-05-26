@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces.Services.DataAccess.Services;
 
-using Infrastructure.Services.DataAccess.Repositories;
-using Infrastructure.Services.DataAccess.Services;
+using Infrastructure.DataAccess.Repositories;
+using Infrastructure.DataAccess.Services;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 

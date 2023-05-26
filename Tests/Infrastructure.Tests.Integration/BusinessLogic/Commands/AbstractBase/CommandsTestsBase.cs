@@ -1,5 +1,5 @@
-﻿using Infrastructure.Extensions;
-using Infrastructure.Services.DataAccess.Database;
+﻿using Infrastructure.DataAccess.Database;
+using Infrastructure.Extensions;
 using Infrastructure.Tests.Integration.Common.Fakers;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 

@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Services.DataAccess.Repositories;
 
-using Infrastructure.Services.DataAccess.Repositories;
+using Infrastructure.DataAccess.Repositories;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 

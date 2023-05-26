@@ -21,14 +21,14 @@ using CryptoExchange.Net.Authentication;
 
 using Domain.PipelineBehaviors;
 
+using Infrastructure.DataAccess.Database;
+using Infrastructure.DataAccess.Repositories;
+using Infrastructure.DataAccess.Services;
 using Infrastructure.Factories;
 using Infrastructure.Logging;
 using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
-using Infrastructure.Services.DataAccess.Database;
-using Infrastructure.Services.DataAccess.Repositories;
-using Infrastructure.Services.DataAccess.Services;
 using Infrastructure.Services.General;
 
 using MediatR;

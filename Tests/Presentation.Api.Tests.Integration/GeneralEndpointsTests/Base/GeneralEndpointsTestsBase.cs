@@ -2,7 +2,7 @@
 
 using CryptoAutopilot.Api.Services.Interfaces;
 
-using Infrastructure.Services.DataAccess.Repositories;
+using Infrastructure.DataAccess.Repositories;
 
 using Microsoft.Extensions.DependencyInjection;
 
