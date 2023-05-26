@@ -1,4 +1,4 @@
-﻿namespace Application.Interfaces.Services;
+﻿namespace Application.Strategies;
 
 /// <summary>
 /// <para>The IStrategyEngine interface defines the structure and lifecycle management methods for a trading strategy.</para>

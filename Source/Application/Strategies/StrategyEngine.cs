@@ -1,10 +1,7 @@
-﻿using Application.Interfaces.Services;
-using Application.Interfaces.Services.Bybit;
+﻿using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 
-using Bybit.Net.Enums;
-
-namespace Infrastructure.Services.Trading;
+namespace Application.Strategies;
 
 /// <summary>
 /// <para>The StrategyEngine class provides an abstract base class for implementing specific trading strategies.</para>
@@ -19,7 +16,7 @@ public abstract class StrategyEngine : IStrategyEngine
     protected readonly IBybitUsdPerpetualKlinesMonitor KlinesMonitor;
     protected readonly IBybitFuturesAccountDataProvider FuturesAccount;
     protected readonly IBybitUsdFuturesTradingService TradingService;
-    
+
     protected StrategyEngine(IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdPerpetualKlinesMonitor klinesMonitor, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesTradingService tradingService)
     {
         this.CTS = new CancellationTokenSource();
@@ -42,7 +39,7 @@ public abstract class StrategyEngine : IStrategyEngine
 
         while (!this.CTS.IsCancellationRequested)
             await this.TakeActionAsync();
-        
+
         await Task.WhenAll(this.TradingService.CloseAllPositionsAsync(),
                            this.TradingService.CancelAllLimitOrdersAsync());
 
@@ -54,7 +51,7 @@ public abstract class StrategyEngine : IStrategyEngine
     {
         if (!this.CTS.IsCancellationRequested)
             this.CTS.Cancel();
-        
+
         while (this.Running)
             await Task.Delay(20);
     }
@@ -93,13 +90,13 @@ public abstract class StrategyEngine : IStrategyEngine
     {
         if (this.Disposed)
             return;
-        
+
         if (disposing)
         {
             this.CTS.Dispose();
             await this.StopTradingAsync();
         }
-        
+
         this.Disposed = true;
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.Strategies;
 
 namespace CryptoAutopilot.Api.Services.Interfaces;
 

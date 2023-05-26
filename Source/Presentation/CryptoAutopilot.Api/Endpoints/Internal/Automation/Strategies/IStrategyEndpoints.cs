@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-using Application.Interfaces.Services;
+using Application.Strategies;
 
 using CryptoAutopilot.Api.Endpoints.Internal;
 
