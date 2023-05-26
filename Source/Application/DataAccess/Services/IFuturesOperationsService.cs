@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Futures;
 
-namespace Application.Interfaces.Services.DataAccess.Services;
+namespace Application.DataAccess.Services;
 
 public interface IFuturesOperationsService
 {

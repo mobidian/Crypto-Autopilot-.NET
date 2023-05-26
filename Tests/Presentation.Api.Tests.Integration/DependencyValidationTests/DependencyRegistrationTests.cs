@@ -1,11 +1,11 @@
 ﻿using System.Text;
 
+using Application.DataAccess.Repositories;
+using Application.DataAccess.Services;
 using Application.Interfaces.Logging;
 using Application.Interfaces.Proxies;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
-using Application.Interfaces.Services.DataAccess.Repositories;
-using Application.Interfaces.Services.DataAccess.Services;
 using Application.Interfaces.Services.General;
 
 using Bybit.Net.Clients;

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.DataAccess.Repositories;
+﻿using Application.DataAccess.Repositories;
 
 using Domain.Commands.Orders;
 

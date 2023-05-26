@@ -1,5 +1,5 @@
 ﻿using Application.Data.Mapping;
-using Application.Interfaces.Services.DataAccess.Repositories;
+using Application.DataAccess.Repositories;
 
 using Domain.Models.Signals;
 

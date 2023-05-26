@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.DataAccess.Services;
+﻿using Application.DataAccess.Services;
 
 using Infrastructure.DataAccess.Repositories;
 using Infrastructure.DataAccess.Services;

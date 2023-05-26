@@ -1,6 +1,4 @@
-﻿using Application.Interfaces.Services.DataAccess.Repositories;
-
-using MediatR;
+﻿using MediatR;
 
 namespace Infrastructure.Notifications.FuturesOrders;
 

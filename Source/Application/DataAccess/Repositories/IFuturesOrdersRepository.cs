@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Futures;
 
-namespace Application.Interfaces.Services.DataAccess.Repositories;
+namespace Application.DataAccess.Repositories;
 
 public interface IFuturesOrdersRepository
 {

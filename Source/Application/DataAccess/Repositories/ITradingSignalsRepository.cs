@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Signals;
 
-namespace Application.Interfaces.Services.DataAccess.Repositories;
+namespace Application.DataAccess.Repositories;
 
 public interface ITradingSignalsRepository
 {

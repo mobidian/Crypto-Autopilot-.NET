@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Services.DataAccess.Repositories;
+﻿using Application.DataAccess.Repositories;
 
 using Infrastructure.DataAccess.Repositories;
 using Infrastructure.Tests.Integration.Common.Fixtures;

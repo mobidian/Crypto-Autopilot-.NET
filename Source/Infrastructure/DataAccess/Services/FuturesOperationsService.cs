@@ -1,5 +1,5 @@
-﻿using Application.Interfaces.Services.DataAccess.Repositories;
-using Application.Interfaces.Services.DataAccess.Services;
+﻿using Application.DataAccess.Repositories;
+using Application.DataAccess.Services;
 
 using Domain.Models.Futures;
 
