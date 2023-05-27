@@ -361,17 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Tests/Infrastructure.Tests.Integration/BinanceCfdTradingServiceTests/Common/Credentials.cs
-/Tests/Infrastructure.Tests.Integration/Common/Credentials.cs
-/Source/Presentation.Api/appsettings.Credentials.json
-/Tests/Presentation.Api.Tests.Integration/Common/Credentials.cs
 /.editorconfig
-/Strategies.Tests.Unit/LuxAlgoImbalanceStrategyEngineTests/AbstractBase/LuxAlgoImbalanceStrategyEngineTestsBase.cs
-/Strategies.Tests.Unit/LuxAlgoImbalanceStrategyEngineTests/LuxAlgoImbalanceStrategyEngineTests.cs
+/Source/Strategies/Strategies.csproj
 /Source/Strategies/LuxAlgoImbalance/Enums/FvgSide.cs
 /Source/Strategies/LuxAlgoImbalance/FairValueGapFinder.cs
 /Source/Strategies/LuxAlgoImbalance/IFairValueGapFinder.cs
 /Source/Strategies/LuxAlgoImbalance/LuxAlgoImbalanceStrategyEngine.cs
 /Source/Strategies/LuxAlgoImbalance/Models/LuxAlgoFVG.cs
-/Source/Strategies/Strategies.csproj
-/Strategies.Tests.Unit/Strategies.Tests.Unit.csproj
+/Tests/Strategies.Tests.Unit/LuxAlgoImbalanceStrategyEngineTests/AbstractBase/LuxAlgoImbalanceStrategyEngineTestsBase.cs
+/Tests/Strategies.Tests.Unit/LuxAlgoImbalanceStrategyEngineTests/LuxAlgoImbalanceStrategyEngineTests.cs
