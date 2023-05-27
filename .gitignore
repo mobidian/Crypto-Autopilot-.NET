@@ -370,3 +370,4 @@ FodyWeavers.xsd
 /Source/Strategies/LuxAlgoImbalance/Models/LuxAlgoFVG.cs
 /Tests/Strategies.Tests.Unit/LuxAlgoImbalanceStrategyEngineTests/AbstractBase/LuxAlgoImbalanceStrategyEngineTestsBase.cs
 /Tests/Strategies.Tests.Unit/LuxAlgoImbalanceStrategyEngineTests/LuxAlgoImbalanceStrategyEngineTests.cs
+/Tests/Strategies.Tests.Unit/Strategies.Tests.Unit.csproj
