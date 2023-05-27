@@ -373,3 +373,5 @@ FodyWeavers.xsd
 /Source/Strategies/LuxAlgoImbalance/IFairValueGapFinder.cs
 /Source/Strategies/LuxAlgoImbalance/LuxAlgoImbalanceStrategyEngine.cs
 /Source/Strategies/LuxAlgoImbalance/Models/LuxAlgoFVG.cs
+/Source/Strategies/Strategies.csproj
+/Strategies.Tests.Unit/Strategies.Tests.Unit.csproj
