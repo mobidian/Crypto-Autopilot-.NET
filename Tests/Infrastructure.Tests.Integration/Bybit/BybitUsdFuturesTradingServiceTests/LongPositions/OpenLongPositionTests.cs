@@ -33,8 +33,9 @@ public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
         
         // Act
         await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
         // Assert
+        this.SUT.Positions.Single(x => x.Side == PositionSide.Buy).Should().BeEquivalentTo(this.SUT.LongPosition);
         this.SUT.LongPosition.Should().NotBeNull();
         this.SUT.LongPosition!.Side.Should().Be(PositionSide.Buy);
         this.SUT.LongPosition!.Leverage.Should().Be(this.Leverage);

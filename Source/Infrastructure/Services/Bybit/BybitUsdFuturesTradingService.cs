@@ -43,6 +43,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     
     
     private readonly IDictionary<PositionSide, FuturesPosition> positions = new ConcurrentDictionary<PositionSide, FuturesPosition>();
+    public IEnumerable<FuturesPosition> Positions => this.positions.Values;
     public FuturesPosition? LongPosition
     {
         get
@@ -73,17 +74,17 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         var quantity = Math.Round(Margin * this.Leverage / lastPrice, 2);
 
         var bybitOrder = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
-                                                             positionSide.GetEntryOrderSide(),
-                                                             OrderType.Market,
-                                                             quantity,
-                                                             TimeInForce.ImmediateOrCancel,
-                                                             false,
-                                                             false,
-                                                             stopLossPrice: StopLoss,
-                                                             stopLossTriggerType: tradingStopTriggerType,
-                                                             takeProfitPrice: TakeProfit,
-                                                             takeProfitTriggerType: tradingStopTriggerType,
-                                                             positionMode: positionSide.ToToPositionMode());
+                                                                  positionSide.GetEntryOrderSide(),
+                                                                  OrderType.Market,
+                                                                  quantity,
+                                                                  TimeInForce.ImmediateOrCancel,
+                                                                  false,
+                                                                  false,
+                                                                  stopLossPrice: StopLoss,
+                                                                  stopLossTriggerType: tradingStopTriggerType,
+                                                                  takeProfitPrice: TakeProfit,
+                                                                  takeProfitTriggerType: tradingStopTriggerType,
+                                                                  positionMode: positionSide.ToToPositionMode());
 
         var bybitPosition = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, positionSide);
 
@@ -150,13 +151,13 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
 
         var bybitOrder = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
-                                                             positionSide.GetClosingOrderSide(),
-                                                             OrderType.Market,
-                                                             position.Quantity,
-                                                             TimeInForce.ImmediateOrCancel,
-                                                             false,
-                                                             false,
-                                                             positionMode: position.Side.ToToPositionMode());
+                                                                  positionSide.GetClosingOrderSide(),
+                                                                  OrderType.Market,
+                                                                  position.Quantity,
+                                                                  TimeInForce.ImmediateOrCancel,
+                                                                  false,
+                                                                  false,
+                                                                  positionMode: position.Side.ToToPositionMode());
 
         
         var cryptoAutopilotId = this.positions[positionSide].CryptoAutopilotId;
@@ -185,18 +186,18 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         var quantity = Math.Round(Margin * this.Leverage / LimitPrice, 2);
 
         var bybitOrder = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
-                                                             orderSide,
-                                                             OrderType.Limit,
-                                                             quantity,
-                                                             TimeInForce.GoodTillCanceled,
-                                                             false,
-                                                             false,
-                                                             price: LimitPrice,
-                                                             stopLossPrice: StopLoss,
-                                                             stopLossTriggerType: tradingStopTriggerType,
-                                                             takeProfitPrice: TakeProfit,
-                                                             takeProfitTriggerType: tradingStopTriggerType,
-                                                             positionMode: orderSide.ToPositionMode());
+                                                                  orderSide,
+                                                                  OrderType.Limit,
+                                                                  quantity,
+                                                                  TimeInForce.GoodTillCanceled,
+                                                                  false,
+                                                                  false,
+                                                                  price: LimitPrice,
+                                                                  stopLossPrice: StopLoss,
+                                                                  stopLossTriggerType: tradingStopTriggerType,
+                                                                  takeProfitPrice: TakeProfit,
+                                                                  takeProfitTriggerType: tradingStopTriggerType,
+                                                                  positionMode: orderSide.ToPositionMode());
 
 
         var order = bybitOrder.ToDomainObject(orderSide.ToPositionSide());

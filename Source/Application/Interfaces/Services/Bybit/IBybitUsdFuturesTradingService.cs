@@ -1,5 +1,4 @@
 ﻿using Bybit.Net.Enums;
-using Bybit.Net.Objects.Models;
 
 using Domain.Models.Futures;
 
@@ -7,6 +6,7 @@ namespace Application.Interfaces.Services.Bybit;
 
 public interface IBybitUsdFuturesTradingService
 {
+    public IEnumerable<FuturesPosition> Positions { get; }
     public FuturesPosition? LongPosition { get; }
     public FuturesPosition? ShortPosition { get; }
     

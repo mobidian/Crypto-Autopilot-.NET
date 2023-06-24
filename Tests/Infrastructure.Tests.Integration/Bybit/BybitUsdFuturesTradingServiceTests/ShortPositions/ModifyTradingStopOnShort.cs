@@ -41,6 +41,7 @@ public class ModifyTradingStopOnShort : BybitUsdFuturesTradingServiceTestsBase
 
 
         // Assert
+        this.SUT.Positions.Single(x => x.Side == PositionSide.Sell).Should().BeEquivalentTo(this.SUT.ShortPosition);
         this.SUT.ShortPosition.Should().NotBeNull();
         this.SUT.ShortPosition!.StopLoss.Should().Be(newStopLoss);
         this.SUT.ShortPosition!.TakeProfit.Should().Be(newTakeProfit);

@@ -39,8 +39,9 @@ public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
 
         await this.SUT.ModifyTradingStopAsync(PositionSide.Buy, newStopLoss, newTakeProfit, tradingStopTriggerType);
 
-        
+
         // Assert
+        this.SUT.Positions.Single(x => x.Side == PositionSide.Buy).Should().BeEquivalentTo(this.SUT.LongPosition);
         this.SUT.LongPosition.Should().NotBeNull();
         this.SUT.LongPosition!.StopLoss.Should().Be(newStopLoss);
         this.SUT.LongPosition!.TakeProfit.Should().Be(newTakeProfit);

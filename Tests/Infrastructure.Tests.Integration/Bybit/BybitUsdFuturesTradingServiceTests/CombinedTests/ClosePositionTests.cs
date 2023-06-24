@@ -37,6 +37,7 @@ public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
 
 
         // Assert
+        this.SUT.Positions.Should().BeEmpty();
         var position = positionSide == PositionSide.Buy ? this.SUT.LongPosition : this.SUT.ShortPosition;
         position.Should().BeNull();
     }
@@ -64,6 +65,7 @@ public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
         await this.SUT.CloseAllPositionsAsync();
 
         // Assert
+        this.SUT.Positions.Should().BeEmpty();
         this.SUT.LongPosition.Should().BeNull();
         this.SUT.ShortPosition.Should().BeNull();
     }

@@ -33,8 +33,9 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
         
         // Act
         await this.SUT.OpenPositionAsync(PositionSide.Sell, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
         // Assert
+        this.SUT.Positions.Single(x => x.Side == PositionSide.Sell).Should().BeEquivalentTo(this.SUT.ShortPosition);
         this.SUT.ShortPosition.Should().NotBeNull();
         this.SUT.ShortPosition!.Side.Should().Be(PositionSide.Sell);
         this.SUT.ShortPosition!.Leverage.Should().Be(this.Leverage);
