@@ -49,7 +49,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.SellLimitOrders.Single().StopLoss.Should().Be(newStopLoss);
         this.SUT.SellLimitOrders.Single().TakeProfit.Should().Be(newTakeProfit);
         
-        var orderFromApi = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, this.SUT.SellLimitOrders.Single().BybitID.ToString());
+        var orderFromApi = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, this.SUT.SellLimitOrders.Single().BybitID);
         orderFromApi.Side.Should().Be(OrderSide.Sell);
         orderFromApi.Price.Should().Be(newLimitPrice);
         orderFromApi.Quantity.Should().Be(Math.Round(newMargin * this.Leverage / newLimitPrice, 2));

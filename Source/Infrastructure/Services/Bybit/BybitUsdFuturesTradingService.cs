@@ -231,7 +231,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
                                              takeProfitTriggerType: newTradingStopTriggerType);
 
         
-        var updatedBybitOrder = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, oldLimitOrder.BybitID.ToString());
+        var updatedBybitOrder = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, oldLimitOrder.BybitID);
         var updatedOrder = updatedBybitOrder.ToDomainObject(updatedBybitOrder.Side.ToPositionSide());
         
         this.limitOrders[bybitId] = updatedOrder;

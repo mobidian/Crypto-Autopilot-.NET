@@ -18,9 +18,9 @@ public class BybitUsdFuturesTradingApiClient : IBybitUsdFuturesTradingApiClient
     }
 
 
-    public async Task<BybitUsdPerpetualOrder> GetOrderAsync(string symbol, string OrderID)
+    public async Task<BybitUsdPerpetualOrder> GetOrderAsync(string symbol, Guid orderId)
     {
-        var callResult = await this.FuturesClient.GetOpenOrderRealTimeAsync(symbol, OrderID);
+        var callResult = await this.FuturesClient.GetOpenOrderRealTimeAsync(symbol, orderId.ToString());
         callResult.ThrowIfHasError();
         return callResult.Data;
     }
@@ -59,9 +59,9 @@ public class BybitUsdFuturesTradingApiClient : IBybitUsdFuturesTradingApiClient
         return callResult.Data;
     }
 
-    public async Task<BybitUsdPerpetualOrder> CloseOrderAsync(string symbol, string OrderID)
+    public async Task<BybitUsdPerpetualOrder> CloseOrderAsync(string symbol, Guid orderId)
     {
-        var perpetualOrder = await this.GetOrderAsync(symbol, OrderID);
+        var perpetualOrder = await this.GetOrderAsync(symbol, orderId);
         return await this.CloseOrderAsync(perpetualOrder);
     }
     public async Task<BybitUsdPerpetualOrder> CloseOrderAsync(BybitUsdPerpetualOrder perpetualOrder)
