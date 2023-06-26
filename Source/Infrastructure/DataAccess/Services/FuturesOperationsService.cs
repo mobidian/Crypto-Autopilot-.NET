@@ -32,8 +32,9 @@ public class FuturesOperationsService : IFuturesOperationsService
         await this.OrdersRepository.AddFuturesOrdersAsync(orders, position.CryptoAutopilotId);
     }
 
-    public async Task UpdateFuturesPositionAndAddOrdersAsync(Guid cryptoAutopilotId, FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
+    public async Task UpdateFuturesPositionAndAddOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
     {
+        var cryptoAutopilotId = updatedPosition.CryptoAutopilotId;
         var position = await this.PositionsRepository.GetFuturesOrderByCryptoAutopilotId(cryptoAutopilotId) ?? throw new ArgumentException($"There wasn't any position with cryptoAutopilotId '{cryptoAutopilotId}' in the database", nameof(cryptoAutopilotId));
         var positionCryptoAutopilotId = position.CryptoAutopilotId;
 

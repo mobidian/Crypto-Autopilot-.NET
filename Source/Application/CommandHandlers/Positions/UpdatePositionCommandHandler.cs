@@ -13,11 +13,10 @@ public class UpdatePositionCommandHandler : IRequestHandler<UpdatePositionComman
     
     public async Task<Unit> Handle(UpdatePositionCommand request, CancellationToken cancellationToken)
     {
-        var cryptoAutopilotId = request.UpdatedPosition.CryptoAutopilotId;
         var updatedPosition = request.UpdatedPosition;
         var newFuturesOrders = request.NewFuturesOrders;
 
-        await this.FuturesOperationsService.UpdateFuturesPositionAndAddOrdersAsync(cryptoAutopilotId, updatedPosition, newFuturesOrders);
+        await this.FuturesOperationsService.UpdateFuturesPositionAndAddOrdersAsync(updatedPosition, newFuturesOrders);
         return Unit.Value;
     }
 }
