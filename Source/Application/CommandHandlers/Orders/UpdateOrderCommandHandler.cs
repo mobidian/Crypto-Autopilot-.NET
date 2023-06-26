@@ -16,7 +16,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Uni
         var bybitId = request.UpdatedOrder.BybitID;
         var updatedLimitOrder = request.UpdatedOrder;
 
-        await this.OrdersRepository.UpdateAsync(bybitId, updatedLimitOrder, request.FuturesPositionId);
+        await this.OrdersRepository.UpdateAsync(updatedLimitOrder, request.FuturesPositionId);
         return Unit.Value;
     }
 }

@@ -53,8 +53,9 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
         return await Task.FromResult(positions);
     }
 
-    public async Task UpdateAsync(Guid positionId, FuturesPosition updatedPosition)
+    public async Task UpdateAsync(FuturesPosition updatedPosition)
     {
+        var positionId = updatedPosition.CryptoAutopilotId;
         var positionDbEntity = await this.DbContext.FuturesPositions
             .Include(x => x.FuturesOrders) // Include related orders to be able to validate the relationship when saving the changes
             .Where(x => x.CryptoAutopilotId == positionId)

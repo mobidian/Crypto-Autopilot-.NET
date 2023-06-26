@@ -12,5 +12,5 @@ public interface IFuturesPositionsRepository
     public Task<IEnumerable<FuturesPosition>> GetAllAsync();
     public Task<IEnumerable<FuturesPosition>> GetByCurrencyPairAsync(string currencyPair);
 
-    public Task UpdateAsync(Guid positionId, FuturesPosition updatedPosition);
+    public Task UpdateAsync(FuturesPosition updatedPosition);
 }
