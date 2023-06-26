@@ -30,7 +30,7 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
         var futuresOrders = this.FuturesOrderGenerator.Clone().RuleFor(x => x.CurrencyPair, candlestick.CurrencyPair).GenerateBetween(10, 20);
         
         foreach (var order in futuresOrders)
-            await this.OrdersRepository.AddFuturesOrderAsync(order);
+            await this.OrdersRepository.AddAsync(order);
 
         // Act
         var futuresOrdersResponse = await this.HttpClient.GetAsync("futuresorders");

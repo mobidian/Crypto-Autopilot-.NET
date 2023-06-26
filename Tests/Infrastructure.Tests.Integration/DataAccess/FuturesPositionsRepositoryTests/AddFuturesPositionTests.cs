@@ -29,7 +29,7 @@ public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
 
         // Act
-        await this.SUT.AddFuturesPositionAsync(position);
+        await this.SUT.AddAsync(position);
 
         // Assert
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
@@ -42,7 +42,7 @@ public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         var invalidPosition = this.FuturesPositionsGenerator.Clone().RuleFor(x => x.Leverage, 0).Generate();
 
         // Act
-        var func = async () => await this.SUT.AddFuturesPositionAsync(invalidPosition);
+        var func = async () => await this.SUT.AddAsync(invalidPosition);
 
         // Assert
         (await func.Should()
@@ -57,14 +57,14 @@ public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
     {
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        await this.SUT.AddFuturesPositionAsync(position);
+        await this.SUT.AddAsync(position);
 
         var cryptoAutopilotId = position.CryptoAutopilotId;
         var positionWithSameCryptoAutopilotId = this.FuturesPositionsGenerator.Clone().RuleFor(x => x.CryptoAutopilotId, cryptoAutopilotId).Generate();
 
 
         // Act
-        var func = async () => await this.SUT.AddFuturesPositionAsync(positionWithSameCryptoAutopilotId);
+        var func = async () => await this.SUT.AddAsync(positionWithSameCryptoAutopilotId);
         
 
         // Assert

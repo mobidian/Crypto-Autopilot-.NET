@@ -30,7 +30,7 @@ public class GetFuturesPositionsFunction : MarketDataFunctionBase<GetFuturesPosi
         {
             if (contractName is null)
             {
-                var futuresPositions = await PositionsRepository.GetAllFuturesPositionsAsync();
+                var futuresPositions = await this.PositionsRepository.GetAllAsync();
                 
                 var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
                 {
@@ -49,7 +49,7 @@ public class GetFuturesPositionsFunction : MarketDataFunctionBase<GetFuturesPosi
             }
             else
             {
-                var futuresPositions = await PositionsRepository.GetFuturesPositionsByCurrencyPairAsync(contractName);
+                var futuresPositions = await this.PositionsRepository.GetByCurrencyPairAsync(contractName);
                 
                 var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
                 {

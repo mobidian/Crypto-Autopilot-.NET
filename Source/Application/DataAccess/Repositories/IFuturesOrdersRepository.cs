@@ -4,15 +4,15 @@ namespace Application.DataAccess.Repositories;
 
 public interface IFuturesOrdersRepository
 {
-    public Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null);
-    public Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrder, Guid? positionId = null);
+    public Task AddAsync(FuturesOrder futuresOrder, Guid? positionId = null);
+    public Task AddAsync(IEnumerable<FuturesOrder> futuresOrder, Guid? positionId = null);
 
 
-    public Task<FuturesOrder?> GetFuturesOrderByBybitId(Guid bybitID);
-    public Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync();
-    public Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair);
+    public Task<FuturesOrder?> GetByBybitId(Guid bybitID);
+    public Task<IEnumerable<FuturesOrder>> GetAllAsync();
+    public Task<IEnumerable<FuturesOrder>> GetByCurrencyPairAsync(string currencyPair);
 
-    public Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null);
+    public Task UpdateAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null);
 
-    public Task DeleteFuturesOrdersAsync(params Guid[] bybitIDs);
+    public Task DeleteAsync(params Guid[] bybitIDs);
 }
