@@ -31,12 +31,23 @@ public class FuturesOperationsService : IFuturesOperationsService
         await this.PositionsRepository.AddAsync(position);
         await this.OrdersRepository.AddAsync(orders, position.CryptoAutopilotId);
     }
-
     public async Task UpdateFuturesPositionAndAddOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
     {
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
         await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
     }
+    public async Task UpdateFuturesPositionsAndAddTheirOrdersAsync(Dictionary<FuturesPosition, IEnumerable<FuturesOrder>> positionsOrders)
+    {
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
+        
+        foreach (var positionOrder in positionsOrders)
+        {
+            var updatedPosition = positionOrder.Key;
+            var newOrders = positionOrder.Value;
+            await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
+        }
+    }
+
     private async Task UpdatePositionAndInsertOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
     {
         await this.PositionsRepository.UpdateAsync(updatedPosition);
