@@ -34,13 +34,14 @@ public class FuturesOperationsService : IFuturesOperationsService
 
     public async Task UpdateFuturesPositionAndAddOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
     {
-        var cryptoAutopilotId = updatedPosition.CryptoAutopilotId;
-        var position = await this.PositionsRepository.GetByCryptoAutopilotId(cryptoAutopilotId) ?? throw new ArgumentException($"There wasn't any position with cryptoAutopilotId '{cryptoAutopilotId}' in the database", nameof(cryptoAutopilotId));
-        var positionCryptoAutopilotId = position.CryptoAutopilotId;
-
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
+        await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
+    }
+    private async Task UpdatePositionAndInsertOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
+    {
         await this.PositionsRepository.UpdateAsync(updatedPosition);
+
         if (!newOrders.IsNullOrEmpty())
-            await this.OrdersRepository.AddAsync(newOrders, positionCryptoAutopilotId);
+            await this.OrdersRepository.AddAsync(newOrders, updatedPosition.CryptoAutopilotId);
     }
 }
