@@ -31,16 +31,28 @@ public class FuturesOperationsService : IFuturesOperationsService
         await this.PositionsRepository.AddAsync(position);
         await this.OrdersRepository.AddAsync(orders, position.CryptoAutopilotId);
     }
-
     public async Task UpdateFuturesPositionAndAddOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
     {
-        var cryptoAutopilotId = updatedPosition.CryptoAutopilotId;
-        var position = await this.PositionsRepository.GetByCryptoAutopilotId(cryptoAutopilotId) ?? throw new ArgumentException($"There wasn't any position with cryptoAutopilotId '{cryptoAutopilotId}' in the database", nameof(cryptoAutopilotId));
-        var positionCryptoAutopilotId = position.CryptoAutopilotId;
-
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-        await this.PositionsRepository.UpdateAsync(positionCryptoAutopilotId, updatedPosition);
+        await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
+    }
+    public async Task UpdateFuturesPositionsAndAddTheirOrdersAsync(Dictionary<FuturesPosition, IEnumerable<FuturesOrder>> positionsOrders)
+    {
+        using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
+        
+        foreach (var positionOrder in positionsOrders)
+        {
+            var updatedPosition = positionOrder.Key;
+            var newOrders = positionOrder.Value;
+            await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
+        }
+    }
+
+    private async Task UpdatePositionAndInsertOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
+    {
+        await this.PositionsRepository.UpdateAsync(updatedPosition);
+
         if (!newOrders.IsNullOrEmpty())
-            await this.OrdersRepository.AddAsync(newOrders, positionCryptoAutopilotId);
+            await this.OrdersRepository.AddAsync(newOrders, updatedPosition.CryptoAutopilotId);
     }
 }

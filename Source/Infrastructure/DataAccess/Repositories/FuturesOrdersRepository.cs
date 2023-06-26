@@ -70,8 +70,9 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         return await Task.FromResult(orders);
     }
 
-    public async Task UpdateAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
+    public async Task UpdateAsync(FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
+        var bybitID = updatedFuturesOrder.BybitID;
         var dbEntity = await this.DbContext.FuturesOrders
             .Where(x => x.BybitID == bybitID)
             .FirstOrDefaultAsync() ?? throw new DbUpdateException($"Could not find futures order with uniqueID == {bybitID}");

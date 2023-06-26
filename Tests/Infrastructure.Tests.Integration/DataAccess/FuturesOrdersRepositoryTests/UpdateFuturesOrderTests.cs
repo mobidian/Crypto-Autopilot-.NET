@@ -33,7 +33,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 
 
         // Act
-        await this.SUT.UpdateAsync(updatedOrder.BybitID, updatedOrder);
+        await this.SUT.UpdateAsync(updatedOrder);
 
 
         // Assert
@@ -52,7 +52,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 
 
         // Act
-        await this.SUT.UpdateAsync(updatedOrder.BybitID, updatedOrder, position.CryptoAutopilotId);
+        await this.SUT.UpdateAsync(updatedOrder, position.CryptoAutopilotId);
 
 
         // Assert
@@ -74,7 +74,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 
         
         // Act
-        var func = async () => await this.SUT.UpdateAsync(updatedOrder.BybitID, updatedOrder);
+        var func = async () => await this.SUT.UpdateAsync(updatedOrder);
 
         
         // Assert

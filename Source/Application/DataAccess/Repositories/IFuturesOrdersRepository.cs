@@ -12,7 +12,7 @@ public interface IFuturesOrdersRepository
     public Task<IEnumerable<FuturesOrder>> GetAllAsync();
     public Task<IEnumerable<FuturesOrder>> GetByCurrencyPairAsync(string currencyPair);
 
-    public Task UpdateAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null);
+    public Task UpdateAsync(FuturesOrder updatedFuturesOrder, Guid? positionId = null);
 
     public Task DeleteAsync(params Guid[] bybitIDs);
 }
