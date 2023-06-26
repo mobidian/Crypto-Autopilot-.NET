@@ -27,7 +27,7 @@ public class GetAllFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
         await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
-        var retrievedFuturesPositions = await this.SUT.GetAllFuturesPositionsAsync();
+        var retrievedFuturesPositions = await this.SUT.GetAllAsync();
 
         // Assert
         futuresPositions.ForEach(x => retrievedFuturesPositions.Should().ContainEquivalentOf(x));
@@ -37,7 +37,7 @@ public class GetAllFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
     public async Task GetAllFuturesPositions_ShouldReturnEmptyEnumerable_WhenNoFuturesPositionsExist()
     {
         // Act
-        var retrievedFuturesPositions = await this.SUT.GetAllFuturesPositionsAsync();
+        var retrievedFuturesPositions = await this.SUT.GetAllAsync();
 
         // Assert
         retrievedFuturesPositions.Should().BeEmpty();

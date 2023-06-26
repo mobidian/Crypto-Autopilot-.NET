@@ -35,7 +35,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 
 
         // Act
-        await this.SUT.UpdateFuturesPositionAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
+        await this.SUT.UpdateAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
 
         // Assert
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
@@ -55,7 +55,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 
 
         // Act
-        var func = async () => await this.SUT.UpdateFuturesPositionAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
+        var func = async () => await this.SUT.UpdateAsync(updatedPosition.CryptoAutopilotId, updatedPosition);
 
         
         // Assert

@@ -15,25 +15,25 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
     public FuturesPositionsRepository(FuturesTradingDbContext dbContext) : base(dbContext) { }
 
 
-    public async Task AddFuturesPositionAsync(FuturesPosition position)
+    public async Task AddAsync(FuturesPosition position)
     {
         var positionDbEntity = position.ToDbEntity();
         await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
         await this.DbContext.SaveChangesAsync();
     }
-    public async Task AddFuturesPositionsAsync(IEnumerable<FuturesPosition> positions)
+    public async Task AddAsync(IEnumerable<FuturesPosition> positions)
     {
         var positionsDbEntities = positions.Select(x => x.ToDbEntity());
         await this.DbContext.FuturesPositions.AddRangeAsync(positionsDbEntities);
         await this.DbContext.SaveChangesAsync();
     }
 
-    public async Task<FuturesPosition?> GetFuturesOrderByCryptoAutopilotId(Guid cryptoAutopilotId)
+    public async Task<FuturesPosition?> GetByCryptoAutopilotId(Guid cryptoAutopilotId)
     {
         var positionDbEntity = await this.DbContext.FuturesPositions.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotId);
         return positionDbEntity?.ToDomainObject();
     }
-    public async Task<IEnumerable<FuturesPosition>> GetAllFuturesPositionsAsync()
+    public async Task<IEnumerable<FuturesPosition>> GetAllAsync()
     {
         var positions = this.DbContext.FuturesPositions
             .OrderBy(x => x.CurrencyPair)
@@ -42,7 +42,7 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
 
         return await Task.FromResult(positions);
     }
-    public async Task<IEnumerable<FuturesPosition>> GetFuturesPositionsByCurrencyPairAsync(string currencyPair)
+    public async Task<IEnumerable<FuturesPosition>> GetByCurrencyPairAsync(string currencyPair)
     {
         var positions = this.DbContext.FuturesPositions
             .Where(x => x.CurrencyPair == currencyPair)
@@ -53,7 +53,7 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
         return await Task.FromResult(positions);
     }
 
-    public async Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition)
+    public async Task UpdateAsync(Guid positionId, FuturesPosition updatedPosition)
     {
         var positionDbEntity = await this.DbContext.FuturesPositions
             .Include(x => x.FuturesOrders) // Include related orders to be able to validate the relationship when saving the changes
@@ -71,7 +71,7 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
         await this.DbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteFuturesPositionsAsync(params Guid[] cryptoAutopilotIDs)
+    public async Task DeleteAsync(params Guid[] cryptoAutopilotIDs)
     {
         foreach (var cryptoAutopilotID in cryptoAutopilotIDs)
             if (await this.DbContext.FuturesPositions.FirstOrDefaultAsync(x => x.CryptoAutopilotId == cryptoAutopilotID) is null)

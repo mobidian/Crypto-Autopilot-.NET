@@ -35,7 +35,7 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesPositionsRepository
 
 
         // Act
-        var retrievedFuturesPositions = await this.SUT.GetFuturesPositionsByCurrencyPairAsync(currencyPair.Name);
+        var retrievedFuturesPositions = await this.SUT.GetByCurrencyPairAsync(currencyPair.Name);
 
         // Assert
         retrievedFuturesPositions.Should().BeEquivalentTo(futuresPositions);
@@ -57,7 +57,7 @@ public class GetFuturesPositionsByCurrencyPairTests : FuturesPositionsRepository
 
 
         // Act
-        var retrievedFuturesPositions = await this.SUT.GetFuturesPositionsByCurrencyPairAsync(currencyPair.Name);
+        var retrievedFuturesPositions = await this.SUT.GetByCurrencyPairAsync(currencyPair.Name);
 
         // Assert
         retrievedFuturesPositions.Should().BeEmpty();

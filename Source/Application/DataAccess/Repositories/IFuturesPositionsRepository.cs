@@ -4,13 +4,13 @@ namespace Application.DataAccess.Repositories;
 
 public interface IFuturesPositionsRepository
 {
-    public Task AddFuturesPositionAsync(FuturesPosition position);
-    public Task AddFuturesPositionsAsync(IEnumerable<FuturesPosition> positions);
+    public Task AddAsync(FuturesPosition position);
+    public Task AddAsync(IEnumerable<FuturesPosition> positions);
 
 
-    public Task<FuturesPosition?> GetFuturesOrderByCryptoAutopilotId(Guid cryptoAutopilotId);
-    public Task<IEnumerable<FuturesPosition>> GetAllFuturesPositionsAsync();
-    public Task<IEnumerable<FuturesPosition>> GetFuturesPositionsByCurrencyPairAsync(string currencyPair);
+    public Task<FuturesPosition?> GetByCryptoAutopilotId(Guid cryptoAutopilotId);
+    public Task<IEnumerable<FuturesPosition>> GetAllAsync();
+    public Task<IEnumerable<FuturesPosition>> GetByCurrencyPairAsync(string currencyPair);
 
-    public Task UpdateFuturesPositionAsync(Guid positionId, FuturesPosition updatedPosition);
+    public Task UpdateAsync(Guid positionId, FuturesPosition updatedPosition);
 }
