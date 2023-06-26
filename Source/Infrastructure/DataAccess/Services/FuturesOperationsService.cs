@@ -29,7 +29,7 @@ public class FuturesOperationsService : IFuturesOperationsService
     {
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
         await this.PositionsRepository.AddAsync(position);
-        await this.OrdersRepository.AddFuturesOrdersAsync(orders, position.CryptoAutopilotId);
+        await this.OrdersRepository.AddAsync(orders, position.CryptoAutopilotId);
     }
 
     public async Task UpdateFuturesPositionAndAddOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
@@ -41,6 +41,6 @@ public class FuturesOperationsService : IFuturesOperationsService
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
         await this.PositionsRepository.UpdateAsync(positionCryptoAutopilotId, updatedPosition);
         if (!newOrders.IsNullOrEmpty())
-            await this.OrdersRepository.AddFuturesOrdersAsync(newOrders, positionCryptoAutopilotId);
+            await this.OrdersRepository.AddAsync(newOrders, positionCryptoAutopilotId);
     }
 }

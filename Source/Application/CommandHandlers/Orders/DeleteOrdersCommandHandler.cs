@@ -13,7 +13,7 @@ public class DeleteOrdersCommandHandler : IRequestHandler<DeleteOrdersCommand, U
 
     public async Task<Unit> Handle(DeleteOrdersCommand request, CancellationToken cancellationToken)
     {
-        await this.OrdersRepository.DeleteFuturesOrdersAsync(request.BybitIds);
+        await this.OrdersRepository.DeleteAsync(request.BybitIds);
         return Unit.Value;
     }
 }

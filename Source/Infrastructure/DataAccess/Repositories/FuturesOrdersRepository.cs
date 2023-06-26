@@ -15,7 +15,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
     public FuturesOrdersRepository(FuturesTradingDbContext dbContext) : base(dbContext) { }
 
 
-    public async Task AddFuturesOrderAsync(FuturesOrder futuresOrder, Guid? positionId = null)
+    public async Task AddAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
         var entity = futuresOrder.ToDbEntity();
         if (positionId is not null)
@@ -27,7 +27,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         await this.DbContext.FuturesOrders.AddAsync(entity);
         await this.DbContext.SaveChangesAsync();
     }
-    public async Task AddFuturesOrdersAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
+    public async Task AddAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
     {
         var futuresOrderDbEntities = futuresOrders.Select(x => x.ToDbEntity()).ToArray();
         if (positionId is not null)
@@ -43,12 +43,12 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         await this.DbContext.SaveChangesAsync();
     }
 
-    public async Task<FuturesOrder?> GetFuturesOrderByBybitId(Guid bybitID)
+    public async Task<FuturesOrder?> GetByBybitId(Guid bybitID)
     {
         var positionDbEntity = await this.DbContext.FuturesOrders.FirstOrDefaultAsync(x => x.BybitID == bybitID);
         return positionDbEntity?.ToDomainObject();
     }
-    public async Task<IEnumerable<FuturesOrder>> GetAllFuturesOrdersAsync()
+    public async Task<IEnumerable<FuturesOrder>> GetAllAsync()
     {
         var orders = this.DbContext.FuturesOrders
             .OrderBy(x => x.CurrencyPair)
@@ -58,7 +58,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
 
         return await Task.FromResult(orders);
     }
-    public async Task<IEnumerable<FuturesOrder>> GetFuturesOrdersByCurrencyPairAsync(string currencyPair)
+    public async Task<IEnumerable<FuturesOrder>> GetByCurrencyPairAsync(string currencyPair)
     {
         var orders = this.DbContext.FuturesOrders
             .Where(x => x.CurrencyPair == currencyPair)
@@ -70,7 +70,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         return await Task.FromResult(orders);
     }
 
-    public async Task UpdateFuturesOrderAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
+    public async Task UpdateAsync(Guid bybitID, FuturesOrder updatedFuturesOrder, Guid? positionId = null)
     {
         var dbEntity = await this.DbContext.FuturesOrders
             .Where(x => x.BybitID == bybitID)
@@ -100,7 +100,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         await this.DbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteFuturesOrdersAsync(params Guid[] bybitIDs)
+    public async Task DeleteAsync(params Guid[] bybitIDs)
     {
         foreach (var bybitID in bybitIDs)
             if (await this.DbContext.FuturesOrders.FirstOrDefaultAsync(x => x.BybitID == bybitID) is null)

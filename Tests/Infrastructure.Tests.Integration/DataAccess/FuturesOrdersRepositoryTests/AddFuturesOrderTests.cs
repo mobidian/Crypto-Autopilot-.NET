@@ -26,7 +26,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Limit.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}");
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(order);
+        await this.SUT.AddAsync(order);
 
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
@@ -42,7 +42,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         await this.ArrangeAssertDbContext.SaveChangesAsync();
 
         // Act
-        await this.SUT.AddFuturesOrderAsync(order, position.CryptoAutopilotId);
+        await this.SUT.AddAsync(order, position.CryptoAutopilotId);
 
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
