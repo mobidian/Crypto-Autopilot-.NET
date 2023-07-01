@@ -149,7 +149,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         if (!this.positions.TryGetValue(positionSide, out var position))
             throw new InvalidOrderException($"No open {positionSide} position was found");
 
-
         var bybitOrder = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
                                                                   positionSide.GetClosingOrderSide(),
                                                                   OrderType.Market,
@@ -159,8 +158,6 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
                                                                   false,
                                                                   positionMode: position.Side.ToToPositionMode());
 
-        
-        var cryptoAutopilotId = this.positions[positionSide].CryptoAutopilotId;
         var order = bybitOrder.ToDomainObject(positionSide);
         position.ExitPrice = bybitOrder.Price;
         
@@ -174,10 +171,33 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     }
     public async Task CloseAllPositionsAsync()
     {
+        var commands = new List<UpdatePositionCommand>();
+
         foreach (var positionSide in this.positions.Keys)
-            await this.ClosePositionAsync(positionSide);
-        
-        // // TODO parallelization // //
+        {
+            var position = this.positions[positionSide];
+            var bybitOrder = await this.TradingClient.PlaceOrderAsync(this.CurrencyPair.Name,
+                                                                      positionSide.GetClosingOrderSide(),
+                                                                      OrderType.Market,
+                                                                      position.Quantity,
+                                                                      TimeInForce.ImmediateOrCancel,
+                                                                      false,
+                                                                      false,
+                                                                      positionMode: position.Side.ToToPositionMode());
+
+            var order = bybitOrder.ToDomainObject(positionSide);
+            position.ExitPrice = bybitOrder.Price;
+
+            commands.Add(new UpdatePositionCommand
+            {
+                UpdatedPosition = position,
+                NewFuturesOrders = new[] { order }
+            });
+        }
+
+        await this.Mediator.Send(new UpdatePositionsCommand { Commands = commands });
+
+        this.positions.Clear();
     }
 
     
