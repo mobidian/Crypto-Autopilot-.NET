@@ -25,11 +25,11 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Restore Api
-      run: dotnet restore "${{ env.API_DIRECTORY }}"
+    - name: Restore Solution
+      run: dotnet restore
 
-    - name: Build Api
-      run: dotnet build "${{ env.API_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Build Solution
+      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
 
     - name: Test
       run: dotnet test --no-build
