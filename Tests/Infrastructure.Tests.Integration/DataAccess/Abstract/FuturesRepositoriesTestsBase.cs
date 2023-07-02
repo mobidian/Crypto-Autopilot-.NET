@@ -7,8 +7,6 @@ using Infrastructure.Internal.Extensions;
 using Infrastructure.Tests.Integration.Common.Fakers;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 
-using Microsoft.EntityFrameworkCore;
-
 using Xunit;
 
 namespace Infrastructure.Tests.Integration.DataAccess.Abstract;

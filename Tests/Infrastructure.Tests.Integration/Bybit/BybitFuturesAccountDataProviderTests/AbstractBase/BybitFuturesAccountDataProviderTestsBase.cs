@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Services.Bybit;
 
+using Bybit.Net;
 using Bybit.Net.Enums;
 using Bybit.Net.Objects.Models;
 
@@ -9,6 +10,7 @@ using Infrastructure.Extensions;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Xunit;
 
@@ -25,6 +27,8 @@ public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTe
     public BybitFuturesAccountDataProviderTestsBase() : base()
     {
         this.Services.AddServices(this.Configuration);
+        this.Services.RemoveAll<BybitEnvironment>();
+        this.Services.AddSingleton<BybitEnvironment>(BybitEnvironment.Testnet);
         var serviceProvider = this.Services.BuildServiceProvider();
         
         this.SUT = serviceProvider.GetRequiredService<IBybitFuturesAccountDataProvider>();

@@ -8,6 +8,7 @@ using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
 
+using Bybit.Net;
 using Bybit.Net.Clients;
 using Bybit.Net.Clients.UsdPerpetualApi;
 using Bybit.Net.Interfaces.Clients;
@@ -79,16 +80,17 @@ public class DependencyRegistrationTests
     
     private void AddBybitServices()
     {
+        this.RequiredDescriptors.Add((typeof(BybitEnvironment), typeof(BybitEnvironment), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton));
 
-        this.RequiredDescriptors.Add((typeof(IBybitClient), typeof(BybitClient), ServiceLifetime.Singleton));
-        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApi), typeof(BybitClientUsdPerpetualApi), ServiceLifetime.Singleton));
-        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApiTrading), typeof(BybitClientUsdPerpetualApiTrading), ServiceLifetime.Singleton));
-        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
-        this.RequiredDescriptors.Add((typeof(IBybitClientUsdPerpetualApiExchangeData), typeof(BybitClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitRestClient), typeof(BybitRestClient), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApi), typeof(BybitRestClientUsdPerpetualApi), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiTrading), typeof(BybitRestClientUsdPerpetualApiTrading), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiExchangeData), typeof(BybitRestClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiExchangeData), typeof(BybitRestClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
         
         this.RequiredDescriptors.Add((typeof(IBybitSocketClient), typeof(BybitSocketClient), ServiceLifetime.Singleton));
-        this.RequiredDescriptors.Add((typeof(IBybitSocketClientUsdPerpetualStreams), typeof(BybitSocketClientUsdPerpetualStreams), ServiceLifetime.Singleton));
+        this.RequiredDescriptors.Add((typeof(IBybitSocketClientUsdPerpetualApi), typeof(BybitSocketClientUsdPerpetualApi), ServiceLifetime.Singleton));
         
         this.RequiredDescriptors.Add((typeof(IBybitFuturesAccountDataProvider), typeof(BybitFuturesAccountDataProvider), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitUsdFuturesMarketDataProvider), typeof(BybitUsdFuturesMarketDataProvider), ServiceLifetime.Singleton));
@@ -123,14 +125,13 @@ public class DependencyRegistrationTests
     {
         var searchFailed = false;
         var failedText = new StringBuilder();
-        var failedText2 = new StringBuilder();
         
-        foreach (var requiredDescriptor in this.RequiredDescriptors)
+        foreach (var (serviceType, implementationType, lifetime) in this.RequiredDescriptors)
         {
             var match = serviceDescriptors.SingleOrDefault(serviceDescriptor => 
-                serviceDescriptor.ServiceType == requiredDescriptor.serviceType &&
-                (serviceDescriptor.ImplementationType == requiredDescriptor.implementationType || serviceDescriptor.ImplementationFactory is not null || serviceDescriptor.ImplementationInstance is not null) &&
-                serviceDescriptor.Lifetime == requiredDescriptor.lifetime);
+                serviceDescriptor.ServiceType == serviceType &&
+                (serviceDescriptor.ImplementationType == implementationType || serviceDescriptor.ImplementationFactory is not null || serviceDescriptor.ImplementationInstance is not null) &&
+                serviceDescriptor.Lifetime == lifetime);
             
             if (match is not null)
                 continue;
@@ -141,7 +142,7 @@ public class DependencyRegistrationTests
                 searchFailed = true;
             }
             
-            failedText.AppendLine($"{requiredDescriptor.serviceType} | {requiredDescriptor.implementationType} | {requiredDescriptor.lifetime}");
+            failedText.AppendLine($"{serviceType} | {implementationType} | {lifetime}");
         }
         
         return (!searchFailed, failedText.ToString());

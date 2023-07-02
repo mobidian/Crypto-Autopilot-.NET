@@ -10,9 +10,9 @@ namespace Infrastructure.Services.Bybit;
 
 public class BybitUsdFuturesTradingApiClient : IBybitUsdFuturesTradingApiClient
 {
-    private readonly IBybitClientUsdPerpetualApiTrading FuturesClient;
+    private readonly IBybitRestClientUsdPerpetualApiTrading FuturesClient;
 
-    public BybitUsdFuturesTradingApiClient(IBybitClientUsdPerpetualApiTrading tradingClient)
+    public BybitUsdFuturesTradingApiClient(IBybitRestClientUsdPerpetualApiTrading tradingClient)
     {
         this.FuturesClient = tradingClient ?? throw new ArgumentNullException(nameof(tradingClient));
     }

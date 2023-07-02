@@ -9,9 +9,9 @@ namespace Infrastructure.Services.Bybit;
 
 public class BybitFuturesAccountDataProvider : IBybitFuturesAccountDataProvider
 {
-    private readonly IBybitClientUsdPerpetualApiAccount FuturesAccount;
+    private readonly IBybitRestClientUsdPerpetualApiAccount FuturesAccount;
 
-    public BybitFuturesAccountDataProvider(IBybitClientUsdPerpetualApiAccount futuresAccount)
+    public BybitFuturesAccountDataProvider(IBybitRestClientUsdPerpetualApiAccount futuresAccount)
     {
         this.FuturesAccount = futuresAccount;
     }

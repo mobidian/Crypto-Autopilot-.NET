@@ -18,7 +18,7 @@ public abstract class ByBitUsdPerpetualOrderMonitorTestsBase
 {
     protected readonly ByBitUsdPerpetualOrderMonitor SUT;
 
-    protected readonly IBybitSocketClientUsdPerpetualStreams UsdPerpetualStreams = Substitute.For<IBybitSocketClientUsdPerpetualStreams>();
+    protected readonly IBybitSocketClientUsdPerpetualApi UsdPerpetualStreams = Substitute.For<IBybitSocketClientUsdPerpetualApi>();
     protected readonly IUpdateSubscriptionProxy UsdPerpetualUpdatesSubscription = Substitute.For<IUpdateSubscriptionProxy>();
     protected readonly ILoggerAdapter<ByBitUsdPerpetualOrderMonitor> Logger = Substitute.For<ILoggerAdapter<ByBitUsdPerpetualOrderMonitor>>();
     protected readonly IDictionary<Guid, OrderStatus?> Orders = new Dictionary<Guid, OrderStatus?>();

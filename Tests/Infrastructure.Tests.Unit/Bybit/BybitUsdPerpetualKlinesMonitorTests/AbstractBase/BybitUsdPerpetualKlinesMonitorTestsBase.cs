@@ -18,7 +18,7 @@ public abstract class BybitUsdPerpetualKlinesMonitorTestsBase : FakersClass
 {
     protected readonly BybitUsdPerpetualKlinesMonitor SUT;
 
-    protected readonly IBybitSocketClientUsdPerpetualStreams FuturesStreams = Substitute.For<IBybitSocketClientUsdPerpetualStreams>();
+    protected readonly IBybitSocketClientUsdPerpetualApi FuturesStreams = Substitute.For<IBybitSocketClientUsdPerpetualApi>();
     protected readonly IDateTimeProvider DateTimeProvider = Substitute.For<IDateTimeProvider>();
     protected readonly Func<IUpdateSubscriptionProxy> SubscriptionFactory = Substitute.For<Func<IUpdateSubscriptionProxy>>();
     protected readonly IDictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?> DataDictionary = new Dictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?>();

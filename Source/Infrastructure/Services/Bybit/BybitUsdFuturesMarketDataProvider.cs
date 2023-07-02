@@ -11,9 +11,9 @@ namespace Infrastructure.Services.Bybit;
 public class BybitUsdFuturesMarketDataProvider : IBybitUsdFuturesMarketDataProvider
 {
     private readonly IDateTimeProvider DateTime;
-    private readonly IBybitClientUsdPerpetualApiExchangeData FuturesExchangeData;
+    private readonly IBybitRestClientUsdPerpetualApiExchangeData FuturesExchangeData;
 
-    public BybitUsdFuturesMarketDataProvider(IDateTimeProvider dateTime, IBybitClientUsdPerpetualApiExchangeData futuresExchangeData)
+    public BybitUsdFuturesMarketDataProvider(IDateTimeProvider dateTime, IBybitRestClientUsdPerpetualApiExchangeData futuresExchangeData)
     {
         this.DateTime = dateTime ?? throw new ArgumentNullException(nameof(dateTime));
         this.FuturesExchangeData = futuresExchangeData ?? throw new ArgumentNullException(nameof(futuresExchangeData));

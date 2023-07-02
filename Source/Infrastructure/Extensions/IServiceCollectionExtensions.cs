@@ -7,13 +7,12 @@ using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
 
+using Bybit.Net;
 using Bybit.Net.Clients;
 using Bybit.Net.Interfaces.Clients;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
-using Bybit.Net.Objects;
 
 using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Objects;
 
 using Domain;
 using Domain.PipelineBehaviors;
@@ -75,44 +74,25 @@ public static class IServiceCollectionExtensions
     }
     private static void AddBybitServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<ApiCredentials>(_ => new ApiCredentials(configuration["Bybit:ApiCredentials:Key"]!, configuration["Bybit:ApiCredentials:Secret"]!));
+        services.AddSingleton<BybitEnvironment>(BybitEnvironment.Live);
+        services.AddSingleton<ApiCredentials>(new ApiCredentials(configuration["Bybit:ApiCredentials:Key"]!, configuration["Bybit:ApiCredentials:Secret"]!));
         
-        // bybit client
-        services.AddSingleton<IBybitClient, BybitClient>(services =>
+        services.AddSingleton<IBybitRestClient, BybitRestClient>(services => new BybitRestClient(options =>
         {
-            var options = new BybitClientOptions
-            {
-                UsdPerpetualApiOptions = new RestApiClientOptions
-                {
-                    BaseAddress = configuration["Bybit:UsdPerpetualApiOptions:BaseAddress"]!,
-                },
-            };
-            
-            var client = new BybitClient(options);
-            client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
-            return client;
-        });
-        services.AddSingleton<IBybitClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitClient>().UsdPerpetualApi);
-        services.AddSingleton<IBybitClientUsdPerpetualApiTrading>(services => services.GetRequiredService<IBybitClientUsdPerpetualApi>().Trading);
-        services.AddSingleton<IBybitClientUsdPerpetualApiExchangeData>(services => services.GetRequiredService<IBybitClientUsdPerpetualApi>().ExchangeData);
-        services.AddSingleton<IBybitClientUsdPerpetualApiAccount>(services => services.GetRequiredService<IBybitClientUsdPerpetualApi>().Account);
-
-        // bybit socket client
-        services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services =>
+            options.Environment = services.GetRequiredService<BybitEnvironment>();
+            options.ApiCredentials = services.GetRequiredService<ApiCredentials>();
+        }));
+        services.AddSingleton<IBybitRestClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitRestClient>().UsdPerpetualApi);
+        services.AddSingleton<IBybitRestClientUsdPerpetualApiTrading>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().Trading);
+        services.AddSingleton<IBybitRestClientUsdPerpetualApiExchangeData>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().ExchangeData);
+        services.AddSingleton<IBybitRestClientUsdPerpetualApiAccount>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().Account);
+        
+        services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services => new BybitSocketClient(options =>
         {
-            var options = new BybitSocketClientOptions
-            {
-                UsdPerpetualStreamsOptions = new BybitSocketApiClientOptions
-                {
-                    BaseAddress = configuration["Bybit:UsdPerpetualStreamsOptions:BaseAddress"]!,
-                },
-            };
-
-            var client = new BybitSocketClient(options);
-            client.SetApiCredentials(services.GetRequiredService<ApiCredentials>());
-            return client;
-        });
-        services.AddSingleton<IBybitSocketClientUsdPerpetualStreams>(services => services.GetRequiredService<IBybitSocketClient>().UsdPerpetualStreams);
+            options.Environment = services.GetRequiredService<BybitEnvironment>();
+            options.ApiCredentials = services.GetRequiredService<ApiCredentials>();
+        }));
+        services.AddSingleton<IBybitSocketClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitSocketClient>().UsdPerpetualApi);
 
         services.AddSingleton<IBybitFuturesAccountDataProvider, BybitFuturesAccountDataProvider>();
         services.AddSingleton<IBybitUsdFuturesMarketDataProvider, BybitUsdFuturesMarketDataProvider>();

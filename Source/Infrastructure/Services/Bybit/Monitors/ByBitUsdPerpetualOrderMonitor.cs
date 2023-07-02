@@ -14,12 +14,12 @@ namespace Infrastructure.Services.Bybit.Monitors;
 
 public class ByBitUsdPerpetualOrderMonitor : IByBitUsdPerpetualOrderMonitor
 {
-    private readonly IBybitSocketClientUsdPerpetualStreams UsdPerpetualStreams;
+    private readonly IBybitSocketClientUsdPerpetualApi UsdPerpetualStreams;
     private readonly IUpdateSubscriptionProxy UsdPerpetualUpdatesSubscription;
     private readonly ILoggerAdapter<ByBitUsdPerpetualOrderMonitor> Logger;
 
-    public ByBitUsdPerpetualOrderMonitor(IBybitSocketClientUsdPerpetualStreams usdPerpetualStreams, IUpdateSubscriptionProxy usdPerpetualUpdatesSubscription, ILoggerAdapter<ByBitUsdPerpetualOrderMonitor> logger) : this(usdPerpetualStreams, usdPerpetualUpdatesSubscription, logger, new Dictionary<Guid, OrderStatus?>()) { }
-    public ByBitUsdPerpetualOrderMonitor(IBybitSocketClientUsdPerpetualStreams usdPerpetualStreams, IUpdateSubscriptionProxy usdPerpetualUpdatesSubscription, ILoggerAdapter<ByBitUsdPerpetualOrderMonitor> logger, IDictionary<Guid, OrderStatus?> orders)
+    public ByBitUsdPerpetualOrderMonitor(IBybitSocketClientUsdPerpetualApi usdPerpetualStreams, IUpdateSubscriptionProxy usdPerpetualUpdatesSubscription, ILoggerAdapter<ByBitUsdPerpetualOrderMonitor> logger) : this(usdPerpetualStreams, usdPerpetualUpdatesSubscription, logger, new Dictionary<Guid, OrderStatus?>()) { }
+    public ByBitUsdPerpetualOrderMonitor(IBybitSocketClientUsdPerpetualApi usdPerpetualStreams, IUpdateSubscriptionProxy usdPerpetualUpdatesSubscription, ILoggerAdapter<ByBitUsdPerpetualOrderMonitor> logger, IDictionary<Guid, OrderStatus?> orders)
     {
         this.UsdPerpetualStreams = usdPerpetualStreams ?? throw new ArgumentNullException(nameof(usdPerpetualStreams));
         this.UsdPerpetualUpdatesSubscription = usdPerpetualUpdatesSubscription ?? throw new ArgumentNullException(nameof(usdPerpetualUpdatesSubscription));

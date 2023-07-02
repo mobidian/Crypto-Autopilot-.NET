@@ -13,11 +13,11 @@ namespace Infrastructure.Services.Bybit.Monitors;
 
 public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
 {
-    private readonly IBybitSocketClientUsdPerpetualStreams FuturesStreams;
+    private readonly IBybitSocketClientUsdPerpetualApi FuturesStreams;
     private readonly IDateTimeProvider DateTimeProvider;
     private readonly Func<IUpdateSubscriptionProxy> SubscriptionFactory;
 
-    public BybitUsdPerpetualKlinesMonitor(IBybitSocketClientUsdPerpetualStreams futuresStreams, IDateTimeProvider dateTimeProvider, Func<IUpdateSubscriptionProxy> subscriptionFactory)
+    public BybitUsdPerpetualKlinesMonitor(IBybitSocketClientUsdPerpetualApi futuresStreams, IDateTimeProvider dateTimeProvider, Func<IUpdateSubscriptionProxy> subscriptionFactory)
     {
         this.FuturesStreams = futuresStreams ?? throw new ArgumentNullException(nameof(futuresStreams));
         this.DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -26,7 +26,7 @@ public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
         this.DataDictionary = new Dictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?>();
         this.SubscriptionsDictionary = new Dictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy>();
     }
-    internal BybitUsdPerpetualKlinesMonitor(IBybitSocketClientUsdPerpetualStreams futuresStreams, IDateTimeProvider dateTimeProvider, Func<IUpdateSubscriptionProxy> subscriptionFactory, IDictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?> dataDictionary, IDictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy> subscriptionsDictionary)
+    internal BybitUsdPerpetualKlinesMonitor(IBybitSocketClientUsdPerpetualApi futuresStreams, IDateTimeProvider dateTimeProvider, Func<IUpdateSubscriptionProxy> subscriptionFactory, IDictionary<(string currencyPair, KlineInterval timeframe), BybitKlineUpdate?> dataDictionary, IDictionary<(string currencyPair, KlineInterval timeframe), IUpdateSubscriptionProxy> subscriptionsDictionary)
     {
         this.FuturesStreams = futuresStreams ?? throw new ArgumentNullException(nameof(futuresStreams));
         this.DateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
