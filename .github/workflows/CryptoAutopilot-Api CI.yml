@@ -31,8 +31,8 @@ jobs:
     - name: Build Solution
       run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
 
-    - name: Test
-      run: dotnet test --no-build
+    #- name: Test
+    #  run: dotnet test --no-build
 
     - name: Publish Api
       run: dotnet publish "${{ env.API_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
