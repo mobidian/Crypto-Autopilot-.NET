@@ -2,6 +2,11 @@
 
 using Application.Strategies;
 
+using CryptoAutopilot.Api.Services;
+using CryptoAutopilot.Api.Services.Interfaces;
+
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
 
 /// <summary>
@@ -12,7 +17,7 @@ internal static class StrategyEndpointExtensions
     private static IEnumerable<Type> GetStrategyEndpointTypes(Assembly assembly) => assembly.DefinedTypes.Where(typeInfo => !typeInfo.IsAbstract && !typeInfo.IsInterface && typeInfo.GetInterface(typeof(IStrategyEndpoints<>).Name) is not null);
 
     /// <summary>
-    /// Scans everything in the specified type's assembly and finds every class that implements the <see cref="IStrategyEndpoints{}"/> interface and dynamically calls <see cref="IStrategyEndpoints{}.AddStrategy(IServiceCollection, IConfiguration)"/>
+    /// Scans everything in the specified type's assembly and finds every class that implements the <see cref="IStrategyEndpoints{}"/> interface and dynamically calls <see cref="IStrategyEndpoints{}.AddStrategy(IServiceCollection, IConfiguration)"/> and registers <see cref="IStrategiesTracker"/> as a singleton if it hasn't been registered already
     /// </summary>
     /// <typeparam name="TMarker">The type marker for the assembly to be scanned</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the trading strategies to</param>
@@ -22,6 +27,8 @@ internal static class StrategyEndpointExtensions
         var endpointTypes = GetStrategyEndpointTypes(typeof(TMarker).Assembly);
         foreach (var endpointType in endpointTypes)
             endpointType.GetMethod(nameof(IStrategyEndpoints<IStrategyEngine>.AddStrategy))!.Invoke(null, new object[] { services, configuration });
+
+        services.TryAddSingleton<IStrategiesTracker, StrategiesTracker>();
     }
 
     /// <summary>
