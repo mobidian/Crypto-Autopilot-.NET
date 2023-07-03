@@ -25,14 +25,20 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef
+
     - name: Restore Solution
       run: dotnet restore
 
     - name: Build Solution
       run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
-
+      
     #- name: Test
     #  run: dotnet test --no-build
+
+    - name: Apply EF Core migrations
+      run: dotnet ef database update --project ${{ env.API_DIRECTORY }}
 
     - name: Publish Api
       run: dotnet publish "${{ env.API_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
