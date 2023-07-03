@@ -10,6 +10,8 @@ env:
   API_DIRECTORY: Source\Presentation\CryptoAutopilot.Api
   AZURE_WEBAPP_NAME: CryptoAutopilot-Api
   AZURE_WEBAPP_PACKAGE_PATH: Source\Presentation\CryptoAutopilot.Api\publish
+  INFRASTRUCTURE_UNIT_TESTS_DIRECTORY: Tests\Infrastructure.Tests.Unit
+  STRATEGIES_UNIT_TESTS_DIRECTORY: Tests\Strategies.Tests.Unit
   CONFIGURATION: Release
   DOTNET_VERSION: 7.0.x
 
@@ -31,8 +33,11 @@ jobs:
     - name: Build Solution
       run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
       
-    #- name: Test
-    #  run: dotnet test --no-build
+    - name: Unit Tests
+      run: |
+        dotnet test "${{ env.INFRASTRUCTURE_UNIT_TESTS_DIRECTORY }}" --no-build
+        dotnet test "${{ env.STRATEGIES_UNIT_TESTS_DIRECTORY }}" --no-build
+
 
     - name: Publish Api
       run: dotnet publish "${{ env.API_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
