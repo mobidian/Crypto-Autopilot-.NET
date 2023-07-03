@@ -1,6 +1,7 @@
 using CryptoAutopilot.Api.Endpoints;
 using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.HealthChecks;
 
 using Infrastructure.Extensions;
 
@@ -17,6 +18,8 @@ builder.Services.AddServices(builder.Configuration);
 builder.Services.AddServices<Program>(builder.Configuration);
 builder.Services.AddStrategies<Program>(builder.Configuration);
 
+builder.Services.AddHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +30,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapHealthChecks();
 
 app.MapEndpoints();
 app.MapEndpoints<Program>();
