@@ -34,7 +34,7 @@ public class FuturesOperationsService : IFuturesOperationsService
     public async Task UpdateFuturesPositionAndAddOrdersAsync(FuturesPosition updatedPosition, IEnumerable<FuturesOrder> newOrders)
     {
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-        await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
+        await this.UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
     }
     public async Task UpdateFuturesPositionsAndAddTheirOrdersAsync(Dictionary<FuturesPosition, IEnumerable<FuturesOrder>> positionsOrders)
     {
@@ -44,7 +44,7 @@ public class FuturesOperationsService : IFuturesOperationsService
         {
             var updatedPosition = positionOrder.Key;
             var newOrders = positionOrder.Value;
-            await UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
+            await this.UpdatePositionAndInsertOrdersAsync(updatedPosition, newOrders);
         }
     }
 
