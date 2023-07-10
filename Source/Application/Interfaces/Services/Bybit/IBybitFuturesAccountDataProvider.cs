@@ -7,7 +7,7 @@ namespace Application.Interfaces.Services.Bybit;
 public interface IBybitFuturesAccountDataProvider
 {
     public Task<IEnumerable<ByBitApiKeyInfo>> GetAllApiKeysInfoAsync();
-    public Task<ByBitApiKeyInfo> GetApiKeyInfoAsync(string? publicKey = null);
+    public Task<ByBitApiKeyInfo> GetApiKeyInfoAsync(string publicKey);
 
     public Task<BybitBalance> GetAssetBalanceAsync(string asset);
 

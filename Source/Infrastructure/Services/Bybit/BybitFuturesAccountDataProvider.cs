@@ -24,7 +24,7 @@ public class BybitFuturesAccountDataProvider : IBybitFuturesAccountDataProvider
 
         return callResult.Data;
     }
-    public async Task<ByBitApiKeyInfo> GetApiKeyInfoAsync(string? publicKey = null)
+    public async Task<ByBitApiKeyInfo> GetApiKeyInfoAsync(string publicKey)
     {
         var apiKeys = await this.GetAllApiKeysInfoAsync();
         return apiKeys.Single(x => x.Apikey == publicKey);
