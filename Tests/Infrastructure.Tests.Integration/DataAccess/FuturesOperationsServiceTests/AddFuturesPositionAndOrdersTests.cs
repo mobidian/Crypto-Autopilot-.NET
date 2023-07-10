@@ -6,6 +6,7 @@ using Domain.Models.Futures;
 
 using FluentAssertions;
 
+using Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
@@ -21,13 +22,10 @@ public class AddFuturesPositionAndOrdersTests : FuturesOperationsServiceTestsBas
     }
 
 
-    [Fact]
-    public async Task AddFuturesPositionAndOrders_ShouldAddFuturesPositionAndOrders_WhenAllFuturesOrdersRequirePosition()
+    [Theory]
+    [ClassData(typeof(ValidPositionAndOrdersGenerator))]
+    public async Task AddFuturesPositionAndOrders_ShouldAddFuturesPositionAndOrders_WhenAllFuturesOrdersRequirePosition(FuturesPosition position, List<FuturesOrder> orders)
     {
-        // Arrange
-        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
-
         // Act
         await this.SUT.AddFuturesPositionAndOrdersAsync(position, orders);
 
