@@ -8,11 +8,11 @@ using FluentAssertions;
 
 using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
-using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests.AbstractBase;
+using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
 
 using Xunit;
 
-namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests;
 
 public class AddFuturesPositionAndOrdersTests : FuturesOperationsServiceTestsBase
 {
@@ -74,12 +74,12 @@ public class AddFuturesPositionAndOrdersTests : FuturesOperationsServiceTestsBas
             var newOrders = this.FuturesOrdersGenerator.Generate(3, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Sell.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
 
             await this.SUT.AddFuturesPositionAndOrdersAsync(position, orders);
-            
+
             positionsOrders.Add(position, orders);
             updatedPositionsOrders.Add(updatedPosition, newOrders);
         }
 
-        
+
         // Act
         await this.SUT.UpdateFuturesPositionsAndAddTheirOrdersAsync(updatedPositionsOrders);
 

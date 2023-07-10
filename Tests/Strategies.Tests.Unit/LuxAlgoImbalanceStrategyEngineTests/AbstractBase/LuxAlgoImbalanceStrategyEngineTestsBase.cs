@@ -12,7 +12,7 @@ using NSubstitute;
 
 using Strategies.LuxAlgoImbalance;
 
-namespace Infrastructure.Tests.Unit.LuxAlgoImbalanceStrategyEngineTests.AbstractBase;
+namespace Strategies.Tests.Unit.LuxAlgoImbalanceStrategyEngineTests.AbstractBase;
 
 public abstract class LuxAlgoImbalanceStrategyEngineTestsBase
 {
@@ -24,7 +24,7 @@ public abstract class LuxAlgoImbalanceStrategyEngineTestsBase
     protected IBybitFuturesAccountDataProvider FuturesAccount;
     protected IBybitUsdFuturesTradingService TradingService;
     protected IFairValueGapFinder FvgFinder;
-    
+
     protected Faker<Candlestick> CandlesticksFaker = new Faker<Candlestick>()
         .RuleFor(x => x.CurrencyPair, f => new CurrencyPair("BTC", "USDT"))
         .RuleFor(x => x.Date, f => f.Date.Past())
@@ -33,7 +33,7 @@ public abstract class LuxAlgoImbalanceStrategyEngineTestsBase
         .RuleFor(x => x.Close, f => f.Random.Decimal(500, 1000))
         .RuleFor(x => x.Low, f => f.Random.Decimal(1500, 2500))
         .RuleFor(x => x.Volume, f => f.Random.Decimal(1000000, 2000000));
-    
+
     protected Faker<BybitKline> BybitKlinesFaker = new Faker<BybitKline>()
         .RuleFor(x => x.Symbol, f => "BTCUSDT")
         .RuleFor(x => x.Interval, KlineInterval.OneHour)

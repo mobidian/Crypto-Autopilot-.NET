@@ -5,7 +5,7 @@ using Infrastructure.DataAccess.Services;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
 
-namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsUnitOfWorkTests.AbstractBase;
+namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
 
 public abstract class FuturesOperationsServiceTestsBase : FuturesRepositoriesTestsBase
 {
@@ -16,7 +16,7 @@ public abstract class FuturesOperationsServiceTestsBase : FuturesRepositoriesTes
         var ctx = this.DbContextFactory.Create();
         var ordersRepository = new FuturesOrdersRepository(ctx);
         var positionsRepository = new FuturesPositionsRepository(ctx);
-        
+
         this.SUT = new FuturesOperationsService(ctx, positionsRepository, ordersRepository);
     }
 }
