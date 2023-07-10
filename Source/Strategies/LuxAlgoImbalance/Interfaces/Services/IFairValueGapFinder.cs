@@ -2,7 +2,7 @@
 
 using Strategies.LuxAlgoImbalance.Models;
 
-namespace Strategies.LuxAlgoImbalance;
+namespace Strategies.LuxAlgoImbalance.Interfaces.Services;
 
 public interface IFairValueGapFinder
 {

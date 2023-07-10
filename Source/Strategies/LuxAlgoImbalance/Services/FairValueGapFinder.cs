@@ -1,9 +1,10 @@
 ﻿using Domain.Models.Common;
 
 using Strategies.LuxAlgoImbalance.Enums;
+using Strategies.LuxAlgoImbalance.Interfaces.Services;
 using Strategies.LuxAlgoImbalance.Models;
 
-namespace Strategies.LuxAlgoImbalance;
+namespace Strategies.LuxAlgoImbalance.Services;
 
 public class FairValueGapFinder : IFairValueGapFinder
 {

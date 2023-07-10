@@ -11,6 +11,7 @@ using Domain.Models.Common;
 using NSubstitute;
 
 using Strategies.LuxAlgoImbalance;
+using Strategies.LuxAlgoImbalance.Interfaces.Services;
 
 namespace Strategies.Tests.Unit.LuxAlgoImbalanceStrategyEngineTests.AbstractBase;
 
