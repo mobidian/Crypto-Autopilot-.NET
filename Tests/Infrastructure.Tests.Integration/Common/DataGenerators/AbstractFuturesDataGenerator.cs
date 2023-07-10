@@ -5,7 +5,7 @@ using Bybit.Net.Enums;
 using Infrastructure.Tests.Integration.Common.Fakers;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 
-namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+namespace Infrastructure.Tests.Integration.Common.DataGenerators;
 
 public abstract class AbstractFuturesDataGenerator : FuturesDataFakersClass, IEnumerable<object[]>
 {

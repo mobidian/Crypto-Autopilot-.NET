@@ -1,13 +1,10 @@
-﻿using Application.Data.Mapping;
-
-using Bogus;
+﻿using Bogus;
 
 using Bybit.Net.Enums;
 
 using Domain.Models.Common;
 using Domain.Models.Futures;
 
-using Infrastructure.Internal.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 
 namespace Infrastructure.Tests.Integration.Common.Fakers;

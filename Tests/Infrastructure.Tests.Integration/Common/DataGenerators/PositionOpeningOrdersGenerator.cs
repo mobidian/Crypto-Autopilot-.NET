@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+﻿namespace Infrastructure.Tests.Integration.Common.DataGenerators;
 
 public class PositionOpeningOrdersGenerator : AbstractFuturesDataGenerator
 {
@@ -12,7 +12,7 @@ public class PositionOpeningOrdersGenerator : AbstractFuturesDataGenerator
                 })).ToList();
 
     public static IEnumerable<object[]> GetRuleSetsAsObjectArrays() => ruleSets.Select(ruleSet => new[] { ruleSet });
-    
+
 
     public override IEnumerator<object[]> GetEnumerator()
     {

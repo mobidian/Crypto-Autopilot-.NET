@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+﻿namespace Infrastructure.Tests.Integration.Common.DataGenerators;
 
 public class LimitOrdersGenerator : AbstractFuturesDataGenerator
 {
@@ -6,7 +6,7 @@ public class LimitOrdersGenerator : AbstractFuturesDataGenerator
         positionSideRules.SelectMany(
             positionSideRule => orderSideRules.Select(
                 orderSideRule => $"{limitOrderNotFilledRule}, {orderSideRule}, {positionSideRule}")).ToList();
-    
+
     public static IEnumerable<object[]> GetRuleSetsAsObjectArrays() => ruleSets.Select(ruleSet => new[] { ruleSet });
 
 

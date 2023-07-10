@@ -6,7 +6,7 @@ using Domain.Models.Futures;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+using Infrastructure.Tests.Integration.Common.DataGenerators;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;

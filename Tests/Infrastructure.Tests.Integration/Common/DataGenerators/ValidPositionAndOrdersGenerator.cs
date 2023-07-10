@@ -2,7 +2,7 @@
 
 using Infrastructure.Tests.Integration.Common.Fakers;
 
-namespace Infrastructure.Tests.Integration.BusinessLogic.Commands.Common;
+namespace Infrastructure.Tests.Integration.Common.DataGenerators;
 
 /// <summary>
 /// <para>
@@ -25,10 +25,10 @@ public class ValidPositionAndOrdersGenerator : AbstractFuturesDataGenerator
             {
                 var position1 = this.FuturesPositionsGenerator.Generate($"default, {positionSideRule}");
                 var orders1 = this.FuturesOrdersGenerator.Generate(3, $"default, {marketOrderRule}, {orderSideRule}, {positionSideRule}");
-                
+
                 var position2 = this.FuturesPositionsGenerator.Generate($"default, {positionSideRule}");
                 var orders2 = this.FuturesOrdersGenerator.Generate(3, $"default, {limitFilledRule}, {orderSideRule}, {positionSideRule}");
-                
+
                 yield return new object[] { position1, orders1 };
                 yield return new object[] { position2, orders2 };
             }
