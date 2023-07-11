@@ -11,6 +11,7 @@ public static class HealthChecksExtensions
     public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHealthChecks()
+            .AddCheck<BybitAuthorizationCheck>("Bybit Authorization Check")
             .AddSqlServer(configuration.GetConnectionString("TradingHistoryDB")!)
             .AddAzureKeyVault(configuration);
     }
