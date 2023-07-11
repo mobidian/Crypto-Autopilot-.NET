@@ -76,7 +76,8 @@ public static class IServiceCollectionExtensions
     {
         services.AddSingleton<BybitEnvironment>(BybitEnvironment.Live);
         services.AddOptions<HmacApiCredentialsOptions>().Bind(configuration.GetRequiredSection(HmacApiCredentialsOptions.SectionName));
-        
+        services.AddOptions<ApiKeyPermissionsOptions>().Bind(configuration.GetRequiredSection(ApiKeyPermissionsOptions.SectionName));
+
         services.AddSingleton<IBybitRestClient, BybitRestClient>(services => new BybitRestClient(options =>
         {
             options.Environment = services.GetRequiredService<BybitEnvironment>();
