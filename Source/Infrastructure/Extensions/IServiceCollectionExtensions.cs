@@ -12,8 +12,6 @@ using Bybit.Net.Clients;
 using Bybit.Net.Interfaces.Clients;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
 
-using CryptoExchange.Net.Authentication;
-
 using Domain;
 using Domain.PipelineBehaviors;
 
@@ -24,6 +22,7 @@ using Infrastructure.DataAccess.Repositories;
 using Infrastructure.DataAccess.Services;
 using Infrastructure.Factories;
 using Infrastructure.Logging;
+using Infrastructure.Options;
 using Infrastructure.Proxies;
 using Infrastructure.Services.Bybit;
 using Infrastructure.Services.Bybit.Monitors;
@@ -34,6 +33,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Extensions;
 
@@ -75,12 +75,12 @@ public static class IServiceCollectionExtensions
     private static void AddBybitServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<BybitEnvironment>(BybitEnvironment.Live);
-        services.AddSingleton<ApiCredentials>(new ApiCredentials(configuration["Bybit:ApiCredentials:Key"]!, configuration["Bybit:ApiCredentials:Secret"]!));
+        services.AddOptions<HmacApiCredentialsOptions>().Bind(configuration.GetRequiredSection(HmacApiCredentialsOptions.SectionName));
         
         services.AddSingleton<IBybitRestClient, BybitRestClient>(services => new BybitRestClient(options =>
         {
             options.Environment = services.GetRequiredService<BybitEnvironment>();
-            options.ApiCredentials = services.GetRequiredService<ApiCredentials>();
+            options.ApiCredentials = services.GetRequiredService<IOptions<HmacApiCredentialsOptions>>().Value.GetApiCredentials();
         }));
         services.AddSingleton<IBybitRestClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitRestClient>().UsdPerpetualApi);
         services.AddSingleton<IBybitRestClientUsdPerpetualApiTrading>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().Trading);
@@ -90,7 +90,7 @@ public static class IServiceCollectionExtensions
         services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services => new BybitSocketClient(options =>
         {
             options.Environment = services.GetRequiredService<BybitEnvironment>();
-            options.ApiCredentials = services.GetRequiredService<ApiCredentials>();
+            options.ApiCredentials = services.GetRequiredService<IOptions<HmacApiCredentialsOptions>>().Value.GetApiCredentials();
         }));
         services.AddSingleton<IBybitSocketClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitSocketClient>().UsdPerpetualApi);
 
