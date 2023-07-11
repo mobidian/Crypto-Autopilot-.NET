@@ -18,8 +18,6 @@ using CryptoAutopilot.Api;
 using CryptoAutopilot.Api.Services;
 using CryptoAutopilot.Api.Services.Interfaces;
 
-using CryptoExchange.Net.Authentication;
-
 using Domain.PipelineBehaviors;
 
 using Infrastructure.DataAccess.Database;
@@ -81,7 +79,6 @@ public class DependencyRegistrationTests
     private void AddBybitServices()
     {
         this.RequiredDescriptors.Add((typeof(BybitEnvironment), typeof(BybitEnvironment), ServiceLifetime.Singleton));
-        this.RequiredDescriptors.Add((typeof(ApiCredentials), typeof(ApiCredentials), ServiceLifetime.Singleton));
 
         this.RequiredDescriptors.Add((typeof(IBybitRestClient), typeof(BybitRestClient), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApi), typeof(BybitRestClientUsdPerpetualApi), ServiceLifetime.Singleton));
