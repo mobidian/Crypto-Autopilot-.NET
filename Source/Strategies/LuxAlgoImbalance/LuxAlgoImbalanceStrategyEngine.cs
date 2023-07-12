@@ -1,11 +1,14 @@
 ﻿using Application.Extensions.Bybit;
 using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
+using Application.Interfaces.Services.General;
 using Application.Strategies;
 
 using Bybit.Net.Enums;
 
 using Domain.Models.Common;
+
+using MediatR;
 
 using Strategies.LuxAlgoImbalance.Enums;
 using Strategies.LuxAlgoImbalance.Interfaces.Services;
@@ -18,12 +21,12 @@ public class LuxAlgoImbalanceStrategyEngine : StrategyEngine
     private readonly CurrencyPair CurrencyPair;
     private readonly KlineInterval Timeframe;
 
-    public LuxAlgoImbalanceStrategyEngine(CurrencyPair currencyPair, KlineInterval timeframe, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdPerpetualKlinesMonitor klinesMonitor, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesTradingService tradingService) : this(currencyPair, timeframe, marketDataProvider, klinesMonitor, futuresAccount, tradingService, new FairValueGapFinder()) { }
-    internal LuxAlgoImbalanceStrategyEngine(CurrencyPair currencyPair, KlineInterval timeframe, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdPerpetualKlinesMonitor klinesMonitor, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesTradingService tradingService, IFairValueGapFinder fvgFinder) : base(marketDataProvider, klinesMonitor, futuresAccount, tradingService)
+    public LuxAlgoImbalanceStrategyEngine(CurrencyPair currencyPair, KlineInterval timeframe, IDateTimeProvider dateTimeProvider, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdPerpetualKlinesMonitor klinesMonitor, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesTradingService tradingService, IMediator mediator) : this(currencyPair, timeframe, dateTimeProvider, marketDataProvider, klinesMonitor, futuresAccount, tradingService, mediator, new FairValueGapFinder()) { }
+    internal LuxAlgoImbalanceStrategyEngine(CurrencyPair currencyPair, KlineInterval timeframe, IDateTimeProvider dateTimeProvider, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdPerpetualKlinesMonitor klinesMonitor, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesTradingService tradingService, IMediator mediator, IFairValueGapFinder fvgFinder) : base(dateTimeProvider, marketDataProvider, klinesMonitor, futuresAccount, tradingService, mediator)
     {
-        this.CurrencyPair = currencyPair;
+        this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Timeframe = timeframe;
-        this.FvgFinder = fvgFinder;
+        this.FvgFinder = fvgFinder ?? throw new ArgumentNullException(nameof(fvgFinder));
     }
 
 
