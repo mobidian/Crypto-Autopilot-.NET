@@ -11,7 +11,7 @@ public interface IBybitUsdFuturesTradingApiClient
 
     public Task<BybitOrderId> ModifyOrderAsync(string symbol, string? orderId = null, string? clientOrderId = null, decimal? newPrice = null, decimal? newQuantity = null, decimal? takeProfitPrice = null, decimal? stopLossPrice = null, TriggerType? takeProfitTriggerType = null, TriggerType? stopLossTriggerType = null, long? receiveWindow = null);
 
-    public Task SetTradingStopAsync(string symbol, PositionSide side, decimal? takeProfitPrice = null, decimal? stopLossPrice = null, decimal? trailingStopPrice = null, TriggerType? takeProfitTriggerType = null, TriggerType? stopLossTriggerType = null, decimal? takeProfitQuantity = null, decimal? stopLossQuantity = null, PositionMode? positionMode = null, long? receiveWindow = null);
+    public Task SetTradingStopAsync(string symbol, PositionSide side, decimal? takeProfitPrice = null, decimal? stopLossPrice = null, decimal? trailingStopPriceDistance = null, TriggerType? takeProfitTriggerType = null, TriggerType? stopLossTriggerType = null, decimal? takeProfitQuantity = null, decimal? stopLossQuantity = null, PositionMode? positionMode = null, long? receiveWindow = null);
 
     public Task<BybitOrderId> CancelOrderAsync(string symbol, string? orderId = null, string? clientOrderId = null, long? receiveWindow = null);
     public Task<IEnumerable<string>> CancelAllOrdersAsync(string symbol, long? receiveWindow = null);

@@ -32,9 +32,9 @@ public class BybitUsdFuturesTradingApiClient : IBybitUsdFuturesTradingApiClient
         return callResult.Data;
     }
 
-    public async Task SetTradingStopAsync(string symbol, PositionSide side, decimal? takeProfitPrice = null, decimal? stopLossPrice = null, decimal? trailingStopPrice = null, TriggerType? takeProfitTriggerType = null, TriggerType? stopLossTriggerType = null, decimal? takeProfitQuantity = null, decimal? stopLossQuantity = null, PositionMode? positionMode = null, long? receiveWindow = null)
+    public async Task SetTradingStopAsync(string symbol, PositionSide side, decimal? takeProfitPrice = null, decimal? stopLossPrice = null, decimal? trailingStopPriceDistance = null, TriggerType? takeProfitTriggerType = null, TriggerType? stopLossTriggerType = null, decimal? takeProfitQuantity = null, decimal? stopLossQuantity = null, PositionMode? positionMode = null, long? receiveWindow = null)
     {
-        var callResult = await this.FuturesClient.SetTradingStopAsync(symbol, side, takeProfitPrice, stopLossPrice, trailingStopPrice, takeProfitTriggerType, stopLossTriggerType, takeProfitQuantity, stopLossQuantity, positionMode, receiveWindow);
+        var callResult = await this.FuturesClient.SetTradingStopAsync(symbol, side, takeProfitPrice, stopLossPrice, trailingStopPriceDistance, takeProfitTriggerType, stopLossTriggerType, takeProfitQuantity, stopLossQuantity, positionMode, receiveWindow);
         callResult.ThrowIfHasError();
     }
 
