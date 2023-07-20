@@ -2,8 +2,6 @@
 
 using Bogus;
 
-using Bybit.Net;
-
 using Domain.Models.Common;
 
 using Infrastructure.Extensions;
@@ -12,7 +10,6 @@ using Infrastructure.Tests.Integration.Bybit.Abstract;
 using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Xunit;
 
@@ -36,16 +33,8 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
     
     public BybitUsdFuturesTradingServiceTestsBase(DatabaseFixture databaseFixture) : base()
     {
-        //this.Services.AddServices(this.Configuration);
-        //this.Services.RemoveAll<DbContextOptions>();
-        //this.Services.RemoveAll<DbContextOptions<FuturesTradingDbContext>>();
-        //this.Services.RemoveAll<FuturesTradingDbContext>();
-        //this.Services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(databaseFixture.ConnectionString));
-
         this.Configuration["ConnectionStrings:TradingHistoryDB"] = databaseFixture.ConnectionString;
         this.Services.AddServices(this.Configuration);
-        this.Services.RemoveAll<BybitEnvironment>();
-        this.Services.AddSingleton<BybitEnvironment>(BybitEnvironment.Testnet);
         var serviceProvider = this.Services.BuildServiceProvider();
         
         this.SUT = serviceProvider.GetRequiredService<BybitUsdFuturesTradingServiceFactory>().Create(this.CurrencyPair, this.Leverage, serviceProvider);

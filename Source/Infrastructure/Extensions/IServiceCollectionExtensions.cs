@@ -7,7 +7,6 @@ using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
 
-using Bybit.Net;
 using Bybit.Net.Clients;
 using Bybit.Net.Interfaces.Clients;
 using Bybit.Net.Interfaces.Clients.UsdPerpetualApi;
@@ -74,13 +73,13 @@ public static class IServiceCollectionExtensions
     }
     private static void AddBybitServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<BybitEnvironment>(BybitEnvironment.Live);
+        services.AddOptions<BybitEnvironmentOptions>().Bind(configuration.GetRequiredSection(BybitEnvironmentOptions.SectionName));
         services.AddOptions<HmacApiCredentialsOptions>().Bind(configuration.GetRequiredSection(HmacApiCredentialsOptions.SectionName));
         services.AddOptions<ApiKeyPermissionsOptions>().Bind(configuration.GetRequiredSection(ApiKeyPermissionsOptions.SectionName));
 
         services.AddSingleton<IBybitRestClient, BybitRestClient>(services => new BybitRestClient(options =>
         {
-            options.Environment = services.GetRequiredService<BybitEnvironment>();
+            options.Environment = services.GetRequiredService<IOptions<BybitEnvironmentOptions>>().Value.GetEnvironment();
             options.ApiCredentials = services.GetRequiredService<IOptions<HmacApiCredentialsOptions>>().Value.GetApiCredentials();
         }));
         services.AddSingleton<IBybitRestClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitRestClient>().UsdPerpetualApi);
@@ -90,7 +89,7 @@ public static class IServiceCollectionExtensions
         
         services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services => new BybitSocketClient(options =>
         {
-            options.Environment = services.GetRequiredService<BybitEnvironment>();
+            options.Environment = services.GetRequiredService<IOptions<BybitEnvironmentOptions>>().Value.GetEnvironment();
             options.ApiCredentials = services.GetRequiredService<IOptions<HmacApiCredentialsOptions>>().Value.GetApiCredentials();
         }));
         services.AddSingleton<IBybitSocketClientUsdPerpetualApi>(services => services.GetRequiredService<IBybitSocketClient>().UsdPerpetualApi);

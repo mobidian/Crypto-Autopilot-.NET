@@ -78,8 +78,6 @@ public class DependencyRegistrationTests
     
     private void AddBybitServices()
     {
-        this.RequiredDescriptors.Add((typeof(BybitEnvironment), typeof(BybitEnvironment), ServiceLifetime.Singleton));
-
         this.RequiredDescriptors.Add((typeof(IBybitRestClient), typeof(BybitRestClient), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApi), typeof(BybitRestClientUsdPerpetualApi), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiTrading), typeof(BybitRestClientUsdPerpetualApiTrading), ServiceLifetime.Singleton));
