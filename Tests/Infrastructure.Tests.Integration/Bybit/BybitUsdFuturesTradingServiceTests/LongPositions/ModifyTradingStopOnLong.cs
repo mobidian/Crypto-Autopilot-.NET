@@ -18,6 +18,30 @@ public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
     }
 
 
+    [Fact]
+    public async Task ModifyTradingStop_ShouldHaveNoEffect_WhenNoOptionalParametersAreSpecified()
+    {
+        // Arrange
+        var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
+        var stopLoss = lastPrice - 300;
+        var takeProfit = lastPrice + 300;
+        var tradingStopTriggerType = TriggerType.LastPrice;
+
+        await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
+
+
+        // Act
+        var func = async () => await this.SUT.ModifyTradingStopAsync(PositionSide.Buy);
+
+
+        // Assert
+        (await func.Should().ThrowExactlyAsync<InternalTradingServiceException>()).And.Message.Should().Contain("not modified");
+        this.SUT.Positions.Single(x => x.Side == PositionSide.Buy).Should().BeEquivalentTo(this.SUT.LongPosition);
+        this.SUT.LongPosition.Should().NotBeNull();
+        this.SUT.LongPosition!.StopLoss.Should().Be(stopLoss);
+        this.SUT.LongPosition!.TakeProfit.Should().Be(takeProfit);
+    }
+
     [Theory]
     [InlineData(100, -100)] // Both StopLoss and TakeProfit specified
     [InlineData(100, 0)] // Only StopLoss specified
