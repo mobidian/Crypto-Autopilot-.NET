@@ -36,7 +36,7 @@ public class FairValueGapFinder : IFairValueGapFinder
                 Bottom = second.IsBullish ? third.Low : third.High
             };
         }
-        else
-            return null;
+
+        return null;
     }
 }
