@@ -20,36 +20,43 @@ public class ContractHistoryEndpoints : IEndpoints
     {
         app.MapGet("Data/Market/ContractHistory", async ([FromQuery] string? name, [FromQuery] int? min, IBybitUsdFuturesMarketDataProvider marketDataProvider) =>
         {
-            if (name is null || min is null)
+            try
             {
-                return Results.BadRequest("Contract name and timeframe are required");
+                if (name is null || min is null)
+                {
+                    return Results.BadRequest("Contract name and timeframe are required");
+                }
+
+                if (!Enum.IsDefined(typeof(KlineInterval), min * 60))
+                {
+                    return Results.BadRequest($"There is no defined {min} minutes timeframe");
+                }
+
+
+                var timeframe = (KlineInterval)(min * 60);
+                var klines = await marketDataProvider.GetAllCandlesticksAsync(name, timeframe);
+                var candlesticksResponses = klines.Select(x => new CandlestickResponse
+                {
+                    ContractName = x.Symbol,
+                    Date = x.OpenTime,
+                    Open = x.OpenPrice,
+                    High = x.HighPrice,
+                    Low = x.LowPrice,
+                    Close = x.ClosePrice,
+                    Volume = x.Volume
+                });
+
+                return Results.Ok(new GetContractHistoryResponse
+                {
+                    ContractName = name,
+                    Timeframe = timeframe,
+                    Candlesticks = candlesticksResponses
+                });
             }
-
-            if (!Enum.IsDefined(typeof(KlineInterval), min * 60))
+            catch (Exception exception)
             {
-                return Results.BadRequest($"There is no defined {min} minutes timeframe");
+                return Results.BadRequest(exception.Message);
             }
-
-
-            var timeframe = (KlineInterval)(min * 60);
-            var klines = await marketDataProvider.GetAllCandlesticksAsync(name, timeframe);
-            var candlesticksResponses = klines.Select(x => new CandlestickResponse
-            {
-                ContractName = x.Symbol,
-                Date = x.OpenTime,
-                Open = x.OpenPrice,
-                High = x.HighPrice,
-                Low = x.LowPrice,
-                Close = x.ClosePrice,
-                Volume = x.Volume
-            });
-
-            return Results.Ok(new GetContractHistoryResponse
-            {
-                ContractName = name,
-                Timeframe = timeframe,
-                Candlesticks = candlesticksResponses
-            });
         });
     }
 }

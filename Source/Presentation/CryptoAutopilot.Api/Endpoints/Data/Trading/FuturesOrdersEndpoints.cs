@@ -18,57 +18,64 @@ public class FuturesOrdersEndpoints : IEndpoints
     {
         app.MapGet("Data/Trading/Orders", async ([FromQuery] string? contractName, IFuturesOrdersRepository ordersRepository) =>
         {
-            if (contractName is null)
+            try
             {
-                var futuresOrders = await ordersRepository.GetAllAsync();
-
-                var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
+                if (contractName is null)
                 {
-                    BybitID = x.BybitID,
-                    CurrencyPair = x.CurrencyPair.Name,
-                    CreateTime = x.CreateTime,
-                    UpdateTime = x.UpdateTime,
-                    Side = x.Side,
-                    PositionSide = x.PositionSide,
-                    Type = x.Type,
-                    Price = x.Price,
-                    Quantity = x.Quantity,
-                    StopLoss = x.StopLoss,
-                    TakeProfit = x.TakeProfit,
-                    TimeInForce = x.TimeInForce,
-                    Status = x.Status
-                });
-                var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrdersResponses };
+                    var futuresOrders = await ordersRepository.GetAllAsync();
 
-                return Results.Ok(response);
+                    var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
+                    {
+                        BybitID = x.BybitID,
+                        CurrencyPair = x.CurrencyPair.Name,
+                        CreateTime = x.CreateTime,
+                        UpdateTime = x.UpdateTime,
+                        Side = x.Side,
+                        PositionSide = x.PositionSide,
+                        Type = x.Type,
+                        Price = x.Price,
+                        Quantity = x.Quantity,
+                        StopLoss = x.StopLoss,
+                        TakeProfit = x.TakeProfit,
+                        TimeInForce = x.TimeInForce,
+                        Status = x.Status
+                    });
+                    var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrdersResponses };
+
+                    return Results.Ok(response);
+                }
+                else
+                {
+                    var futuresOrders = await ordersRepository.GetByCurrencyPairAsync(contractName);
+
+                    var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
+                    {
+                        BybitID = x.BybitID,
+                        CurrencyPair = x.CurrencyPair.Name,
+                        CreateTime = x.CreateTime,
+                        UpdateTime = x.UpdateTime,
+                        Side = x.Side,
+                        PositionSide = x.PositionSide,
+                        Type = x.Type,
+                        Price = x.Price,
+                        Quantity = x.Quantity,
+                        StopLoss = x.StopLoss,
+                        TakeProfit = x.TakeProfit,
+                        TimeInForce = x.TimeInForce,
+                        Status = x.Status
+                    });
+                    var response = new GetFuturesOrdersByContractNameResponse
+                    {
+                        ContractName = contractName.ToUpper(),
+                        FuturesOrders = futuresOrdersResponses,
+                    };
+
+                    return Results.Ok(response);
+                }
             }
-            else
+            catch (Exception exception)
             {
-                var futuresOrders = await ordersRepository.GetByCurrencyPairAsync(contractName);
-
-                var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
-                {
-                    BybitID = x.BybitID,
-                    CurrencyPair = x.CurrencyPair.Name,
-                    CreateTime = x.CreateTime,
-                    UpdateTime = x.UpdateTime,
-                    Side = x.Side,
-                    PositionSide = x.PositionSide,
-                    Type = x.Type,
-                    Price = x.Price,
-                    Quantity = x.Quantity,
-                    StopLoss = x.StopLoss,
-                    TakeProfit = x.TakeProfit,
-                    TimeInForce = x.TimeInForce,
-                    Status = x.Status
-                });
-                var response = new GetFuturesOrdersByContractNameResponse
-                {
-                    ContractName = contractName.ToUpper(),
-                    FuturesOrders = futuresOrdersResponses,
-                };
-
-                return Results.Ok(response);
+                return Results.BadRequest(exception.Message);
             }
         });
     }

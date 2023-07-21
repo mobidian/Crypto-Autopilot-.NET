@@ -18,47 +18,54 @@ public class FuturesPositionsEndpoints : IEndpoints
     {
         app.MapGet("Data/Trading/Positions", async ([FromQuery] string? contractName, IFuturesPositionsRepository positionsRepository) =>
         {
-            if (contractName is null)
+            try
             {
-                var futuresPositions = await positionsRepository.GetAllAsync();
-
-                var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
+                if (contractName is null)
                 {
-                    CryptoAutopilotId = x.CryptoAutopilotId,
-                    ContractName = x.CurrencyPair.Name,
-                    Side = x.Side,
-                    Margin = x.Margin,
-                    Leverage = x.Leverage,
-                    Quantity = x.Quantity,
-                    EntryPrice = x.EntryPrice,
-                    ExitPrice = x.ExitPrice,
-                });
-                var response = new GetAllFuturesPositionsResponse { FuturesPositions = futuresPositionsResponses };
+                    var futuresPositions = await positionsRepository.GetAllAsync();
 
-                return Results.Ok(response);
+                    var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
+                    {
+                        CryptoAutopilotId = x.CryptoAutopilotId,
+                        ContractName = x.CurrencyPair.Name,
+                        Side = x.Side,
+                        Margin = x.Margin,
+                        Leverage = x.Leverage,
+                        Quantity = x.Quantity,
+                        EntryPrice = x.EntryPrice,
+                        ExitPrice = x.ExitPrice,
+                    });
+                    var response = new GetAllFuturesPositionsResponse { FuturesPositions = futuresPositionsResponses };
+
+                    return Results.Ok(response);
+                }
+                else
+                {
+                    var futuresPositions = await positionsRepository.GetByCurrencyPairAsync(contractName);
+
+                    var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
+                    {
+                        CryptoAutopilotId = x.CryptoAutopilotId,
+                        ContractName = x.CurrencyPair.Name,
+                        Side = x.Side,
+                        Margin = x.Margin,
+                        Leverage = x.Leverage,
+                        Quantity = x.Quantity,
+                        EntryPrice = x.EntryPrice,
+                        ExitPrice = x.ExitPrice
+                    });
+                    var response = new GetFuturesPositionsByContractNameResponse
+                    {
+                        ContractName = contractName.ToUpper(),
+                        FuturesPositions = futuresPositionsResponses,
+                    };
+
+                    return Results.Ok(response);
+                }
             }
-            else
+            catch (Exception exception)
             {
-                var futuresPositions = await positionsRepository.GetByCurrencyPairAsync(contractName);
-
-                var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
-                {
-                    CryptoAutopilotId = x.CryptoAutopilotId,
-                    ContractName = x.CurrencyPair.Name,
-                    Side = x.Side,
-                    Margin = x.Margin,
-                    Leverage = x.Leverage,
-                    Quantity = x.Quantity,
-                    EntryPrice = x.EntryPrice,
-                    ExitPrice = x.ExitPrice
-                });
-                var response = new GetFuturesPositionsByContractNameResponse
-                {
-                    ContractName = contractName.ToUpper(),
-                    FuturesPositions = futuresPositionsResponses,
-                };
-
-                return Results.Ok(response);
+                return Results.BadRequest(exception.Message);
             }
         });
     }
