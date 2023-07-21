@@ -1,36 +1,26 @@
-﻿using System.Net;
+﻿using Application.DataAccess.Repositories;
 
-using Application.DataAccess.Repositories;
-using Application.Interfaces.Logging;
-
+using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Contracts.Responses.Common;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
-using CryptoAutopilot.DataFunctions.Extensions;
-using CryptoAutopilot.DataFunctions.Functions.Abstract;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 
-namespace CryptoAutopilot.DataFunctions.Functions.Data.Trading.Orders;
+namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
-public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersFunction>
+public class FuturesOrdersEndpoints : IEndpoints
 {
-    private readonly IFuturesOrdersRepository OrdersRepository;
-    public GetFuturesOrdersFunction(IFuturesOrdersRepository ordersRepository, ILoggerAdapter<GetFuturesOrdersFunction> logger) : base(logger)
+    public static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        this.OrdersRepository = ordersRepository ?? throw new ArgumentNullException(nameof(ordersRepository));
     }
 
-    
-    [Function("Data/Trading/Orders")]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "GET")][FromQuery] HttpRequestData request, [FromQuery] string? contractName)
+    public static void MapEndpoints(IEndpointRouteBuilder app)
     {
-        try
+        app.MapGet("Data/Trading/Orders", async ([FromQuery] string? contractName, IFuturesOrdersRepository ordersRepository) =>
         {
             if (contractName is null)
             {
-                var futuresOrders = await OrdersRepository.GetAllAsync();
+                var futuresOrders = await ordersRepository.GetAllAsync();
 
                 var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
                 {
@@ -50,11 +40,11 @@ public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersF
                 });
                 var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrdersResponses };
 
-                return await request.CreateOkJsonResponseAsync(response);
+                return Results.Ok(response);
             }
             else
             {
-                var futuresOrders = await OrdersRepository.GetByCurrencyPairAsync(contractName);
+                var futuresOrders = await ordersRepository.GetByCurrencyPairAsync(contractName);
 
                 var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
                 {
@@ -78,19 +68,8 @@ public class GetFuturesOrdersFunction : MarketDataFunctionBase<GetFuturesOrdersF
                     FuturesOrders = futuresOrdersResponses,
                 };
 
-                return await request.CreateOkJsonResponseAsync(response);
+                return Results.Ok(response);
             }
-        }
-        catch (Exception exception)
-        {
-            this.Logger.LogError(exception, $"{exception.GetType().FullName}: {exception.Message}\n{exception.StackTrace}");
-
-            var response = request.CreateResponse(HttpStatusCode.InternalServerError);
-            await response.WriteAsJsonAsync(new
-            {
-                exception.Message
-            });
-            return response;
-        }
+        });
     }
 }
