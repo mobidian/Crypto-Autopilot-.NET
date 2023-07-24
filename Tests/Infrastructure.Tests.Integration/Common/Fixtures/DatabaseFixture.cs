@@ -1,6 +1,4 @@
-﻿using Infrastructure.Tests.Integration.Common.Fakers;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using Respawn;
 
@@ -12,7 +10,6 @@ namespace Infrastructure.Tests.Integration.Common.Fixtures;
 public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
 {
 }
-
 
 public class DatabaseFixture : IAsyncLifetime
 {
