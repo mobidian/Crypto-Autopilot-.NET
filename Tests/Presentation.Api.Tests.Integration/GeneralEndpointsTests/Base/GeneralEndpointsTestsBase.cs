@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Presentation.Api.Tests.Integration.Common;
 
+using Tests.Integration.Common.Fixtures;
+
 using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;

@@ -7,6 +7,8 @@ using FluentAssertions;
 using Presentation.Api.Tests.Integration.Common;
 using Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
 
+using Tests.Integration.Common.Fixtures;
+
 using Xunit;
 
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Strategies;
