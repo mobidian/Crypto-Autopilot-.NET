@@ -11,10 +11,8 @@ using Domain.Models.Futures;
 
 using Infrastructure;
 
-using Xunit;
-
 namespace Presentation.Api.Tests.Integration.GeneralEndpointsTests.Base;
-[Collection("DatabaseFixture")]
+
 public abstract class FakersClass
 {
     private const int precision = 4;
