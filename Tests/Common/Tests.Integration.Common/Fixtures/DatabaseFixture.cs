@@ -6,11 +6,6 @@ using Xunit;
 
 namespace Tests.Integration.Common.Fixtures;
 
-[CollectionDefinition(nameof(DatabaseFixture))]
-public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
-{
-}
-
 public class DatabaseFixture : IAsyncLifetime
 {
     public string ConnectionString { get; } = $"""Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TradingHistoryDB-TestDatabase-{Guid.NewGuid()};Integrated Security=True;Connect Timeout=60;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False""";
