@@ -1,12 +1,13 @@
 ﻿using Infrastructure.DataAccess.Database;
 using Infrastructure.Extensions;
-using Infrastructure.Tests.Integration.Common.Fakers;
-using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using MediatR;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using Tests.Integration.Common.Fakers;
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

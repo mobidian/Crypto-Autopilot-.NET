@@ -7,9 +7,9 @@ using Domain.Commands.Orders;
 using FluentAssertions;
 
 using Infrastructure.Tests.Integration.BusinessLogic.Commands.AbstractBase;
-using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using Tests.Integration.Common.DataAccess.Extensions;
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

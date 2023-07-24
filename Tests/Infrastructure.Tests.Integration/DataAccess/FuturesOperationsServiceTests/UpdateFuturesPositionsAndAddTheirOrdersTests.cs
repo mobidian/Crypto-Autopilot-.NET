@@ -6,10 +6,10 @@ using Domain.Models.Futures;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
 
 using Tests.Integration.Common.DataAccess.Extensions;
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

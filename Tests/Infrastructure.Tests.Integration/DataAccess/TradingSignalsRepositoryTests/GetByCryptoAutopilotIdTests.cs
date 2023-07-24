@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
+
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

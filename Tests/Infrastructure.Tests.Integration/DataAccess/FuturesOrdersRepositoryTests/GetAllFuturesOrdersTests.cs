@@ -4,8 +4,9 @@ using Bogus;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
+
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

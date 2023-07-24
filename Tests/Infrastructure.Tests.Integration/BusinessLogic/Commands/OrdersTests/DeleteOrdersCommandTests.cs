@@ -8,11 +8,11 @@ using Domain.Commands.Positions;
 using FluentAssertions;
 
 using Infrastructure.Tests.Integration.BusinessLogic.Commands.AbstractBase;
-using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using Microsoft.EntityFrameworkCore;
 
 using Tests.Integration.Common.DataAccess.Extensions;
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

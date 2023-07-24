@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Integration.Common.Fixtures;
+namespace Tests.Integration.Common.Fixtures;
 
 public class FuturesTradingDbContextFactory
 {

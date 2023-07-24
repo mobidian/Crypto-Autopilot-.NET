@@ -2,11 +2,12 @@
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

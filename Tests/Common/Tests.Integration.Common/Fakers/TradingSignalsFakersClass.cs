@@ -3,7 +3,7 @@
 using Domain.Models.Common;
 using Domain.Models.Signals;
 
-namespace Infrastructure.Tests.Integration.Common.Fakers;
+namespace Tests.Integration.Common.Fakers;
 
 public abstract class TradingSignalsFakersClass
 {

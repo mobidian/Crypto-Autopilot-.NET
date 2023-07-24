@@ -1,8 +1,8 @@
 ﻿using Domain.Models.Futures;
 
-using Infrastructure.Tests.Integration.Common.Fakers;
+using Tests.Integration.Common.Fakers;
 
-namespace Infrastructure.Tests.Integration.Common.DataGenerators;
+namespace Tests.Integration.Common.DataGenerators;
 
 /// <summary>
 /// <para>

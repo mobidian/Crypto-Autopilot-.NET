@@ -2,10 +2,11 @@
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
 using Microsoft.EntityFrameworkCore;
+
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

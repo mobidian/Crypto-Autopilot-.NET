@@ -2,8 +2,9 @@
 
 using Infrastructure.DataAccess.Repositories;
 using Infrastructure.DataAccess.Services;
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.Abstract;
+
+using Tests.Integration.Common.Fixtures;
 
 namespace Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
 

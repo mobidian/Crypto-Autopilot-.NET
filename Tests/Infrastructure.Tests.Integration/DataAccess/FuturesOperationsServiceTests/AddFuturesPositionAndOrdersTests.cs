@@ -4,9 +4,10 @@ using Domain.Models.Futures;
 
 using FluentAssertions;
 
-using Infrastructure.Tests.Integration.Common.DataGenerators;
-using Infrastructure.Tests.Integration.Common.Fixtures;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
+
+using Tests.Integration.Common.DataGenerators;
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

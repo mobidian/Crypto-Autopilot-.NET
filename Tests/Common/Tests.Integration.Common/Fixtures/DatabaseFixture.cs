@@ -4,7 +4,7 @@ using Respawn;
 
 using Xunit;
 
-namespace Infrastructure.Tests.Integration.Common.Fixtures;
+namespace Tests.Integration.Common.Fixtures;
 
 [CollectionDefinition(nameof(DatabaseFixture))]
 public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
@@ -19,7 +19,7 @@ public class DatabaseFixture : IAsyncLifetime
     private Respawner DbRespawner = default!;
     public async Task ClearDatabaseAsync() => await this.DbRespawner.ResetAsync(this.ConnectionString);
 
-    
+
     public async Task InitializeAsync()
     {
         var options = new DbContextOptionsBuilder().UseSqlServer(this.ConnectionString).Options;

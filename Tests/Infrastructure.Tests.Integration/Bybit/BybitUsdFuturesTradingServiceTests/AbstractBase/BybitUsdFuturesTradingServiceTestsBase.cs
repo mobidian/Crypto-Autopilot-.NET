@@ -7,9 +7,10 @@ using Domain.Models.Common;
 using Infrastructure.Extensions;
 using Infrastructure.Factories;
 using Infrastructure.Tests.Integration.Bybit.Abstract;
-using Infrastructure.Tests.Integration.Common.Fixtures;
 
 using Microsoft.Extensions.DependencyInjection;
+
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

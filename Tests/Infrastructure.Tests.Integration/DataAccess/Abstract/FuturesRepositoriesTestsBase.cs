@@ -4,8 +4,9 @@ using Domain.Models.Futures;
 
 using Infrastructure.DataAccess.Database;
 using Infrastructure.Internal.Extensions;
-using Infrastructure.Tests.Integration.Common.Fakers;
-using Infrastructure.Tests.Integration.Common.Fixtures;
+
+using Tests.Integration.Common.Fakers;
+using Tests.Integration.Common.Fixtures;
 
 using Xunit;
 

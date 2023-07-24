@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Tests.Integration.Common.DataGenerators;
+﻿namespace Tests.Integration.Common.DataGenerators;
 
 public class PositionOpeningOrdersGenerator : AbstractFuturesDataGenerator
 {

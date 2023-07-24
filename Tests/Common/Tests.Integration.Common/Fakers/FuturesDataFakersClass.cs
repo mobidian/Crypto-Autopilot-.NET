@@ -7,7 +7,7 @@ using Domain.Models.Futures;
 
 using Tests.Integration.Common.DataAccess.Extensions;
 
-namespace Infrastructure.Tests.Integration.Common.Fakers;
+namespace Tests.Integration.Common.Fakers;
 
 public abstract class FuturesDataFakersClass : TradingSignalsFakersClass
 {
