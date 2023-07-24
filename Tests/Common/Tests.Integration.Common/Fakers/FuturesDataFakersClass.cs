@@ -13,11 +13,20 @@ public abstract class FuturesDataFakersClass : TradingSignalsFakersClass
 {
     private const int decimals = 4;
 
+
+    protected readonly Faker Faker = new();
+
     protected readonly Faker<CurrencyPair> CurrencyPairGenerator = new Faker<CurrencyPair>()
         .CustomInstantiator(f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code));
 
-
-    protected readonly Faker Faker = new Faker();
+    protected readonly Faker<Candlestick> CandlestickGenerator = new Faker<Candlestick>()
+        .RuleFor(c => c.CurrencyPair, f => new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code))
+        .RuleFor(c => c.Date, f => f.Date.Recent(365))
+        .RuleFor(c => c.Open, f => Math.Round(f.Random.Decimal(1000, 1500), decimals))
+        .RuleFor(c => c.High, (f, c) => Math.Round(f.Random.Decimal(c.Open, c.Open + 100), decimals))
+        .RuleFor(c => c.Low, (f, c) => Math.Round(f.Random.Decimal(c.Open - 100, c.Open), decimals))
+        .RuleFor(c => c.Close, (f, c) => Math.Round(f.Random.Decimal(1000, 1500), decimals))
+        .RuleFor(c => c.Volume, f => Math.Round(f.Random.Decimal(100000, 300000), decimals));
 
     protected readonly Faker<FuturesOrder> FuturesOrdersGenerator = new Faker<FuturesOrder>()
         .RuleFor(o => o.BybitID, f => Guid.NewGuid())

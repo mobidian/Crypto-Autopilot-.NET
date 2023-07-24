@@ -32,13 +32,13 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         var currencyPair = this.CurrencyPairGenerator.Generate();
 
         var matchingCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, currencyPair).Generate();
-        var matchingFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, matchingCandlestick.CurrencyPair).GenerateBetween(10, 20);
+        var matchingFuturesOrders = this.FuturesOrdersGenerator.Clone().RuleFor(o => o.CurrencyPair, matchingCandlestick.CurrencyPair).GenerateBetween(10, 20);
         await this.AddCandlestickAndFuturesOrdersInTheDatabaseAsync(matchingCandlestick, matchingFuturesOrders);
 
         for (var i = 0; i < 10; i++)
         {
             var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
-            var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, randomCandlestick.CurrencyPair).GenerateBetween(10, 20);
+            var randomFuturesOrders = this.FuturesOrdersGenerator.Clone().RuleFor(o => o.CurrencyPair, randomCandlestick.CurrencyPair).GenerateBetween(10, 20);
             await this.AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
         }
 
@@ -60,7 +60,7 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         for (var i = 0; i < 10; i++)
         {
             var randomCandlestick = this.CandlestickGenerator.Clone().RuleFor(c => c.CurrencyPair, f => GetRandomCurrencyPairExcept(f, currencyPair)).Generate();
-            var randomFuturesOrders = this.FuturesOrderGenerator.Clone().RuleFor(o => o.CurrencyPair, randomCandlestick.CurrencyPair).GenerateBetween(10, 20);
+            var randomFuturesOrders = this.FuturesOrdersGenerator.Clone().RuleFor(o => o.CurrencyPair, randomCandlestick.CurrencyPair).GenerateBetween(10, 20);
 
             await this.AddCandlestickAndFuturesOrdersInTheDatabaseAsync(randomCandlestick, randomFuturesOrders);
         }
