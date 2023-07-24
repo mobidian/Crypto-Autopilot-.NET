@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Tests.Integration.DataAccess.Extensions;
+﻿namespace Tests.Integration.Common.DataAccess.Extensions;
 
 public static class EnumRuleSetsExtensions
 {

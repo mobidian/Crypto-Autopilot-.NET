@@ -9,9 +9,10 @@ using FluentAssertions;
 
 using Infrastructure.Tests.Integration.BusinessLogic.Commands.AbstractBase;
 using Infrastructure.Tests.Integration.Common.Fixtures;
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
 
 using Microsoft.EntityFrameworkCore;
+
+using Tests.Integration.Common.DataAccess.Extensions;
 
 using Xunit;
 

@@ -5,11 +5,12 @@ using Bybit.Net.Enums;
 using FluentAssertions;
 
 using Infrastructure.Tests.Integration.Common.Fixtures;
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesPositionsRepositoryTests.AbstractBase;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+
+using Tests.Integration.Common.DataAccess.Extensions;
 
 using Xunit;
 

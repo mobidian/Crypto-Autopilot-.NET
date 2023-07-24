@@ -5,8 +5,9 @@ using Bybit.Net.Enums;
 using FluentAssertions;
 
 using Infrastructure.Tests.Integration.Common.Fixtures;
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
 using Infrastructure.Tests.Integration.DataAccess.FuturesOperationsServiceTests.AbstractBase;
+
+using Tests.Integration.Common.DataAccess.Extensions;
 
 using Xunit;
 

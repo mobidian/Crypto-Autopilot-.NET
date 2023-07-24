@@ -3,7 +3,8 @@
 using Bybit.Net.Enums;
 
 using Infrastructure.Tests.Integration.Common.Fakers;
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
+
+using Tests.Integration.Common.DataAccess.Extensions;
 
 namespace Infrastructure.Tests.Integration.Common.DataGenerators;
 

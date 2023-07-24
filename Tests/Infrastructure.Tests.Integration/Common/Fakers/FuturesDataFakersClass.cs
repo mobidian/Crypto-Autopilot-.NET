@@ -5,7 +5,7 @@ using Bybit.Net.Enums;
 using Domain.Models.Common;
 using Domain.Models.Futures;
 
-using Infrastructure.Tests.Integration.DataAccess.Extensions;
+using Tests.Integration.Common.DataAccess.Extensions;
 
 namespace Infrastructure.Tests.Integration.Common.Fakers;
 
