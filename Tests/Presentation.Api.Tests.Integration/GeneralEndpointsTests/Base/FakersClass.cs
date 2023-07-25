@@ -26,17 +26,4 @@ public abstract class FakersClass : FuturesDataFakersClass
             var parameters = new object[] { Guid.NewGuid(), new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code), f.PickRandom<KlineInterval>() };
             return (IStrategyEngine)Activator.CreateInstance(type, flags, null, parameters, null)!;
         });
-
-
-    protected static CurrencyPair GetRandomCurrencyPairExcept(Faker f, CurrencyPair currencyPair)
-    {
-        CurrencyPair newCurrencyPair;
-        do
-        {
-            newCurrencyPair = new CurrencyPair(f.Finance.Currency().Code, f.Finance.Currency().Code);
-        }
-        while (newCurrencyPair == currencyPair);
-
-        return newCurrencyPair;
-    }
 }
