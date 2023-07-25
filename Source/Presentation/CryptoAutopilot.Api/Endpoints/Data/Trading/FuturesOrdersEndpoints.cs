@@ -1,7 +1,7 @@
 ﻿using Application.DataAccess.Repositories;
 
+using CryptoAutopilot.Api.Endpoints.Extensions;
 using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
-using CryptoAutopilot.Contracts.Responses.Common;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 using Microsoft.AspNetCore.Mvc;
@@ -23,51 +23,17 @@ public class FuturesOrdersEndpoints : IEndpoints
                 if (contractName is null)
                 {
                     var futuresOrders = await ordersRepository.GetAllAsync();
-
-                    var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
-                    {
-                        BybitID = x.BybitID,
-                        CurrencyPair = x.CurrencyPair.Name,
-                        CreateTime = x.CreateTime,
-                        UpdateTime = x.UpdateTime,
-                        Side = x.Side,
-                        PositionSide = x.PositionSide,
-                        Type = x.Type,
-                        Price = x.Price,
-                        Quantity = x.Quantity,
-                        StopLoss = x.StopLoss,
-                        TakeProfit = x.TakeProfit,
-                        TimeInForce = x.TimeInForce,
-                        Status = x.Status
-                    });
-                    var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrdersResponses };
+                    var response = new GetAllFuturesOrdersResponse { FuturesOrders = futuresOrders.ToResponses() };
 
                     return Results.Ok(response);
                 }
                 else
                 {
                     var futuresOrders = await ordersRepository.GetByCurrencyPairAsync(contractName);
-
-                    var futuresOrdersResponses = futuresOrders.Select(x => new FuturesOrderResponse
-                    {
-                        BybitID = x.BybitID,
-                        CurrencyPair = x.CurrencyPair.Name,
-                        CreateTime = x.CreateTime,
-                        UpdateTime = x.UpdateTime,
-                        Side = x.Side,
-                        PositionSide = x.PositionSide,
-                        Type = x.Type,
-                        Price = x.Price,
-                        Quantity = x.Quantity,
-                        StopLoss = x.StopLoss,
-                        TakeProfit = x.TakeProfit,
-                        TimeInForce = x.TimeInForce,
-                        Status = x.Status
-                    });
                     var response = new GetFuturesOrdersByContractNameResponse
                     {
                         ContractName = contractName.ToUpper(),
-                        FuturesOrders = futuresOrdersResponses,
+                        FuturesOrders = futuresOrders.ToResponses(),
                     };
 
                     return Results.Ok(response);
