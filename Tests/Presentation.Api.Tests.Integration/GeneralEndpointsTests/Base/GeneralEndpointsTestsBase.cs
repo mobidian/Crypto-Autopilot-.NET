@@ -20,7 +20,7 @@ public abstract class GeneralEndpointsTestsBase : FakersClass, IClassFixture<Api
     protected readonly ApiFactory ApiFactory;
     protected readonly HttpClient HttpClient;
 
-    protected IFuturesOrdersRepository OrdersRepository;
+    protected IFuturesOrdersRepository ArrangeOrdersRepository;
     protected IStrategiesTracker StrategiesTracker;
     
     protected GeneralEndpointsTestsBase(ApiFactory apiFactory, DatabaseFixture databaseFixture)
@@ -28,7 +28,7 @@ public abstract class GeneralEndpointsTestsBase : FakersClass, IClassFixture<Api
         this.ApiFactory = apiFactory;
         this.HttpClient = this.ApiFactory.CreateClient();
         
-        this.OrdersRepository = new FuturesOrdersRepository(databaseFixture.DbContextFactory.Create());
+        this.ArrangeOrdersRepository = new FuturesOrdersRepository(databaseFixture.DbContextFactory.Create());
         this.StrategiesTracker = this.ApiFactory.Services.GetRequiredService<IStrategiesTracker>();
     }
 }
