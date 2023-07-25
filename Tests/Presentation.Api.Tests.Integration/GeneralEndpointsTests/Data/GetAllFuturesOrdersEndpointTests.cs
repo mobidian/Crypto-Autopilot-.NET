@@ -48,6 +48,6 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
 
         // Assert
         var response = await candlesticksResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
-        response!.FuturesOrders.Should().BeEquivalentTo(Enumerable.Empty<FuturesOrderResponse>());
+        response!.FuturesOrders.Should().BeEmpty();
     }
 }
