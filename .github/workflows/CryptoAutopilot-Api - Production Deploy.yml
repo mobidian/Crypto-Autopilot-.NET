@@ -1,0 +1,69 @@
+name: Build and deploy ASP.NET Core Web Api to CryptoAutopilot-Api Azure Linux App Service
+
+on:
+  push:
+    branches:
+    - master
+
+
+env:
+  API_DIRECTORY: Source/Presentation/CryptoAutopilot.Api
+  AZURE_WEBAPP_NAME: CryptoAutopilot-Api
+  AZURE_WEBAPP_PACKAGE_PATH: Source/Presentation/CryptoAutopilot.Api/publish
+  INFRASTRUCTURE_UNIT_TESTS_DIRECTORY: Tests/Infrastructure.Tests.Unit
+  STRATEGIES_UNIT_TESTS_DIRECTORY: Tests/Strategies.Tests.Unit
+  CONFIGURATION: Release
+  DOTNET_VERSION: 7.0.x
+  WORKING_DIRECTORY: Source/Presentation/CryptoAutopilot.Api
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore Solution
+      run: dotnet restore
+
+    - name: Build Solution
+      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
+      
+    - name: Unit Tests
+      run: |
+        dotnet test "${{ env.INFRASTRUCTURE_UNIT_TESTS_DIRECTORY }}" --no-build
+        dotnet test "${{ env.STRATEGIES_UNIT_TESTS_DIRECTORY }}" --no-build
+
+
+    - name: Publish Api
+      run: dotnet publish "${{ env.API_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+
+    - name: Publish Api Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+    - name: Download Api artifact from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+    - name: Deploy Api to Azure WebApp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.CryptoAutopilot_Api_FE80 }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
