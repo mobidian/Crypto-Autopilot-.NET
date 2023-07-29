@@ -12,9 +12,9 @@
     },
     "secrets1": {
       "secretStore": null,
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/CryptoAutopilot-KeyVault",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/CryptoAutopilot-KV",
       "type": "secrets.keyVault",
-      "connectionId": "CryptoAutopilotKeyVaultUrl"
+      "connectionId": "CryptoAutopilot-KV-Url"
     }
   }
 }

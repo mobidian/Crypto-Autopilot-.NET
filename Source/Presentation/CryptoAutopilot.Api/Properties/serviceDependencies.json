@@ -9,7 +9,7 @@
     },
     "secrets1": {
       "type": "secrets",
-      "connectionId": "CryptoAutopilotKeyVaultUrl"
+      "connectionId": "CryptoAutopilot-KV-Url"
     }
   }
 }
