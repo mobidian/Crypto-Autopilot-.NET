@@ -1,15 +1,16 @@
 {
   "dependencies": {
-    "mssql1": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:TradingHistoryDB"
-    },
     "apis1": {
       "type": "apis"
     },
     "secrets1": {
       "type": "secrets",
       "connectionId": "CryptoAutopilot-KV-Url"
+    },
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:TradingHistoryDB",
+      "dynamicId": null
     }
   }
 }
