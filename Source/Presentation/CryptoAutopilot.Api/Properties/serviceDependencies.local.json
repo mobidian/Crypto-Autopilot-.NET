@@ -4,17 +4,19 @@
       "ignored": "true",
       "type": "apis"
     },
-    "mssql1": {
-      "secretStore": null,
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/cryptoautopilot-azure-sql-server/databases/TradingHistoryDB",
-      "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:TradingHistoryDB"
-    },
     "secrets1": {
       "secretStore": null,
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/CryptoAutopilot-KeyVault",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/CryptoAutopilot-KV",
       "type": "secrets.keyVault",
-      "connectionId": "CryptoAutopilotKeyVaultUrl"
+      "connectionId": "CryptoAutopilot-KV-Url"
+    },
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ServiceLinker/locations/westeurope/connectors/ConnectionStringsTradingHistoryDB_41933A4364",
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/cryptoautopilot-azure-sql-server/databases/TradingHistoryDB",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:TradingHistoryDB",
+      "dynamicId": null
     }
   }
 }
