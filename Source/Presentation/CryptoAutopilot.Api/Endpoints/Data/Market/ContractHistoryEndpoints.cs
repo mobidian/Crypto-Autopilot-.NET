@@ -37,7 +37,6 @@ public class ContractHistoryEndpoints : IEndpoints
                 var klines = await marketDataProvider.GetAllCandlesticksAsync(name, timeframe);
                 var candlesticksResponses = klines.Select(x => new CandlestickResponse
                 {
-                    ContractName = x.Symbol,
                     Date = x.OpenTime,
                     Open = x.OpenPrice,
                     High = x.HighPrice,
