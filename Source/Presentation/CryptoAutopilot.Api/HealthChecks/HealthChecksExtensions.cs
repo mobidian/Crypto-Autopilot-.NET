@@ -30,7 +30,7 @@ public static class HealthChecksExtensions
             "ConnectionStrings--TradingHistoryDB"
         };
 
-        builder.AddAzureKeyVault(new Uri(configuration["KeyVaultConfig:Url"]!), tokenCredential, options => secrets.ForEach(x => options.AddSecret(x)), tags: secrets);
+        builder.AddAzureKeyVault(new Uri(configuration["KeyVaultConfig:Url"]!), tokenCredential, options => secrets.ForEach(x => options.AddSecret(x)));
     }
 
     public static void MapHealthChecks(this IEndpointRouteBuilder app)

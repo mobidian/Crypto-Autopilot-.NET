@@ -47,7 +47,7 @@ public class BybitAuthorizationCheck : IHealthCheck
                 return HealthCheckResult.Unhealthy("The api key does not have all required permissions");
             }
 
-            var str = this.PermissionsOptions.ReadOnlyKey ? "read-write" : "read-only";
+            var str = this.PermissionsOptions.ReadOnlyKey ? "read-only" : "read-write";
             return HealthCheckResult.Healthy($"The api key is {str} and has all required permissions");
         }
         catch (Exception exception)
