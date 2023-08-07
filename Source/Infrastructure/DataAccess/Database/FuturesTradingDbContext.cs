@@ -93,21 +93,33 @@ public class FuturesTradingDbContext : DbContext
     }
     private void ValidateOrderEntries()
     {
-        var ordersEntries = this.ChangeTracker.Entries<FuturesOrderDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-        foreach (var orderEntry in ordersEntries)
-            this.FuturesOrderValidator.ValidateAndThrow(orderEntry.Entity);
+        var orders = this.ChangeTracker
+            .Entries<FuturesOrderDbEntity>()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified)
+            .Select(e => e.Entity);
+        
+        foreach (var order in orders)
+            this.FuturesOrderValidator.ValidateAndThrow(order);
     }
     private void ValidatePositionEntries()
     {
-        var positionsEntries = this.ChangeTracker.Entries<FuturesPositionDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-        foreach (var positionEntry in positionsEntries)
-            this.FuturesPositionValidator.ValidateAndThrow(positionEntry.Entity);
+        var positions = this.ChangeTracker
+            .Entries<FuturesPositionDbEntity>()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified)
+            .Select(e => e.Entity);
+        
+        foreach (var position in positions)
+            this.FuturesPositionValidator.ValidateAndThrow(position);
     }
     private void ValidateTradingSignalEntries()
     {
-        var signalsEntries = this.ChangeTracker.Entries<TradingSignalDbEntity>().Where(e => e.State is EntityState.Added or EntityState.Modified);
-        foreach (var signalsEntry in signalsEntries)
-            this.TradingSignalValidator.ValidateAndThrow(signalsEntry.Entity);
+        var signals = this.ChangeTracker
+            .Entries<TradingSignalDbEntity>()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified)
+            .Select(e => e.Entity);
+        
+        foreach (var signal in signals)
+            this.TradingSignalValidator.ValidateAndThrow(signal);
     }
     #endregion
 
