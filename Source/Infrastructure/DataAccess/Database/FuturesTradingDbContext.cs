@@ -48,9 +48,6 @@ public class FuturesTradingDbContext : DbContext
     {
         try
         {
-            this.ValidateUpdatedOrders();
-            this.ValidateUpdatedPositions();
-
             this.ValidateOrderEntries();
             this.ValidatePositionEntries();
             this.ValidateTradingSignalEntries();
@@ -61,53 +58,45 @@ public class FuturesTradingDbContext : DbContext
             throw new DbUpdateException(message, exception);
         }
     }
-    private void ValidateUpdatedOrders()
-    {
-        var updatedOrdersEntries = this.ChangeTracker
-                        .Entries<FuturesOrderDbEntity>()
-                        .Where(x => x.State == EntityState.Modified);
-
-        foreach (var orderEntry in updatedOrdersEntries)
-        {
-            var position = this.FuturesPositions.Find(orderEntry.Entity.PositionId);
-
-            if (position is not null && position.Side != orderEntry.Entity.PositionSide)
-                throw new DbUpdateException($"The {orderEntry.State.ToString().ToLowerInvariant()} order position side property value does not match the side property value of the related position.");
-        }
-    }
-    private void ValidateUpdatedPositions()
-    {
-        var updatedPositionsEntries = this.ChangeTracker
-                        .Entries<FuturesPositionDbEntity>()
-                        .Where(x => x.State == EntityState.Modified);
-
-        foreach (var positionEntry in updatedPositionsEntries)
-        {
-            var order = positionEntry.Entity.FuturesOrders!.FirstOrDefault();
-
-            if (order is not null && positionEntry.Entity.Side != order.PositionSide)
-                throw new DbUpdateException($"The {positionEntry.State.ToString().ToLowerInvariant()} position side property value does not match the position side property value of the related orders.");
-        }
-    }
     private void ValidateOrderEntries()
     {
-        var orders = this.ChangeTracker
-            .Entries<FuturesOrderDbEntity>()
-            .Where(e => e.State is EntityState.Added or EntityState.Modified)
-            .Select(e => e.Entity);
-        
-        foreach (var order in orders)
+        var ordersEntries = this.ChangeTracker
+                        .Entries<FuturesOrderDbEntity>()
+                        .Where(x => x.State is EntityState.Added or EntityState.Modified);
+
+        foreach (var orderEntry in ordersEntries)
+        {
+            var order = orderEntry.Entity;
+            var state = orderEntry.State.ToString().ToLowerInvariant();
+
+
             this.FuturesOrderValidator.ValidateAndThrow(order);
+
+            var position = this.FuturesPositions.Find(order.PositionId);
+            
+            if (position is not null && position.Side != order.PositionSide)
+                throw new DbUpdateException($"The {state} order position side property value does not match the side property value of the related position.");
+        }
     }
     private void ValidatePositionEntries()
     {
-        var positions = this.ChangeTracker
-            .Entries<FuturesPositionDbEntity>()
-            .Where(e => e.State is EntityState.Added or EntityState.Modified)
-            .Select(e => e.Entity);
-        
-        foreach (var position in positions)
+        var positionsEntries = this.ChangeTracker
+                        .Entries<FuturesPositionDbEntity>()
+                        .Where(x => x.State is EntityState.Added or EntityState.Modified);
+
+        foreach (var positionEntry in positionsEntries)
+        {
+            var position = positionEntry.Entity;
+            var state = positionEntry.State.ToString().ToLowerInvariant();
+
+
             this.FuturesPositionValidator.ValidateAndThrow(position);
+
+            var order = positionEntry.Entity.FuturesOrders?.FirstOrDefault();
+
+            if (order is not null && positionEntry.Entity.Side != order.PositionSide)
+                throw new DbUpdateException($"The {state} position side property value does not match the position side property value of the related orders.");
+        }
     }
     private void ValidateTradingSignalEntries()
     {
