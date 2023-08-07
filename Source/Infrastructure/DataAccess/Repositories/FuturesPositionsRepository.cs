@@ -15,17 +15,17 @@ public class FuturesPositionsRepository : FuturesRepository, IFuturesPositionsRe
     public FuturesPositionsRepository(FuturesTradingDbContext dbContext) : base(dbContext) { }
 
 
-    public async Task AddAsync(FuturesPosition position)
+    public async Task<bool> AddAsync(FuturesPosition position)
     {
         var positionDbEntity = position.ToDbEntity();
         await this.DbContext.FuturesPositions.AddAsync(positionDbEntity);
-        await this.DbContext.SaveChangesAsync();
+        return await this.DbContext.SaveChangesAsync() == 1;
     }
-    public async Task AddAsync(IEnumerable<FuturesPosition> positions)
+    public async Task<bool> AddAsync(IEnumerable<FuturesPosition> positions)
     {
         var positionsDbEntities = positions.Select(x => x.ToDbEntity());
         await this.DbContext.FuturesPositions.AddRangeAsync(positionsDbEntities);
-        await this.DbContext.SaveChangesAsync();
+        return await this.DbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<FuturesPosition?> GetByCryptoAutopilotId(Guid cryptoAutopilotId)

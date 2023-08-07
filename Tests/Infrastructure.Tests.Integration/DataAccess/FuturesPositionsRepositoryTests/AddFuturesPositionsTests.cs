@@ -30,9 +30,10 @@ public class AddFuturesPositionsTests : FuturesPositionsRepositoryTestsBase
         var positions = this.FuturesPositionsGenerator.Generate(5, $"default, {PositionSide.Buy.ToRuleSetName()}");
 
         // Act
-        await this.SUT.AddAsync(positions);
+        var added = await this.SUT.AddAsync(positions);
 
         // Assert
+        added.Should().BeTrue();
         this.ArrangeAssertDbContext.FuturesPositions.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(positions);
     }
 

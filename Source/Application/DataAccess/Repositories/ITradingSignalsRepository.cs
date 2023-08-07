@@ -11,14 +11,14 @@ public interface ITradingSignalsRepository
     /// Adds a single trading signal asynchronously.
     /// </summary>
     /// <param name="tradingSignal">The trading signal to add.</param>
-    /// <returns>A task that returns true if the operation succeeded, false otherwise.</returns>
+    /// <returns>A task that returns <see langword="true"/> if the operation succeeded, <see langword="false"/> otherwise.</returns>
     public Task<bool> AddAsync(TradingSignal tradingSignal);
 
     /// <summary>
     /// Adds multiple trading signals asynchronously.
     /// </summary>
     /// <param name="tradingSignals">The trading signals to add.</param>
-    /// <returns>A task that returns true if the operation succeeded, false otherwise.</returns>
+    /// <returns>A task that returns <see langword="true"/> if the operation succeeded, <see langword="false"/> otherwise.</returns>
     public Task<bool> AddAsync(IEnumerable<TradingSignal> tradingSignals);
 
 

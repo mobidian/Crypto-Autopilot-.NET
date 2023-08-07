@@ -12,16 +12,16 @@ public interface IFuturesOrdersRepository
     /// </summary>
     /// <param name="futuresOrder">The futures order to add.</param>
     /// <param name="positionId">Optional position ID to associate with the futures order.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public Task AddAsync(FuturesOrder futuresOrder, Guid? positionId = null);
+    /// <returns>A task that returns <see langword="true"/> if the operation succeeded, <see langword="false"/> otherwise.</returns>
+    public Task<bool> AddAsync(FuturesOrder futuresOrder, Guid? positionId = null);
 
     /// <summary>
     /// Adds multiple futures orders asynchronously.
     /// </summary>
     /// <param name="futuresOrder">The futures orders to add.</param>
     /// <param name="positionId">Optional position ID to associate with the futures orders.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public Task AddAsync(IEnumerable<FuturesOrder> futuresOrder, Guid? positionId = null);
+    /// <returns>A task that returns <see langword="true"/> if the operation succeeded, <see langword="false"/> otherwise.</returns>
+    public Task<bool> AddAsync(IEnumerable<FuturesOrder> futuresOrder, Guid? positionId = null);
 
 
     /// <summary>

@@ -15,7 +15,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
     public FuturesOrdersRepository(FuturesTradingDbContext dbContext) : base(dbContext) { }
 
 
-    public async Task AddAsync(FuturesOrder futuresOrder, Guid? positionId = null)
+    public async Task<bool> AddAsync(FuturesOrder futuresOrder, Guid? positionId = null)
     {
         var entity = futuresOrder.ToDbEntity();
         if (positionId is not null)
@@ -25,9 +25,9 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
         }
 
         await this.DbContext.FuturesOrders.AddAsync(entity);
-        await this.DbContext.SaveChangesAsync();
+        return await this.DbContext.SaveChangesAsync() == 1;
     }
-    public async Task AddAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
+    public async Task<bool> AddAsync(IEnumerable<FuturesOrder> futuresOrders, Guid? positionId = null)
     {
         var futuresOrderDbEntities = futuresOrders.Select(x => x.ToDbEntity()).ToArray();
         if (positionId is not null)
@@ -40,7 +40,7 @@ public class FuturesOrdersRepository : FuturesRepository, IFuturesOrdersReposito
 
 
         await this.DbContext.FuturesOrders.AddRangeAsync(futuresOrderDbEntities);
-        await this.DbContext.SaveChangesAsync();
+        return await this.DbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<FuturesOrder?> GetByBybitId(Guid bybitID)

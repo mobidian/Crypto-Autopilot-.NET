@@ -11,15 +11,15 @@ public interface IFuturesPositionsRepository
     /// Adds a single futures position asynchronously.
     /// </summary>
     /// <param name="position">The futures position to add.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public Task AddAsync(FuturesPosition position);
+    /// <returns>A task that returns <see langword="true"/> if the operation succeeded, <see langword="false"/> otherwise.</returns>
+    public Task<bool> AddAsync(FuturesPosition position);
 
     /// <summary>
     /// Adds multiple futures positions asynchronously.
     /// </summary>
     /// <param name="positions">The futures positions to add.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public Task AddAsync(IEnumerable<FuturesPosition> positions);
+    /// <returns>A task that returns <see langword="true"/> if the operation succeeded, <see langword="false"/> otherwise.</returns>
+    public Task<bool> AddAsync(IEnumerable<FuturesPosition> positions);
 
 
     /// <summary>

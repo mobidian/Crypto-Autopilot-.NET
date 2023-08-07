@@ -27,10 +27,10 @@ public class AddTests : TradingSignalsRepositoryTestsBase
         var tradingSignal = this.TradingSignalGenerator.Generate();
 
         // Act
-        var result = await this.SUT.AddAsync(tradingSignal);
+        var added = await this.SUT.AddAsync(tradingSignal);
 
         // Assert
-        result.Should().BeTrue();
+        added.Should().BeTrue();
         this.ArrangeAssertDbContext.TradingSignals.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(new[] { tradingSignal });
     }
 
