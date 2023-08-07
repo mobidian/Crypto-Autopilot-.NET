@@ -29,7 +29,7 @@ public class TradingSignalsRepository : ITradingSignalsRepository
     {
         var entities = tradingSignals.Select(x => x.ToDbEntity());
         await this.DbContext.TradingSignals.AddRangeAsync(entities);
-        return await this.DbContext.SaveChangesAsync() == 1;
+        return await this.DbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<TradingSignal?> GetByCryptoAutopilotIdAsync(Guid cryptoAutopilotId)
