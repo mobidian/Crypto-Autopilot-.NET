@@ -6,6 +6,8 @@ using FluentAssertions;
 
 using Infrastructure.Tests.Integration.DataAccess.FuturesOrdersRepositoryTests.AbstractBase;
 
+using Microsoft.EntityFrameworkCore;
+
 using Tests.Integration.Common.DataAccess.Extensions;
 using Tests.Integration.Common.Fixtures;
 
@@ -47,5 +49,28 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
 
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
+    }
+
+    [Fact]
+    public async Task AddFuturesOrderWithPositionGuid_ShouldThrow_WhenThePositionSideDoesNotMatchTheOrderSide()
+    {
+        // Arrange
+        var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
+        var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}");
+
+        await this.ArrangeAssertDbContext.FuturesPositions.AddAsync(position.ToDbEntity());
+        await this.ArrangeAssertDbContext.SaveChangesAsync();
+
+
+        // Act
+        var func = async () => await this.SUT.AddAsync(order, position.CryptoAutopilotId);
+
+
+        // Assert
+        (await func.Should()
+            .ThrowExactlyAsync<DbUpdateException>()
+            .WithMessage("An error occurred while validating the entities. The database update operation cannot be performed."))
+                .WithInnerExceptionExactly<DbUpdateException>()
+                .WithMessage("The added order position side property value does not match the side property value of the related position.");
     }
 }
