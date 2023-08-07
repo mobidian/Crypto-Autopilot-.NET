@@ -63,32 +63,30 @@ public class FuturesTradingDbContext : DbContext
     }
     private void ValidateUpdatedOrders()
     {
-        var updatedOrders = this.ChangeTracker
+        var updatedOrdersEntries = this.ChangeTracker
                         .Entries<FuturesOrderDbEntity>()
-                        .Where(x => x.State == EntityState.Modified)
-                        .Select(x => x.Entity);
+                        .Where(x => x.State == EntityState.Modified);
 
-        foreach (var order in updatedOrders)
+        foreach (var orderEntry in updatedOrdersEntries)
         {
-            var position = this.FuturesPositions.Find(order.PositionId);
+            var position = this.FuturesPositions.Find(orderEntry.Entity.PositionId);
 
-            if (position is not null && position.Side != order.PositionSide)
-                throw new DbUpdateException($"The new order position side property value does not match the side property value of the related position.");
+            if (position is not null && position.Side != orderEntry.Entity.PositionSide)
+                throw new DbUpdateException($"The {orderEntry.State.ToString().ToLowerInvariant()} order position side property value does not match the side property value of the related position.");
         }
     }
     private void ValidateUpdatedPositions()
     {
-        var updatedPositions = this.ChangeTracker
+        var updatedPositionsEntries = this.ChangeTracker
                         .Entries<FuturesPositionDbEntity>()
-                        .Where(x => x.State == EntityState.Modified)
-                        .Select(x => x.Entity);
+                        .Where(x => x.State == EntityState.Modified);
 
-        foreach (var position in updatedPositions)
+        foreach (var positionEntry in updatedPositionsEntries)
         {
-            var order = position.FuturesOrders!.FirstOrDefault();
+            var order = positionEntry.Entity.FuturesOrders!.FirstOrDefault();
 
-            if (order is not null && position.Side != order.PositionSide)
-                throw new DbUpdateException($"The new position side property value does not match the position side property value of the related orders.");
+            if (order is not null && positionEntry.Entity.Side != order.PositionSide)
+                throw new DbUpdateException($"The {positionEntry.State.ToString().ToLowerInvariant()} position side property value does not match the position side property value of the related orders.");
         }
     }
     private void ValidateOrderEntries()

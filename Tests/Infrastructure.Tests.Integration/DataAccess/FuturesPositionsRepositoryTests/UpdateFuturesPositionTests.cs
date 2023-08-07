@@ -64,6 +64,6 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
             .ThrowExactlyAsync<DbUpdateException>()
             .WithMessage("An error occurred while validating the entities. The database update operation cannot be performed."))
                 .WithInnerExceptionExactly<DbUpdateException>()
-                .WithMessage("The new position side property value does not match the position side property value of the related orders.");
+                .WithMessage("The modified position side property value does not match the position side property value of the related orders.");
     }
 }
