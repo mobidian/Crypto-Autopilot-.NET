@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
-public class FuturesPositionsEndpoints : IEndpoints
+public static class FuturesPositionsEndpoint
 {
-    public static void MapEndpoints(IEndpointRouteBuilder app)
+    public static void MapFuturesPositionsEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet("Data/Trading/Positions", async ([FromQuery] string? contractName, IFuturesPositionsRepository positionsRepository) =>
         {
