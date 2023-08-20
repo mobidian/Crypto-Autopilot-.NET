@@ -10,7 +10,7 @@ public interface IBybitUsdFuturesMarketDataProvider
 
     public Task<BybitTicker> GetTickerAsync(string symbol);
 
-    public Task<IEnumerable<BybitKline>> GetAllCandlesticksAsync(string symbol, KlineInterval timeframe, int limit = 1000);
+    public Task<IEnumerable<BybitKline>> GetAllCandlesticksAsync(string symbol, KlineInterval timeframe);
 
-    public Task<IEnumerable<BybitKline>> GetCompletedCandlesticksAsync(string symbol, KlineInterval timeframe, int limit = 1000);
+    public Task<IEnumerable<BybitKline>> GetCompletedCandlesticksAsync(string symbol, KlineInterval timeframe);
 }

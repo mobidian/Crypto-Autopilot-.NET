@@ -38,17 +38,17 @@ public class BybitUsdFuturesMarketDataProvider : IBybitUsdFuturesMarketDataProvi
         return callResult.Data.Single();
     }
 
-    public async Task<IEnumerable<BybitKline>> GetAllCandlesticksAsync(string symbol, KlineInterval timeframe, int limit = 1000)
+    public async Task<IEnumerable<BybitKline>> GetAllCandlesticksAsync(string symbol, KlineInterval timeframe)
     {
-        var seconds = (int)timeframe * limit;
-        var callResult = await this.FuturesExchangeData.GetKlinesAsync(symbol, timeframe, this.DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(seconds)));
+        var startTime = this.DateTime.UtcNow.Subtract(TimeSpan.FromSeconds((int)timeframe * 100));
+        var callResult = await this.FuturesExchangeData.GetKlinesAsync(symbol, timeframe, startTime, 100);
         callResult.ThrowIfHasError();
         return callResult.Data;
     }
 
-    public async Task<IEnumerable<BybitKline>> GetCompletedCandlesticksAsync(string symbol, KlineInterval timeframe, int limit = 1000)
+    public async Task<IEnumerable<BybitKline>> GetCompletedCandlesticksAsync(string symbol, KlineInterval timeframe)
     {
-        var candlesticks = await this.GetAllCandlesticksAsync(symbol, timeframe, limit);
+        var candlesticks = await this.GetAllCandlesticksAsync(symbol, timeframe);
         return candlesticks.SkipLast(1);
     }
 }
