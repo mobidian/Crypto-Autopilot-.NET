@@ -48,7 +48,7 @@ public class BybitUsdFuturesMarketDataProvider : IBybitUsdFuturesMarketDataProvi
 
     public async Task<IEnumerable<BybitKline>> GetCompletedCandlesticksAsync(string symbol, KlineInterval timeframe, int limit = 1000)
     {
-        var candlesticks = await this.GetCompletedCandlesticksAsync(symbol, timeframe, limit);
+        var candlesticks = await this.GetAllCandlesticksAsync(symbol, timeframe, limit);
         return candlesticks.SkipLast(1);
     }
 }
