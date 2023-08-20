@@ -1,4 +1,4 @@
-﻿using CryptoAutopilot.Api.Endpoints.Internal;
+﻿using CryptoAutopilot.Api.Endpoints.Strategies.Extensions;
 using CryptoAutopilot.Api.Services.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;

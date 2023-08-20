@@ -1,5 +1,5 @@
 using CryptoAutopilot.Api.Endpoints;
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.Endpoints.Strategies.Automation;
 using CryptoAutopilot.Api.HealthChecks;
 
 using Infrastructure.Extensions;

@@ -2,9 +2,11 @@
 
 using Application.Strategies;
 
+using CryptoAutopilot.Api.Endpoints.Strategies.Extensions;
+
 using Microsoft.AspNetCore.Mvc;
 
-namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+namespace CryptoAutopilot.Api.Endpoints.Strategies.Automation;
 
 /// <summary>
 /// An interface whose methods will be called during runtime for any type that implements it by methods from <see cref="StrategyEndpointExtensions"/>
