@@ -1,5 +1,4 @@
 using CryptoAutopilot.Api.Endpoints;
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
 using CryptoAutopilot.Api.HealthChecks;
 
@@ -32,7 +31,6 @@ app.UseHttpsRedirection();
 
 app.MapHealthChecks();
 
-app.MapEndpoints<Program>();
 app.MapApiEndpoints();
 app.MapStrategyEndpoints<Program>();
 
