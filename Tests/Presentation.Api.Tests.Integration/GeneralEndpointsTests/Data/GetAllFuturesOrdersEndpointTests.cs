@@ -2,6 +2,7 @@
 
 using Bogus;
 
+using CryptoAutopilot.Api.Endpoints;
 using CryptoAutopilot.Api.Endpoints.Extensions;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
@@ -32,7 +33,7 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
         await this.ArrangeOrdersRepository.AddAsync(futuresOrders);
 
         // Act
-        var futuresOrdersResponse = await this.HttpClient.GetAsync("Data/Trading/Orders");
+        var futuresOrdersResponse = await this.HttpClient.GetAsync(ApiEndpoints.Data.Trading.GetAllOrders);
 
         // Assert
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();
@@ -43,7 +44,7 @@ public class GetAllFuturesOrdersEndpointTests : GeneralEndpointsTestsBase
     public async Task GetAllFuturesOrdersEndpoint_ShouldReturnEmptyEnumerable_WhenNoFurutresOrdersAreInTheDatabase()
     {
         // Act
-        var candlesticksResponse = await this.HttpClient.GetAsync("Data/Trading/Orders");
+        var candlesticksResponse = await this.HttpClient.GetAsync(ApiEndpoints.Data.Trading.GetAllOrders);
 
         // Assert
         var response = await candlesticksResponse.Content.ReadFromJsonAsync<GetAllFuturesOrdersResponse>();

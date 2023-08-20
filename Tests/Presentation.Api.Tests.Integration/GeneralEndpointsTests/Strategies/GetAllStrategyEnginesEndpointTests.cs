@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 
+using CryptoAutopilot.Api.Endpoints;
 using CryptoAutopilot.Contracts.Responses.Strategies;
 
 using FluentAssertions;
@@ -28,7 +29,7 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
         engines.ForEach(this.StrategiesTracker.Add);
 
         // Act
-        var strategiesResponse = await this.HttpClient.GetAsync("strategies");
+        var strategiesResponse = await this.HttpClient.GetAsync(ApiEndpoints.Strategies.GetAll);
 
         // Assert
         var response = await strategiesResponse.Content.ReadFromJsonAsync<GetAllStrategyEnginesResponse>();
@@ -44,7 +45,7 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
     public async Task GetAllStrategyEnginesEndpoint_ShouldReturnEmptyEnumerable_WhenNoStrategyEnginesExist()
     {
         // Act
-        var strategiesResponse = await this.HttpClient.GetAsync("strategies");
+        var strategiesResponse = await this.HttpClient.GetAsync(ApiEndpoints.Strategies.GetAll);
 
         // Assert
         var response = await strategiesResponse.Content.ReadFromJsonAsync<GetAllStrategyEnginesResponse>();

@@ -3,64 +3,55 @@
 using CryptoAutopilot.Contracts.Responses.Common;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Positions;
 
-using Microsoft.AspNetCore.Mvc;
-
 namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
 public static class GetFuturesPositionsEndpoint
 {
     public static void MapGetFuturesPositionsEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapGet("Data/Trading/Positions", async ([FromQuery] string? contractName, IFuturesPositionsRepository positionsRepository) =>
+        app.MapGet(ApiEndpoints.Data.Trading.GetAllPositions, async (string? contractName, IFuturesPositionsRepository positionsRepository) =>
         {
-            try
+            if (contractName is null)
             {
-                if (contractName is null)
+                var futuresPositions = await positionsRepository.GetAllAsync();
+
+                var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
                 {
-                    var futuresPositions = await positionsRepository.GetAllAsync();
+                    CryptoAutopilotId = x.CryptoAutopilotId,
+                    ContractName = x.CurrencyPair.Name,
+                    Side = x.Side,
+                    Margin = x.Margin,
+                    Leverage = x.Leverage,
+                    Quantity = x.Quantity,
+                    EntryPrice = x.EntryPrice,
+                    ExitPrice = x.ExitPrice,
+                });
+                var response = new GetAllFuturesPositionsResponse { FuturesPositions = futuresPositionsResponses };
 
-                    var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
-                    {
-                        CryptoAutopilotId = x.CryptoAutopilotId,
-                        ContractName = x.CurrencyPair.Name,
-                        Side = x.Side,
-                        Margin = x.Margin,
-                        Leverage = x.Leverage,
-                        Quantity = x.Quantity,
-                        EntryPrice = x.EntryPrice,
-                        ExitPrice = x.ExitPrice,
-                    });
-                    var response = new GetAllFuturesPositionsResponse { FuturesPositions = futuresPositionsResponses };
-
-                    return Results.Ok(response);
-                }
-                else
-                {
-                    var futuresPositions = await positionsRepository.GetByCurrencyPairAsync(contractName);
-
-                    var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
-                    {
-                        CryptoAutopilotId = x.CryptoAutopilotId,
-                        ContractName = x.CurrencyPair.Name,
-                        Side = x.Side,
-                        Margin = x.Margin,
-                        Leverage = x.Leverage,
-                        Quantity = x.Quantity,
-                        EntryPrice = x.EntryPrice,
-                        ExitPrice = x.ExitPrice
-                    });
-                    var response = new GetFuturesPositionsByContractNameResponse
-                    {
-                        ContractName = contractName.ToUpper(),
-                        FuturesPositions = futuresPositionsResponses,
-                    };
-
-                    return Results.Ok(response);
-                }
+                return Results.Ok(response);
             }
-            catch (Exception exception)
+            else
             {
-                return Results.BadRequest(exception.Message);
+                var futuresPositions = await positionsRepository.GetByCurrencyPairAsync(contractName);
+
+                var futuresPositionsResponses = futuresPositions.Select(x => new FuturesPositionResponse
+                {
+                    CryptoAutopilotId = x.CryptoAutopilotId,
+                    ContractName = x.CurrencyPair.Name,
+                    Side = x.Side,
+                    Margin = x.Margin,
+                    Leverage = x.Leverage,
+                    Quantity = x.Quantity,
+                    EntryPrice = x.EntryPrice,
+                    ExitPrice = x.ExitPrice
+                });
+                var response = new GetFuturesPositionsByContractNameResponse
+                {
+                    ContractName = contractName.ToUpper(),
+                    FuturesPositions = futuresPositionsResponses,
+                };
+
+                return Results.Ok(response);
             }
         });
     }

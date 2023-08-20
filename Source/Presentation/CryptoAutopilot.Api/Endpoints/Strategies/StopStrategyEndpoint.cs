@@ -1,17 +1,15 @@
 ﻿using CryptoAutopilot.Api.Endpoints.Strategies.Extensions;
 using CryptoAutopilot.Api.Services.Interfaces;
 
-using Microsoft.AspNetCore.Mvc;
-
 namespace CryptoAutopilot.Api.Endpoints.Strategies;
 
 public static class StopStrategyEndpoint
 {
     public static IEndpointRouteBuilder MapStopStrategyEndpoint(this IEndpointRouteBuilder app)
     {
-        app.MapDelete($"StopStrategy/{{guid}}", async ([FromServices] IStrategiesTracker StrategiesTracker, Guid guid, IServiceProvider services) =>
+        app.MapDelete(ApiEndpoints.Strategies.Stop, async (Guid id, IStrategiesTracker StrategiesTracker, IServiceProvider services) =>
         {
-            var strategy = StrategiesTracker.Get(guid);
+            var strategy = StrategiesTracker.Get(id);
             if (strategy is null)
                 return Results.NotFound();
 

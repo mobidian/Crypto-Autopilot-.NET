@@ -2,6 +2,7 @@
 
 using Bogus;
 
+using CryptoAutopilot.Api.Endpoints;
 using CryptoAutopilot.Api.Endpoints.Extensions;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
@@ -39,7 +40,7 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         }
 
         // Act
-        var futuresOrdersResponse = await this.HttpClient.GetAsync($"Data/Trading/Orders?contractName={currencyPair}");
+        var futuresOrdersResponse = await this.HttpClient.GetAsync($"{ApiEndpoints.Data.Trading.GetAllOrders}?contractName={currencyPair}");
 
         // Assert
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByContractNameResponse>();
@@ -61,7 +62,7 @@ public class GetFuturesOrdersByCurrencyPairEndpointTests : GeneralEndpointsTests
         }
 
         // Act
-        var futuresOrdersResponse = await this.HttpClient.GetAsync($"Data/Trading/Orders?contractName={currencyPair}");
+        var futuresOrdersResponse = await this.HttpClient.GetAsync($"{ApiEndpoints.Data.Trading.GetAllOrders}?contractName={currencyPair}");
 
         // Assert
         var response = await futuresOrdersResponse.Content.ReadFromJsonAsync<GetFuturesOrdersByContractNameResponse>();

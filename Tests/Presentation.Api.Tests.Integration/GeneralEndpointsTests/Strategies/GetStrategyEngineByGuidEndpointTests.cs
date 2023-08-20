@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 
+using CryptoAutopilot.Api.Endpoints;
 using CryptoAutopilot.Contracts.Responses.Strategies;
 
 using FluentAssertions;
@@ -30,7 +31,7 @@ public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
         engines.ForEach(this.StrategiesTracker.Add);
 
         // Act
-        var strategyResponse = await this.HttpClient.GetAsync($"strategies?guid={engines[i].Guid}");
+        var strategyResponse = await this.HttpClient.GetAsync(ApiEndpoints.Strategies.Get.Replace("id:guid", engines[i].Guid.ToString()));
 
         // Assert
         var response = await strategyResponse.Content.ReadFromJsonAsync<StrategyEngineResponse>();
@@ -43,7 +44,7 @@ public class GetStrategyEngineByGuidEndpointTests : GeneralEndpointsTestsBase
     public async Task GetStrategyEngineByGuidEndpoint_ShouldReturnNotFound_WhenNoStrategyEngineWithSpecifiedGuidExists()
     {
         // Act
-        var strategyResponse = await this.HttpClient.GetAsync($"strategies/{Guid.NewGuid()}");
+        var strategyResponse = await this.HttpClient.GetAsync(ApiEndpoints.Strategies.Get.Replace("id:guid", Guid.NewGuid().ToString()));
 
         // Assert
         strategyResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);

@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GeneralEndpointsTests\**" />
+    <EmbeddedResource Remove="GeneralEndpointsTests\**" />
+    <None Remove="GeneralEndpointsTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
     <PackageReference Include="FluentAssertions" Version="6.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.10" />
@@ -28,9 +34,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Source\Presentation\CryptoAutopilot.Api\CryptoAutopilot.Api.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-    <Folder Include="GeneralEndpointsTests\Base\" />
-  </ItemGroup>
 
 </Project>
