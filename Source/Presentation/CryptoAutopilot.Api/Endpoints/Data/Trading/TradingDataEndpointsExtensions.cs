@@ -6,8 +6,8 @@ public static class TradingDataEndpointsExtensions
 {
     public static IEndpointRouteBuilder MapTradingDataEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapFuturesOrdersEndpoint();
-        app.MapFuturesPositionsEndpoint();
+        app.MapGetFuturesOrdersEndpoint();
+        app.MapGetFuturesPositionsEndpoint();
 
         return app;
     }
