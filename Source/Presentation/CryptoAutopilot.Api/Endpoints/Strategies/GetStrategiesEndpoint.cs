@@ -1,16 +1,15 @@
 ﻿using Application.Strategies;
 
-using CryptoAutopilot.Api.Endpoints.Internal;
 using CryptoAutopilot.Api.Services.Interfaces;
 using CryptoAutopilot.Contracts.Responses.Strategies;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace CryptoAutopilot.Api.Endpoints;
+namespace CryptoAutopilot.Api.Endpoints.Strategies;
 
-public static class ServicesEndpointsExtensions
+public static class GetStrategiesEndpoint
 {
-    public static void MapEndpoints(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapGetStrategiesEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet("strategies", ([FromServices] IStrategiesTracker StrategiesTracker, Guid? guid, IServiceProvider services) =>
         {
@@ -32,14 +31,8 @@ public static class ServicesEndpointsExtensions
             }
         }).WithTags("Strategies");
 
-        app.MapDelete($"StopStrategy/{{guid}}", async ([FromServices] IStrategiesTracker StrategiesTracker, Guid guid, IServiceProvider services) =>
-        {
-            var strategy = StrategiesTracker.Get(guid);
-            if (strategy is null)
-                return Results.NotFound();
 
-            return await strategy.StopAsync(services, TimeSpan.FromSeconds(15));
-        }).WithTags("Strategies");
+        return app;
     }
     private static StrategyEngineResponse StrategyEngineToResponse(IStrategyEngine strategy) => new StrategyEngineResponse
     {

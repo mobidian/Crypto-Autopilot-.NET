@@ -32,8 +32,4 @@
     <ProjectReference Include="..\CryptoAutopilot.Contracts\CryptoAutopilot.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Endpoints\Strategies\" />
-  </ItemGroup>
-
 </Project>
