@@ -1,14 +1,13 @@
 ﻿using Application.DataAccess.Repositories;
 
 using CryptoAutopilot.Api.Endpoints.Extensions;
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
-public static class FuturesOrdersEndpoint
+public static class GetFuturesOrdersEndpoint
 {
     public static void MapFuturesOrdersEndpoint(this IEndpointRouteBuilder app)
     {

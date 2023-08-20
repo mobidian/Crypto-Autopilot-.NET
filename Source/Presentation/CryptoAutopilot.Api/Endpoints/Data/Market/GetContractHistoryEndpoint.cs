@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Data.Market;
 
-public static class ContractHistoryEndpoint
+public static class GetContractHistoryEndpoint
 {
     public static void MapContractHistoryEndpoint(this IEndpointRouteBuilder app)
     {

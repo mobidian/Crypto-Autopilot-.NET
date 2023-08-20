@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints;
 
-public static partial class ServicesEndpointsExtensions
+public static class ServicesEndpointsExtensions
 {
     public static void MapEndpoints(this IEndpointRouteBuilder app)
     {
