@@ -10,10 +10,6 @@ namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
 public class FuturesPositionsEndpoints : IEndpoints
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
-    {
-    }
-
     public static void MapEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("Data/Trading/Positions", async ([FromQuery] string? contractName, IFuturesPositionsRepository positionsRepository) =>

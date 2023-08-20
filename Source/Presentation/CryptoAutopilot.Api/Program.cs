@@ -15,7 +15,6 @@ builder.Services.AddSwaggerGen();
 builder.Configuration.AddAzureKeyVault();
 
 builder.Services.AddServices(builder.Configuration);
-builder.Services.AddServices<Program>(builder.Configuration);
 builder.Services.AddStrategies<Program>(builder.Configuration);
 
 builder.Services.AddHealthChecks(builder.Configuration);

@@ -12,10 +12,6 @@ namespace CryptoAutopilot.Api.Endpoints.Data.Market;
 
 public class ContractHistoryEndpoints : IEndpoints
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
-    {
-    }
-
     public static void MapEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("Data/Market/ContractHistory", async ([FromQuery] string? name, [FromQuery] int? min, IBybitUsdFuturesMarketDataProvider marketDataProvider) =>
