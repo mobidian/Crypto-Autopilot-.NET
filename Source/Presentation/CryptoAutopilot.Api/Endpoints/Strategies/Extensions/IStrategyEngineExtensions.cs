@@ -6,7 +6,7 @@ using Application.Strategies;
 using CryptoAutopilot.Api.Services.Interfaces;
 using CryptoAutopilot.Contracts.Responses.Strategies;
 
-namespace CryptoAutopilot.Api.Endpoints.Internal;
+namespace CryptoAutopilot.Api.Endpoints.Strategies.Extensions;
 
 internal static class IStrategyEngineExtensions
 {
