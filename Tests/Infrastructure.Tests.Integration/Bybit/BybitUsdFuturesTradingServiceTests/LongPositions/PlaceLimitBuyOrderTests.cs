@@ -35,7 +35,7 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
 
         // Act
         await this.SUT.PlaceLimitOrderAsync(OrderSide.Buy, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
         // Assert
         this.SUT.BuyLimitOrders.Should().NotBeNullOrEmpty();
         this.SUT.BuyLimitOrders.Single().Side.Should().Be(OrderSide.Buy);
@@ -43,7 +43,7 @@ public class PlaceLimitBuyOrderTests : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.BuyLimitOrders.Single().Quantity.Should().Be(Math.Round(this.Margin * this.Leverage / limitPrice, 2));
         this.SUT.BuyLimitOrders.Single().StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
         this.SUT.BuyLimitOrders.Single().TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        
+
         var order = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, this.SUT.BuyLimitOrders.Single().BybitID);
         order.Side.Should().Be(OrderSide.Buy);
         order.Price.Should().Be(limitPrice);

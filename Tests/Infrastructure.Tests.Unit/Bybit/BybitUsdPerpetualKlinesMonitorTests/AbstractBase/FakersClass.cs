@@ -12,7 +12,7 @@ public abstract class FakersClass
     protected readonly Faker<string> CurrencyPairFaker = new Faker<string>()
         .CustomInstantiator(f => $"{f.Finance.Currency().Code}{f.Finance.Currency().Code}");
 
-    
+
     protected (string currencyPair, KlineInterval timeframe) GetRandomContractIdentifier()
     {
         var currencyPair = this.CurrencyPairFaker.Generate();

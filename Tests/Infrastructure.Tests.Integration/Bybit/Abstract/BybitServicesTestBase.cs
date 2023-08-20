@@ -9,7 +9,7 @@ public abstract class BybitServicesTestBase
 {
     protected readonly ConfigurationManager Configuration;
     protected readonly IServiceCollection Services;
-    
+
     protected BybitServicesTestBase()
     {
         var services = new ServiceCollection();
@@ -18,7 +18,7 @@ public abstract class BybitServicesTestBase
         configuration.AddJsonFile("appsettings.test.json", optional: false);
         configuration.AddUserSecrets<BybitServicesTestBase>();
         configuration.AddAzureKeyVault();
-        
+
 
         this.Services = services;
         this.Configuration = configuration;

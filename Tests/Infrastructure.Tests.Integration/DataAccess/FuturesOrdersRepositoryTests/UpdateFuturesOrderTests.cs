@@ -47,7 +47,7 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         // Arrange
         var order = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
-        await InsertRelatedPositionAndOrdersAsync(position, new[] { order });
+        await this.InsertRelatedPositionAndOrdersAsync(position, new[] { order });
 
         var updatedOrder = this.FuturesOrdersGenerator.Clone().RuleFor(x => x.BybitID, order.BybitID).Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
 
@@ -66,18 +66,18 @@ public class UpdateFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
-        await InsertRelatedPositionAndOrdersAsync(position, orders);
+        await this.InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var n = Random.Shared.Next(orders.Count);
         var updatedOrder = this.FuturesOrdersGenerator.Clone()
             .RuleFor(x => x.BybitID, orders[n].BybitID)
             .Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Sell.ToRuleSetName()}");
 
-        
+
         // Act
         var func = async () => await this.SUT.UpdateAsync(updatedOrder);
 
-        
+
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<DbUpdateException>()

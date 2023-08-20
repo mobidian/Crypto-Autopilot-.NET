@@ -27,17 +27,17 @@ public class GetByCryptoAutopilotIdTests : TradingSignalsRepositoryTestsBase
 
         // Act
         var retrievedTradingSignal = await this.SUT.GetByCryptoAutopilotIdAsync(tradingSignal.CryptoAutopilotId);
-        
+
         // Assert
         retrievedTradingSignal.Should().BeEquivalentTo(tradingSignal);
     }
-    
+
     [Fact]
     public async Task GetByCryptoAutopilotId_ShouldReturnNull_WhenTradingSignalWithMatchingCryptoAutopilotIdDoesNotExist()
     {
         // Arrange
         var guid = Guid.NewGuid();
-        
+
         // Act
         var retrievedTradingSignal = await this.SUT.GetByCryptoAutopilotIdAsync(guid);
 

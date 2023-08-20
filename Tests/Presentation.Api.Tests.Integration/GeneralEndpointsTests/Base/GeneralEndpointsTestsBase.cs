@@ -28,7 +28,7 @@ public abstract class GeneralEndpointsTestsBase : FakersClass, IClassFixture<Api
     protected IFuturesOperationsService ArrangeFuturesOperationsService;
 
     protected IStrategiesTracker StrategiesTracker;
-    
+
 
     protected GeneralEndpointsTestsBase(ApiFactory apiFactory, DatabaseFixture databaseFixture)
     {

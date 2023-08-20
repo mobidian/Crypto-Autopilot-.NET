@@ -24,10 +24,10 @@ public abstract class FuturesRepositoriesTestsBase : FuturesDataFakersClass, IAs
     {
         this.DbContextFactory = databaseFixture.DbContextFactory;
         this.ClearDatabaseAsyncFunc = databaseFixture.ClearDatabaseAsync;
-        
+
         this.ArrangeAssertDbContext = this.DbContextFactory.CreateNoTrackingContext();
     }
-    
+
 
     public virtual async Task InitializeAsync() => await Task.CompletedTask;
     public virtual async Task DisposeAsync() => await this.ClearDatabaseAsyncFunc.Invoke();

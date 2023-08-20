@@ -29,7 +29,7 @@ public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
         var stopLoss = lastPrice + stopLossOffset;
         var takeProfit = lastPrice + takeProfitOffset;
         var tradingStopTriggerType = TriggerType.LastPrice;
-        
+
         await this.SUT.OpenPositionAsync(positionSide, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
 
 
@@ -54,7 +54,7 @@ public class ClosePositionTests : BybitUsdFuturesTradingServiceTestsBase
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>(expectedErrorMessage);
     }
-    
+
     [Fact]
     public async Task CloseAllPositionsAsync_ShouldCloseAllOpenPositions()
     {

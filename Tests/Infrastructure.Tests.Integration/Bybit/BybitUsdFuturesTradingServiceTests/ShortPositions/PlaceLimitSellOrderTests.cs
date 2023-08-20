@@ -35,7 +35,7 @@ public class PlaceLimitSellOrderTests : BybitUsdFuturesTradingServiceTestsBase
 
         // Act
         await this.SUT.PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
         // Assert
         this.SUT.SellLimitOrders.Should().NotBeNullOrEmpty();
         this.SUT.SellLimitOrders.Single().Side.Should().Be(OrderSide.Sell);
@@ -83,7 +83,7 @@ public class PlaceLimitSellOrderTests : BybitUsdFuturesTradingServiceTestsBase
 
         // Act
         var func = async () => await this.SUT.PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
         // Assert
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
     }

@@ -31,7 +31,7 @@ public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
         decimal? stopLoss = stopLossOffset.HasValue ? lastPrice + stopLossOffset.Value : null;
         decimal? takeProfit = takeProfitOffset.HasValue ? lastPrice + takeProfitOffset.Value : null;
         var tradingStopTriggerType = TriggerType.LastPrice;
-        
+
         // Act
         await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
 
@@ -42,7 +42,7 @@ public class OpenLongPositionTests : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.LongPosition!.Leverage.Should().Be(this.Leverage);
         this.SUT.LongPosition!.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
         this.SUT.LongPosition!.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        
+
         var position = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Buy);
         position!.Side.Should().Be(PositionSide.Buy);
         position!.PositionMode.Should().Be(PositionMode.BothSideBuy);

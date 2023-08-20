@@ -22,7 +22,7 @@ public static class FuturesOrderMappingExtensions
         TimeInForce = futuresOrder.TimeInForce,
         Status = futuresOrder.Status,
     };
-    
+
     public static FuturesOrder ToDomainObject(this FuturesOrderDbEntity entity) => new FuturesOrder
     {
         BybitID = entity.BybitID,

@@ -46,8 +46,8 @@ public class LuxAlgoImbalanceStrategyEngine : StrategyEngine
         {
             var luxAlgoFVG = this.FvgFinder.FindLast(this.Candlesticks)!.Value;
             var orderSide = luxAlgoFVG.Side == FvgSide.Bullish ? OrderSide.Buy : OrderSide.Sell;
-            
-            await PlaceLimitOrderAsync(orderSide, luxAlgoFVG);
+
+            await this.PlaceLimitOrderAsync(orderSide, luxAlgoFVG);
 
 
             this.FvgFormed = null; // the signal has been consumed

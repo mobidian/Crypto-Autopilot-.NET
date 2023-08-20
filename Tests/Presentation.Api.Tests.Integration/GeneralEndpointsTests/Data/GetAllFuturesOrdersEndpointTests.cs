@@ -3,7 +3,6 @@
 using Bogus;
 
 using CryptoAutopilot.Api.Endpoints.Extensions;
-using CryptoAutopilot.Contracts.Responses.Common;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 using FluentAssertions;

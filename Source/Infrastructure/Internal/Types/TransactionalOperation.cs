@@ -6,7 +6,7 @@ internal class TransactionalOperation : IDisposable, IAsyncDisposable
 {
     private readonly IDbContextTransaction Transaction;
     public TransactionalOperation(IDbContextTransaction transaction) => this.Transaction = transaction;
-    
+
     public void Dispose()
     {
         try
@@ -22,7 +22,7 @@ internal class TransactionalOperation : IDisposable, IAsyncDisposable
         {
             this.Transaction.Dispose();
         }
-    }    
+    }
     public async ValueTask DisposeAsync()
     {
         try

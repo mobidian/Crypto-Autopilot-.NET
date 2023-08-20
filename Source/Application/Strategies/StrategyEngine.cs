@@ -71,7 +71,7 @@ public abstract class StrategyEngine : IStrategyEngine
 
     public void Dispose()
     {
-        Dispose(disposing: true);
+        this.Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
     protected virtual void Dispose(bool disposing)
@@ -90,7 +90,7 @@ public abstract class StrategyEngine : IStrategyEngine
 
     public async ValueTask DisposeAsync()
     {
-        await DisposeAsync(disposing: true);
+        await this.DisposeAsync(disposing: true);
         GC.SuppressFinalize(this);
     }
     protected virtual async Task DisposeAsync(bool disposing)

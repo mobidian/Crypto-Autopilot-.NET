@@ -67,7 +67,7 @@ public class AddFuturesPositionTests : FuturesPositionsRepositoryTestsBase
 
         // Act
         var func = async () => await this.SUT.AddAsync(positionWithSameCryptoAutopilotId);
-        
+
 
         // Assert
         (await func.Should()

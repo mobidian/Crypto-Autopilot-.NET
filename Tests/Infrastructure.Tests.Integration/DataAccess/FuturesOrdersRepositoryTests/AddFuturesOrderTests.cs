@@ -35,7 +35,7 @@ public class AddFuturesOrderTests : FuturesOrdersRepositoryTestsBase
         added.Should().BeTrue();
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(order);
     }
-    
+
     [Fact]
     public async Task AddFuturesOrderWithPositionGuid_ShouldAddFuturesOrder_WhenOrderRequiresPosition()
     {

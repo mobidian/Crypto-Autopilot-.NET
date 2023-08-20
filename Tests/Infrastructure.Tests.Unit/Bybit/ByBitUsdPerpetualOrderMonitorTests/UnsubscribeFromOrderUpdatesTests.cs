@@ -31,7 +31,7 @@ public class UnsubscribeFromOrderUpdatesTests : ByBitUsdPerpetualOrderMonitorTes
     {
         // Act
         var func = async () => await this.SUT.UnsubscribeFromOrderUpdatesAsync();
-        
+
         // Assert
         await func.Should().ThrowExactlyAsync<NotSubscribedException>().WithMessage("Not subscribed to perpetual order updates");
     }

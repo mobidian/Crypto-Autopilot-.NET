@@ -7,7 +7,7 @@ namespace Domain.PipelineBehaviors;
 public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequest>> Validators;
-    
+
     public ValidationPipelineBehavior(IEnumerable<IValidator<TRequest>> validators)
     {
         this.Validators = validators;

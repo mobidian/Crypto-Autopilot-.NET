@@ -19,7 +19,7 @@ public static class FuturesPositionMappingExtensions
         TakeProfit = position.TakeProfit,
         ExitPrice = position.ExitPrice,
     };
-    
+
     public static FuturesPosition ToDomainObject(this FuturesPositionDbEntity entity) => new FuturesPosition
     {
         CryptoAutopilotId = entity.CryptoAutopilotId,

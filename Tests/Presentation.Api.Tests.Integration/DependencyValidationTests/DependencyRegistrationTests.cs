@@ -8,7 +8,6 @@ using Application.Interfaces.Services.Bybit;
 using Application.Interfaces.Services.Bybit.Monitors;
 using Application.Interfaces.Services.General;
 
-using Bybit.Net;
 using Bybit.Net.Clients;
 using Bybit.Net.Clients.UsdPerpetualApi;
 using Bybit.Net.Interfaces.Clients;
@@ -64,18 +63,18 @@ public class DependencyRegistrationTests
 
         this.RequiredDescriptors.Add((typeof(IStrategiesTracker), typeof(StrategiesTracker), ServiceLifetime.Singleton));
     }
-    
+
     private void AddRepositories()
     {
         this.RequiredDescriptors.Add((typeof(IFuturesOrdersRepository), typeof(FuturesOrdersRepository), ServiceLifetime.Scoped));
         this.RequiredDescriptors.Add((typeof(IFuturesPositionsRepository), typeof(FuturesPositionsRepository), ServiceLifetime.Scoped));
     }
-    
+
     private void AddDataAccessServices()
     {
         this.RequiredDescriptors.Add((typeof(IFuturesOperationsService), typeof(FuturesOperationsService), ServiceLifetime.Scoped));
     }
-    
+
     private void AddBybitServices()
     {
         this.RequiredDescriptors.Add((typeof(IBybitRestClient), typeof(BybitRestClient), ServiceLifetime.Singleton));
@@ -83,10 +82,10 @@ public class DependencyRegistrationTests
         this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiTrading), typeof(BybitRestClientUsdPerpetualApiTrading), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiExchangeData), typeof(BybitRestClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitRestClientUsdPerpetualApiExchangeData), typeof(BybitRestClientUsdPerpetualApiExchangeData), ServiceLifetime.Singleton));
-        
+
         this.RequiredDescriptors.Add((typeof(IBybitSocketClient), typeof(BybitSocketClient), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitSocketClientUsdPerpetualApi), typeof(BybitSocketClientUsdPerpetualApi), ServiceLifetime.Singleton));
-        
+
         this.RequiredDescriptors.Add((typeof(IBybitFuturesAccountDataProvider), typeof(BybitFuturesAccountDataProvider), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitUsdFuturesMarketDataProvider), typeof(BybitUsdFuturesMarketDataProvider), ServiceLifetime.Singleton));
         this.RequiredDescriptors.Add((typeof(IBybitUsdFuturesTradingApiClient), typeof(BybitUsdFuturesTradingApiClient), ServiceLifetime.Singleton));
@@ -106,40 +105,40 @@ public class DependencyRegistrationTests
             builder.ConfigureServices(serviceCollection =>
             {
                 var services = serviceCollection.ToList();
-                var res = ValidateServices(services);
+                var res = this.ValidateServices(services);
 
                 if (!res.Success)
                     Assert.Fail(res.Message);
 
                 // Assert.Pass();
             }));
-        
+
         app.CreateClient(); // triggers the building of the application
     }
     private (bool Success, string Message) ValidateServices(List<ServiceDescriptor> serviceDescriptors)
     {
         var searchFailed = false;
         var failedText = new StringBuilder();
-        
+
         foreach (var (serviceType, implementationType, lifetime) in this.RequiredDescriptors)
         {
-            var match = serviceDescriptors.SingleOrDefault(serviceDescriptor => 
+            var match = serviceDescriptors.SingleOrDefault(serviceDescriptor =>
                 serviceDescriptor.ServiceType == serviceType &&
                 (serviceDescriptor.ImplementationType == implementationType || serviceDescriptor.ImplementationFactory is not null || serviceDescriptor.ImplementationInstance is not null) &&
                 serviceDescriptor.Lifetime == lifetime);
-            
+
             if (match is not null)
                 continue;
-            
+
             if (!searchFailed)
             {
                 failedText.AppendLine("Did not find registered service for:");
                 searchFailed = true;
             }
-            
+
             failedText.AppendLine($"{serviceType} | {implementationType} | {lifetime}");
         }
-        
+
         return (!searchFailed, failedText.ToString());
     }
 }

@@ -72,18 +72,18 @@ public class UpdatePositionCommandTests : CommandsTestsBase
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
             .RuleFor(x => x.Side, position.Side)
             .Generate();
-        
+
         var command = new UpdatePositionCommand
         {
             UpdatedPosition = updatedPosition,
             NewFuturesOrders = newFuturesOrders,
         };
 
-        
+
         // Act
         await this.Mediator.Send(command);
 
-        
+
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Select(x => x.ToDomainObject()).Should().BeEquivalentTo(orders.Concat(newFuturesOrders));
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(updatedPosition);
@@ -104,7 +104,7 @@ public class UpdatePositionCommandTests : CommandsTestsBase
         var orderOpposidePositionSide = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {invertedSideRule}");
         var newFuturesOrders = this.FuturesOrdersGenerator.Generate(3, $"default, {OrderType.Market.ToRuleSetName()}, {position.Side.ToRuleSetName()}");
         newFuturesOrders[Random.Shared.Next(orders.Count)] = orderOpposidePositionSide;
-        
+
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
             .RuleFor(x => x.Side, position.Side)

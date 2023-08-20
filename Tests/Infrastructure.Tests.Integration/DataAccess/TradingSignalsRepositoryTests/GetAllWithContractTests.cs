@@ -23,7 +23,7 @@ public class GetAllWithContractTests : TradingSignalsRepositoryTestsBase
         var btcusdtSignals = this.TradingSignalGenerator.Clone().RuleFor(x => x.CurrencyPair, "BTCUSDT").Generate(Random.Shared.Next(10, 100));
         var ethusdtSignals = this.TradingSignalGenerator.Clone().RuleFor(x => x.CurrencyPair, "ETHUSDT").Generate(Random.Shared.Next(10, 100));
         var bnbusdtSignals = this.TradingSignalGenerator.Clone().RuleFor(x => x.CurrencyPair, "BNBUSDT").Generate(Random.Shared.Next(10, 100));
-        
+
         var list = new List<TradingSignal>();
         list.AddRange(btcusdtSignals);
         list.AddRange(ethusdtSignals);
@@ -39,7 +39,7 @@ public class GetAllWithContractTests : TradingSignalsRepositoryTestsBase
         // Assert
         retrievedTradingSignals.Should().BeEquivalentTo(btcusdtSignals);
     }
-    
+
     [Fact]
     public async Task GetAllWithContract_ShouldReturnEmptyEnumerable_WhenTradingSignalsWithMatchingContractDoNotExist()
     {
@@ -55,7 +55,7 @@ public class GetAllWithContractTests : TradingSignalsRepositoryTestsBase
 
         await this.SUT.AddAsync(list);
 
-        
+
         // Act
         var retrievedTradingSignals = await this.SUT.GetAllWithContractAsync("EURUSD");
 

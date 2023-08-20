@@ -31,7 +31,7 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
         decimal? stopLoss = stopLossOffset.HasValue ? lastPrice + stopLossOffset.Value : null;
         decimal? takeProfit = takeProfitOffset.HasValue ? lastPrice + takeProfitOffset.Value : null;
         var tradingStopTriggerType = TriggerType.LastPrice;
-        
+
         // Act
         await this.SUT.OpenPositionAsync(PositionSide.Sell, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
 
@@ -42,7 +42,7 @@ public class OpenShortPositionTests : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.ShortPosition!.Leverage.Should().Be(this.Leverage);
         this.SUT.ShortPosition!.StopLoss.Should().Be(stopLossOffset.HasValue ? stopLoss!.Value : 0);
         this.SUT.ShortPosition!.TakeProfit.Should().Be(takeProfitOffset.HasValue ? takeProfit!.Value : 0);
-        
+
         var position = await this.FuturesAccount.GetPositionAsync(this.CurrencyPair.Name, PositionSide.Sell);
         position!.Side.Should().Be(PositionSide.Sell);
         position!.PositionMode.Should().Be(PositionMode.BothSideSell);

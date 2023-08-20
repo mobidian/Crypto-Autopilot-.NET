@@ -26,7 +26,7 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
         // Arrange
         var engines = this.StrategyEnginesGenerator.Generate(10);
         engines.ForEach(this.StrategiesTracker.Add);
-        
+
         // Act
         var strategiesResponse = await this.HttpClient.GetAsync("strategies");
 
@@ -39,12 +39,12 @@ public class GetAllStrategyEnginesEndpointTests : GeneralEndpointsTestsBase
             IsRunning = engine.IsRunning(),
         }));
     }
-        
+
     [Fact]
     public async Task GetAllStrategyEnginesEndpoint_ShouldReturnEmptyEnumerable_WhenNoStrategyEnginesExist()
     {
         // Act
-        var strategiesResponse = await HttpClient.GetAsync("strategies");
+        var strategiesResponse = await this.HttpClient.GetAsync("strategies");
 
         // Assert
         var response = await strategiesResponse.Content.ReadFromJsonAsync<GetAllStrategyEnginesResponse>();

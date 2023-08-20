@@ -34,7 +34,7 @@ public class UpdateTests : TradingSignalsRepositoryTestsBase
         result.Should().BeTrue();
         this.ArrangeAssertDbContext.TradingSignals.Single().ToDomainObject().Should().BeEquivalentTo(updatedSignal);
     }
-    
+
     [Fact]
     public async Task Update_ShouldUpdateTradingSignal_WhenTradingSignalDoesNotExist()
     {

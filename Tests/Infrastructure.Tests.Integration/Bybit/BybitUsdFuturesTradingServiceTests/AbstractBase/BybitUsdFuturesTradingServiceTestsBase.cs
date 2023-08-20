@@ -21,7 +21,7 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
 {
     protected readonly CurrencyPair CurrencyPair = new CurrencyPair("BTC", "USDT");
     protected readonly Faker faker = new Faker();
-    
+
     protected decimal Margin = 100;
     protected readonly decimal Leverage = 10m;
 
@@ -31,22 +31,22 @@ public abstract class BybitUsdFuturesTradingServiceTestsBase : BybitServicesTest
     protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
 
     protected readonly Func<Task> ClearDatabaseAsyncFunc;
-    
+
     public BybitUsdFuturesTradingServiceTestsBase(DatabaseFixture databaseFixture) : base()
     {
         this.Configuration["ConnectionStrings:TradingHistoryDB"] = databaseFixture.ConnectionString;
         this.Services.AddServices(this.Configuration);
         var serviceProvider = this.Services.BuildServiceProvider();
-        
+
         this.SUT = serviceProvider.GetRequiredService<BybitUsdFuturesTradingServiceFactory>().Create(this.CurrencyPair, this.Leverage, serviceProvider);
         this.FuturesAccount = serviceProvider.GetRequiredService<IBybitFuturesAccountDataProvider>();
         this.MarketDataProvider = serviceProvider.GetRequiredService<IBybitUsdFuturesMarketDataProvider>();
         this.TradingClient = serviceProvider.GetRequiredService<IBybitUsdFuturesTradingApiClient>();
-        
+
 
         this.ClearDatabaseAsyncFunc = databaseFixture.ClearDatabaseAsync;
     }
-    
+
 
     public async Task InitializeAsync()
     {

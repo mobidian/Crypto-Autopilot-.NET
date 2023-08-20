@@ -15,7 +15,7 @@ public static class TradingSignalMappingExtensions
         Time = signal.Time,
         Info = signal.Info,
     };
-    
+
     public static TradingSignal ToDomainObject(this TradingSignalDbEntity entity) => new TradingSignal
     {
         CryptoAutopilotId = entity.CryptoAutopilotId,

@@ -20,7 +20,7 @@ public class WaitForAnyOrderToReachStatusTests : ByBitUsdPerpetualOrderMonitorTe
         var finalStatus = OrderStatus.Filled;
 
         await this.SUT.SubscribeToOrderUpdatesAsync();
-        
+
 
         // Act
         var task = this.SUT.WaitForAnyOrderToReachStatusAsync(orderIDs, finalStatus);
@@ -33,7 +33,7 @@ public class WaitForAnyOrderToReachStatusTests : ByBitUsdPerpetualOrderMonitorTe
             await Task.Delay(100);
             taskCompletedBeforeFinalStatus = task.IsCompleted;
         }
-        
+
         this.SUT.HandleUsdPerpetualOrderUpdate(this.CreateDataEvent(orderIDs[Random.Shared.Next(orderIDs.Count)], finalStatus)); // the dictionary value will get updated here
         await Task.Delay(100);
         var taskCompletedAfterFinalStatus = task.IsCompleted;

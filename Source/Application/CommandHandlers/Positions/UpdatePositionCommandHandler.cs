@@ -10,7 +10,7 @@ public class UpdatePositionCommandHandler : IRequestHandler<UpdatePositionComman
 {
     private readonly IFuturesOperationsService FuturesOperationsService;
     public UpdatePositionCommandHandler(IFuturesOperationsService futuresOperationsService) => this.FuturesOperationsService = futuresOperationsService;
-    
+
     public async Task<Unit> Handle(UpdatePositionCommand request, CancellationToken cancellationToken)
     {
         var updatedPosition = request.UpdatedPosition;

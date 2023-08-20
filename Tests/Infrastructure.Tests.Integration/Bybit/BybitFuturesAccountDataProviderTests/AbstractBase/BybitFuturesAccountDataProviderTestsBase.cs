@@ -21,12 +21,12 @@ public abstract class BybitFuturesAccountDataProviderTestsBase : BybitServicesTe
     protected readonly IBybitFuturesAccountDataProvider SUT;
     protected readonly IBybitUsdFuturesTradingApiClient TradingClient;
     protected readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
-    
+
     public BybitFuturesAccountDataProviderTestsBase() : base()
     {
         this.Services.AddServices(this.Configuration);
         var serviceProvider = this.Services.BuildServiceProvider();
-        
+
         this.SUT = serviceProvider.GetRequiredService<IBybitFuturesAccountDataProvider>();
         this.TradingClient = serviceProvider.GetRequiredService<IBybitUsdFuturesTradingApiClient>();
         this.MarketDataProvider = serviceProvider.GetRequiredService<IBybitUsdFuturesMarketDataProvider>();

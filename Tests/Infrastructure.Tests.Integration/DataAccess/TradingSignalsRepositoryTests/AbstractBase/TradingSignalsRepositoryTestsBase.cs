@@ -13,6 +13,6 @@ public abstract class TradingSignalsRepositoryTestsBase : FuturesRepositoriesTes
 
     protected TradingSignalsRepositoryTestsBase(DatabaseFixture databaseFixture) : base(databaseFixture)
     {
-        this.SUT = new TradingSignalsRepository(DbContextFactory.Create());
+        this.SUT = new TradingSignalsRepository(this.DbContextFactory.Create());
     }
 }

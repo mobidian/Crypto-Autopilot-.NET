@@ -30,11 +30,11 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
 
         var order = await this.SUT.PlaceLimitOrderAsync(orderSide, limitPrice, this.Margin);
 
-        
+
         // Act
         await this.SUT.CancelLimitOrdersAsync(order.BybitID);
 
-        
+
         // Assert
         this.SUT.LimitOrders.Should().BeEmpty();
     }
@@ -44,7 +44,7 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
     {
         // Arrange
         var lastPrice = await this.MarketDataProvider.GetLastPriceAsync(this.CurrencyPair.Name);
-        
+
         var orders = new List<FuturesOrder>();
         for (var offset = 100; offset <= 500; offset += 100)
             orders.Add(Random.Shared.Next(2) switch
@@ -54,12 +54,12 @@ public class CancelLimitOrderTests : BybitUsdFuturesTradingServiceTestsBase
                 _ => throw new NotImplementedException(),
             });
 
-        
+
         // Act
         var ids = orders.Take(3).Select(x => x.BybitID).ToArray();
         await this.SUT.CancelLimitOrdersAsync(ids);
 
-        
+
         // Assert
         this.SUT.LimitOrders.Should().BeEquivalentTo(orders.Skip(3));
     }

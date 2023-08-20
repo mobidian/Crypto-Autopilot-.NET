@@ -21,7 +21,7 @@ public class CreateLimitOrderCommandTests : CommandsTestsBase
     {
     }
 
-    
+
     [Fact]
     public async Task CreateLimitOrderCommand_ShouldCreateLimitOrder_WhenCommandIsValid()
     {
@@ -34,7 +34,7 @@ public class CreateLimitOrderCommandTests : CommandsTestsBase
 
         // Act
         await this.Mediator.Send(command);
-        
+
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(limitOrder);
     }
@@ -49,10 +49,10 @@ public class CreateLimitOrderCommandTests : CommandsTestsBase
         {
             LimitOrder = order,
         };
-        
+
         // Act
         var func = async () => await this.Mediator.Send(command);
-        
+
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<FluentValidation.ValidationException>())

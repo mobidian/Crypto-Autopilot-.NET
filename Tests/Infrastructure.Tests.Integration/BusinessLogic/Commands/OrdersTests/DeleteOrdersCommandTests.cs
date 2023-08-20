@@ -24,7 +24,7 @@ public class DeleteOrdersCommandTests : CommandsTestsBase
     {
     }
 
-    
+
     [Fact]
     public async Task DeleteOrdersCommand_ShouldDeleteOrders_WhenSpecifiedIdsExist()
     {
@@ -37,7 +37,7 @@ public class DeleteOrdersCommandTests : CommandsTestsBase
             Position = position,
             FuturesOrders = orders,
         });
-        
+
         var command = new DeleteOrdersCommand
         {
             BybitIds = orders.Select(x => x.BybitID).ToArray()
@@ -47,7 +47,7 @@ public class DeleteOrdersCommandTests : CommandsTestsBase
         // Act
         await this.Mediator.Send(command);
 
-        
+
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Should().BeEmpty();
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
@@ -62,10 +62,10 @@ public class DeleteOrdersCommandTests : CommandsTestsBase
         {
             BybitIds = new[] { guid }
         };
-        
+
         // Act
         var func = async () => await this.Mediator.Send(command);
-        
+
         // Assert
         (await func.Should().ThrowExactlyAsync<DbUpdateException>())
             .WithMessage($"No order with bybitID {guid} was found in the database");

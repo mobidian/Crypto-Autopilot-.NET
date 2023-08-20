@@ -2,9 +2,6 @@
 
 using Application.Strategies;
 
-using CryptoAutopilot.Api.Endpoints.Internal;
-
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;

@@ -15,7 +15,7 @@ public interface IUpdateSubscriptionProxy
     public event Action ActivityPaused;
     public event Action ActivityUnpaused;
     public event Action<Exception> Exception;
-    
+
     public Task CloseAsync();
     public Task ReconnectAsync();
 }

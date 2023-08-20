@@ -31,7 +31,7 @@ public class BybitAuthorizationCheck : IHealthCheck
 
 
             var key = keys.Single();
-            
+
             var readOnlyValueMatch = this.PermissionsOptions.ReadOnlyKey == key.Readonly;
             var hasPermissions = this.PermissionsOptions.Required.All(x => key.Permissions.Contains(x));
 
@@ -41,7 +41,7 @@ public class BybitAuthorizationCheck : IHealthCheck
                 var str2 = this.PermissionsOptions.ReadOnlyKey ? "read-only" : "read-write";
                 return HealthCheckResult.Unhealthy($"The api key is {str1} when it should be {str2}");
             }
-            
+
             if (!hasPermissions)
             {
                 return HealthCheckResult.Unhealthy("The api key does not have all required permissions");

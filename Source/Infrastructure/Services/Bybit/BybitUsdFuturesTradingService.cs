@@ -24,12 +24,12 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
     private readonly IBybitUsdFuturesMarketDataProvider MarketDataProvider;
     private readonly IBybitUsdFuturesTradingApiClient TradingClient;
     private readonly IMediator Mediator;
-    
+
     public BybitUsdFuturesTradingService(CurrencyPair currencyPair, decimal leverage, IBybitFuturesAccountDataProvider futuresAccount, IBybitUsdFuturesMarketDataProvider marketDataProvider, IBybitUsdFuturesTradingApiClient tradingClient, IMediator mediator)
     {
         if (leverage is < 1 or > 100)
             throw new ArgumentException("The leverage has to be between 1 and 100 inclusive", nameof(leverage));
-        
+
         this.CurrencyPair = currencyPair ?? throw new ArgumentNullException(nameof(currencyPair));
         this.Leverage = leverage;
         this.FuturesAccount = futuresAccount ?? throw new ArgumentNullException(nameof(futuresAccount));
@@ -38,10 +38,10 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         this.Mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    
+
     //// //// ////
-    
-    
+
+
     private readonly IDictionary<PositionSide, FuturesPosition> positions = new ConcurrentDictionary<PositionSide, FuturesPosition>();
     public IEnumerable<FuturesPosition> Positions => this.positions.Values;
     public FuturesPosition? LongPosition
@@ -94,7 +94,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         var existed = this.positions.ContainsKey(positionSide);
         this.positions[positionSide] = position;
-        
+
         if (!existed)
         {
             await this.Mediator.Send(new CreatePositionCommand
@@ -111,7 +111,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
                 NewFuturesOrders = new[] { order },
             });
         }
-        
+
         return position;
     }
     public async Task<FuturesPosition> ModifyTradingStopAsync(PositionSide positionSide, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice)
@@ -119,7 +119,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         if (!this.positions.TryGetValue(positionSide, out var position))
             throw new InvalidOrderException($"No open {positionSide} position was found");
 
-        
+
         await this.TradingClient.SetTradingStopAsync(this.CurrencyPair.Name,
                                                      positionSide,
                                                      stopLossPrice: newStopLoss,
@@ -141,7 +141,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         {
             UpdatedPosition = updatedPosition
         });
-        
+
         return updatedPosition;
     }
     public async Task ClosePositionAsync(PositionSide positionSide)
@@ -160,13 +160,13 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         var order = bybitOrder.ToDomainObject(positionSide);
         position.ExitPrice = bybitOrder.Price;
-        
+
         await this.Mediator.Send(new UpdatePositionCommand
         {
             UpdatedPosition = position,
             NewFuturesOrders = new[] { order }
         });
-        
+
         this.positions.Remove(positionSide);
     }
     public async Task CloseAllPositionsAsync()
@@ -200,7 +200,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         this.positions.Clear();
     }
 
-    
+
     public async Task<FuturesOrder> PlaceLimitOrderAsync(OrderSide orderSide, decimal LimitPrice, decimal Margin, decimal? StopLoss = null, decimal? TakeProfit = null, TriggerType tradingStopTriggerType = TriggerType.LastPrice)
     {
         var quantity = Math.Round(Margin * this.Leverage / LimitPrice, 2);
@@ -230,7 +230,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
 
         return order;
     }
-    
+
     public async Task<FuturesOrder> ModifyLimitOrderAsync(Guid bybitId, decimal newLimitPrice, decimal newMargin, decimal? newStopLoss = null, decimal? newTakeProfit = null, TriggerType newTradingStopTriggerType = TriggerType.LastPrice)
     {
         if (!this.limitOrders.TryGetValue(bybitId, out var oldLimitOrder))
@@ -240,8 +240,8 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         ValidateNewTradingStopParameters(oldLimitOrder.Side, newLimitPrice, newStopLoss, newTakeProfit);
 
         var newQuantity = Math.Round(newMargin * this.Leverage / newLimitPrice, 2);
-        
-        await TradingClient.ModifyOrderAsync(this.CurrencyPair.Name,
+
+        await this.TradingClient.ModifyOrderAsync(this.CurrencyPair.Name,
                                              oldLimitOrder.BybitID.ToString(),
                                              newPrice: newLimitPrice,
                                              newQuantity: newQuantity,
@@ -250,12 +250,12 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
                                              takeProfitPrice: newTakeProfit,
                                              takeProfitTriggerType: newTradingStopTriggerType);
 
-        
+
         var updatedBybitOrder = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, oldLimitOrder.BybitID);
         var updatedOrder = updatedBybitOrder.ToDomainObject(updatedBybitOrder.Side.ToPositionSide());
-        
+
         this.limitOrders[bybitId] = updatedOrder;
-        
+
         await this.Mediator.Send(new UpdateOrderCommand
         {
             UpdatedOrder = updatedOrder
@@ -271,7 +271,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
         if (orderSide == OrderSide.Sell && (newStopLoss < newLimitPrice || newTakeProfit > newLimitPrice))
             throw new InternalTradingServiceException("Incorrect trading stop parameters for updating limit Sell order");
     }
-    
+
     public async Task CancelLimitOrdersAsync(params Guid[] bybitIds)
     {
         var existingIds = bybitIds.Where(this.limitOrders.ContainsKey).ToArray();
@@ -280,7 +280,7 @@ public class BybitUsdFuturesTradingService : IBybitUsdFuturesTradingService
             await this.TradingClient.CancelOrderAsync(this.CurrencyPair.Name, bybitId.ToString());
             this.limitOrders.Remove(bybitId);
         });
-        
+
         await this.Mediator.Send(new DeleteOrdersCommand
         {
             BybitIds = existingIds

@@ -29,7 +29,7 @@ public class DeleteTests : TradingSignalsRepositoryTestsBase
         // Assert
         result.Should().BeTrue();
     }
-    
+
     [Fact]
     public async Task Delete_ShouldTHrow_WhenTradingSignalWithCryptoAutopilotIdDoesNotExist()
     {

@@ -28,7 +28,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
-        await InsertRelatedPositionAndOrdersAsync(position, orders);
+        await this.InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
@@ -48,7 +48,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
-        await InsertRelatedPositionAndOrdersAsync(position, orders);
+        await this.InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var invalidPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
@@ -73,7 +73,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         // Arrange
         var position = this.FuturesPositionsGenerator.Generate($"default, {PositionSide.Buy.ToRuleSetName()}");
         var orders = this.FuturesOrdersGenerator.Generate(10, $"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {PositionSide.Buy.ToRuleSetName()}");
-        await InsertRelatedPositionAndOrdersAsync(position, orders);
+        await this.InsertRelatedPositionAndOrdersAsync(position, orders);
 
         var updatedPosition = this.FuturesPositionsGenerator.Clone()
             .RuleFor(x => x.CryptoAutopilotId, position.CryptoAutopilotId)
@@ -83,7 +83,7 @@ public class UpdateFuturesPositionTests : FuturesPositionsRepositoryTestsBase
         // Act
         var func = async () => await this.SUT.UpdateAsync(updatedPosition);
 
-        
+
         // Assert
         (await func.Should()
             .ThrowExactlyAsync<DbUpdateException>()

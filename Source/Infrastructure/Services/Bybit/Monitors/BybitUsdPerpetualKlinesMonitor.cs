@@ -49,7 +49,7 @@ public class BybitUsdPerpetualKlinesMonitor : IBybitUsdPerpetualKlinesMonitor
             return;
 
 
-        var callResult = await this.FuturesStreams.SubscribeToKlineUpdatesAsync(currencyPair, timeframe, HandleKlineUpdate);
+        var callResult = await this.FuturesStreams.SubscribeToKlineUpdatesAsync(currencyPair, timeframe, this.HandleKlineUpdate);
         callResult.ThrowIfHasError();
 
         var subscription = this.SubscriptionFactory.Invoke();

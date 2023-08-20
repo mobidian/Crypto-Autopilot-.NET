@@ -42,22 +42,22 @@ public static class IServiceCollectionExtensions
     {
         services.AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-        
+
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(IDomainMarker).Assembly, typeof(IApplicationMarker).Assembly, typeof(IInfrastructureMarker).Assembly));
         services.AddValidatorsFromAssemblyContaining<IDomainMarker>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-        
+
         services.AddDbContext<FuturesTradingDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("TradingHistoryDB")!));
         services.AddRepositories();
         services.AddDataAccessServices();
 
         services.AddSingleton<IUpdateSubscriptionProxy, UpdateSubscriptionProxy>();
         services.AddSingleton<Func<IUpdateSubscriptionProxy>>(services => () => services.GetRequiredService<IUpdateSubscriptionProxy>());
-        
+
         services.AddBybitServices(configuration);
         services.AddBybitServiceFactories();
     }
-    
+
     private static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IFuturesOrdersRepository, FuturesOrdersRepository>();
@@ -86,7 +86,7 @@ public static class IServiceCollectionExtensions
         services.AddSingleton<IBybitRestClientUsdPerpetualApiTrading>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().Trading);
         services.AddSingleton<IBybitRestClientUsdPerpetualApiExchangeData>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().ExchangeData);
         services.AddSingleton<IBybitRestClientUsdPerpetualApiAccount>(services => services.GetRequiredService<IBybitRestClientUsdPerpetualApi>().Account);
-        
+
         services.AddSingleton<IBybitSocketClient, BybitSocketClient>(services => new BybitSocketClient(options =>
         {
             options.Environment = services.GetRequiredService<IOptions<BybitEnvironmentOptions>>().Value.GetEnvironment();

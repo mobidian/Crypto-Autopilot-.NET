@@ -37,7 +37,7 @@ internal static class IStrategyEngineExtensions
     internal static async Task<IResult> StopAsync(this IStrategyEngine engine, IServiceProvider services, TimeSpan timeout)
     {
         _ = Task.Run(engine.StopTradingAsync);
-        
+
         await engine.WaitForRunningFalseAsync(timeout);
         if (engine.IsRunning())
             return Results.Problem(detail: $"The operation of stopping the trading strategy engine has timed out after {timeout.Seconds} seconds", type: "TimeoutException");
@@ -52,7 +52,7 @@ internal static class IStrategyEngineExtensions
     internal static async Task WaitForRunningFalseAsync(this IStrategyEngine engine, TimeSpan timeout)
     {
         var timestamp = Stopwatch.GetTimestamp();
-        
+
         while (engine.IsRunning() && Stopwatch.GetElapsedTime(timestamp) < timeout)
             await Task.Delay(50);
     }

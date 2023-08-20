@@ -73,7 +73,7 @@ public class FuturesTradingDbContext : DbContext
             this.FuturesOrderValidator.ValidateAndThrow(order);
 
             var position = this.FuturesPositions.Find(order.PositionId);
-            
+
             if (position is not null && position.Side != order.PositionSide)
                 throw new DbUpdateException($"The {state} order position side property value does not match the side property value of the related position.");
         }
@@ -104,7 +104,7 @@ public class FuturesTradingDbContext : DbContext
             .Entries<TradingSignalDbEntity>()
             .Where(e => e.State is EntityState.Added or EntityState.Modified)
             .Select(e => e.Entity);
-        
+
         foreach (var signal in signals)
             this.TradingSignalValidator.ValidateAndThrow(signal);
     }

@@ -48,7 +48,7 @@ public abstract class LuxAlgoImbalanceStrategyEngineTestsBase
         .RuleFor(x => x.HighPrice, f => f.Random.Decimal(2000, 3000))
         .RuleFor(x => x.ClosePrice, f => f.Random.Decimal(500, 1000))
         .RuleFor(x => x.LowPrice, f => f.Random.Decimal(1500, 2500))
-        .RuleFor(x => x.Volume, f => f.Random.Decimal(1000000, 2000000)); 
+        .RuleFor(x => x.Volume, f => f.Random.Decimal(1000000, 2000000));
     #endregion
 
     public LuxAlgoImbalanceStrategyEngineTestsBase()

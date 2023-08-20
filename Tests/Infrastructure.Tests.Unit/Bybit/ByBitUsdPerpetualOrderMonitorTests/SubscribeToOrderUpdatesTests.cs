@@ -19,7 +19,7 @@ public class SubscribeToOrderUpdatesTests : ByBitUsdPerpetualOrderMonitorTestsBa
     {
         // Act
         await this.SUT.SubscribeToOrderUpdatesAsync();
-        
+
         // Assert
         this.SUT.Subscribed.Should().BeTrue();
         await this.UsdPerpetualStreams.Received(1).SubscribeToOrderUpdatesAsync(Arg.Any<Action<DataEvent<IEnumerable<BybitUsdPerpetualOrderUpdate>>>>());

@@ -23,8 +23,8 @@ public class CreatePositionCommandTests : CommandsTestsBase
     public CreatePositionCommandTests(DatabaseFixture databaseFixture) : base(databaseFixture)
     {
     }
-    
-    
+
+
     [Theory]
     [ClassData(typeof(ValidPositionAndOrdersGenerator))]
     public async Task CreatePositionCommand_ShouldCreateFuturesPositionAndOrders_WhenCommandIsValid(FuturesPosition position, List<FuturesOrder> orders)
@@ -77,7 +77,7 @@ public class CreatePositionCommandTests : CommandsTestsBase
         var invertedSideRule = position.Side.Invert().ToRuleSetName();
         var orderOpposidePositionSide = this.FuturesOrdersGenerator.Generate($"default, {OrderType.Market.ToRuleSetName()}, {OrderSide.Buy.ToRuleSetName()}, {invertedSideRule}");
         orders[Random.Shared.Next(orders.Count)] = orderOpposidePositionSide;
-        
+
         var command = new CreatePositionCommand
         {
             FuturesOrders = orders,

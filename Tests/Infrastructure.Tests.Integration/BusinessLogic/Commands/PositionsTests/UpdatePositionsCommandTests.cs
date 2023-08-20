@@ -51,7 +51,7 @@ public class UpdatePositionsCommandTests : CommandsTestsBase
                 }
             }
         };
-        
+
 
         // Act
         await this.Mediator.Send(command);

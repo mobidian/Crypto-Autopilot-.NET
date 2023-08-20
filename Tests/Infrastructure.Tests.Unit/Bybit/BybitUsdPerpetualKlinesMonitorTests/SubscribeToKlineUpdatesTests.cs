@@ -17,10 +17,10 @@ public class SubscribeToKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTestsB
         var contracts = this.GetRandomContractIdentifiers(Random.Shared.Next(10, 15));
 
         // Act
-        await FuturesStreamsSubscribeToAllContractsAsync(contracts);
+        await this.FuturesStreamsSubscribeToAllContractsAsync(contracts);
 
         // Assert
-        await FuturesStreamsReceivedSubscribeCallsForEveryContractAssertionAsync(contracts);
+        await this.FuturesStreamsReceivedSubscribeCallsForEveryContractAssertionAsync(contracts);
         this.SubscriptionsDictionary.Keys.AsEnumerable().Should().BeEquivalentTo(contracts);
     }
 
@@ -31,7 +31,7 @@ public class SubscribeToKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTestsB
         var contracts = this.GetRandomContractIdentifiers(Random.Shared.Next(10, 15));
         var existingContract = this.Faker.PickRandom(contracts);
 
-        await FuturesStreamsSubscribeToAllContractsAsync(contracts);
+        await this.FuturesStreamsSubscribeToAllContractsAsync(contracts);
 
 
         // Act
@@ -40,7 +40,7 @@ public class SubscribeToKlineUpdatesTests : BybitUsdPerpetualKlinesMonitorTestsB
 
         // Assert
         this.FuturesStreams.ReceivedCalls().Count().Should().Be(contracts.Count);
-        await FuturesStreamsReceivedSubscribeCallsForEveryContractAssertionAsync(contracts);
+        await this.FuturesStreamsReceivedSubscribeCallsForEveryContractAssertionAsync(contracts);
 
         this.SubscriptionsDictionary.Keys.AsEnumerable().Should().BeEquivalentTo(contracts);
     }

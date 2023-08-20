@@ -1,6 +1,4 @@
-﻿using Domain.Models.Signals;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Infrastructure.Tests.Integration.DataAccess.TradingSignalsRepositoryTests.AbstractBase;
 
@@ -23,14 +21,14 @@ public class GetAllTests : TradingSignalsRepositoryTestsBase
         // Arrange
         var tradingSignals = this.TradingSignalGenerator.Generate(100);
         await this.SUT.AddAsync(tradingSignals);
-        
+
         // Act
         var retrievedTradingSignals = await this.SUT.GetAllAsync();
 
         // Assert
         retrievedTradingSignals.Should().BeEquivalentTo(tradingSignals);
     }
-    
+
     [Fact]
     public async Task GetAll_ShouldReturnEmptyEnumerable_WhenTradingNoSignalsExist()
     {

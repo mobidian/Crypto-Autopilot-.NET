@@ -41,7 +41,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
 
         await this.SUT.ModifyLimitOrderAsync(order.BybitID, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
 
-        
+
         // Assert
         this.SUT.SellLimitOrders.Should().NotBeNullOrEmpty();
         this.SUT.SellLimitOrders.Single().Side.Should().Be(OrderSide.Sell);
@@ -49,7 +49,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         this.SUT.SellLimitOrders.Single().Quantity.Should().Be(Math.Round(newMargin * this.Leverage / newLimitPrice, 2));
         this.SUT.SellLimitOrders.Single().StopLoss.Should().Be(newStopLoss);
         this.SUT.SellLimitOrders.Single().TakeProfit.Should().Be(newTakeProfit);
-        
+
         var orderFromApi = await this.TradingClient.GetOrderAsync(this.CurrencyPair.Name, this.SUT.SellLimitOrders.Single().BybitID);
         orderFromApi.Side.Should().Be(OrderSide.Sell);
         orderFromApi.Price.Should().Be(newLimitPrice);
@@ -79,7 +79,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         var newStopLoss = newLimitPrice + 400;
         var newTakeProfit = newLimitPrice - 400;
         var newTradingStopTriggerType = TriggerType.MarkPrice;
-        
+
         var func = async () => await this.SUT.ModifyLimitOrderAsync(order.BybitID, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
 
 
@@ -96,7 +96,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         var stopLoss = limitPrice + 400;
         var takeProfit = limitPrice - 400;
         var tradingStopTriggerType = TriggerType.LastPrice;
-        
+
         var order = await this.SUT.PlaceLimitOrderAsync(OrderSide.Sell, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
 
 
@@ -109,7 +109,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
 
         var func = async () => await this.SUT.ModifyLimitOrderAsync(order.BybitID, newLimitPrice, newMargin, newStopLoss, newTakeProfit, newTradingStopTriggerType);
 
-        
+
         // Assert
         await func.Should().ThrowExactlyAsync<InternalTradingServiceException>();
     }
@@ -127,7 +127,7 @@ public class ModifyLimitSellOrder : BybitUsdFuturesTradingServiceTestsBase
         // Act
         var orderId = Guid.NewGuid();
         var func = async () => await this.SUT.ModifyLimitOrderAsync(orderId, limitPrice, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
         // Assert
         await func.Should().ThrowExactlyAsync<InvalidOrderException>($"No open limit order with id == {orderId} was found");
     }

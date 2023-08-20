@@ -39,7 +39,7 @@ public class FuturesOperationsService : IFuturesOperationsService
     public async Task UpdateFuturesPositionsAndAddTheirOrdersAsync(Dictionary<FuturesPosition, IEnumerable<FuturesOrder>> positionsOrders)
     {
         using var _ = await this.DbContext.Database.BeginTransactionalOperationAsync();
-        
+
         foreach (var positionOrder in positionsOrders)
         {
             var updatedPosition = positionOrder.Key;

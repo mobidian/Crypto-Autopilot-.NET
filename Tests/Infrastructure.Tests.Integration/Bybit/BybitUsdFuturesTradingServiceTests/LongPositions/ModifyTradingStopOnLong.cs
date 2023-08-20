@@ -56,7 +56,7 @@ public class ModifyTradingStopOnLong : BybitUsdFuturesTradingServiceTestsBase
         var tradingStopTriggerType = TriggerType.LastPrice;
 
         await this.SUT.OpenPositionAsync(PositionSide.Buy, this.Margin, stopLoss, takeProfit, tradingStopTriggerType);
-        
+
 
         // Act
         decimal? newStopLoss = stopLoss + newStopLossOffset;

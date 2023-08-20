@@ -33,7 +33,7 @@ public class UpdateOrderCommandTests : CommandsTestsBase
         {
             LimitOrder = limitOrder
         });
-        
+
         var updatedLimitOrder = this.FuturesOrdersGenerator.RuleFor(x => x.BybitID, limitOrder.BybitID).Generate($"default, {ruleSet}");
         var command = new UpdateOrderCommand
         {
@@ -47,7 +47,7 @@ public class UpdateOrderCommandTests : CommandsTestsBase
         // Assert
         this.ArrangeAssertDbContext.FuturesOrders.Single().ToDomainObject().Should().BeEquivalentTo(updatedLimitOrder);
     }
-    
+
     [Theory]
     [ClassData(typeof(ValidPositionAndOrdersGenerator))]
     public async Task UpdateOrderCommand_ShouldUpdateOrderToPositionOpeningOrder_WhenPositionIdIsSpecified(FuturesPosition position, List<FuturesOrder> orders)
@@ -58,14 +58,14 @@ public class UpdateOrderCommandTests : CommandsTestsBase
             Position = position,
             FuturesOrders = orders,
         });
-        
+
         var index = Random.Shared.Next(orders.Count);
         var order = orders[index];
         var updatedOrder = this.FuturesOrdersGenerator.Clone()
             .RuleFor(x => x.BybitID, order.BybitID)
             .Generate($"default, {order.Type.ToRuleSetName()}, {order.Status.ToRuleSetName()}, {order.Side.ToRuleSetName()}, {order.PositionSide.ToRuleSetName()}");
 
-        
+
         // Act
         await this.Mediator.Send(new UpdateOrderCommand
         {
@@ -80,7 +80,7 @@ public class UpdateOrderCommandTests : CommandsTestsBase
         this.ArrangeAssertDbContext.FuturesPositions.Single().ToDomainObject().Should().BeEquivalentTo(position);
     }
 
-    
+
     [Theory]
     [MemberData(nameof(LimitOrdersGenerator.GetRuleSetsAsObjectArrays), MemberType = typeof(LimitOrdersGenerator))]
     public async Task UpdateOrderCommand_ShouldThrow_WhenNewOrderIsLimitAndPositionIdIsSpecified(string ruleSet)
@@ -103,7 +103,7 @@ public class UpdateOrderCommandTests : CommandsTestsBase
         // Act
         var func = async () => await this.Mediator.Send(command);
 
-        
+
         // Assert
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>())
             .And.Errors.Single().ErrorMessage.Should().Be("The FuturesPositionId must be null when the updated order isn't a position opening order.");
@@ -126,14 +126,14 @@ public class UpdateOrderCommandTests : CommandsTestsBase
             .RuleFor(x => x.BybitID, order.BybitID)
             .Generate($"default, {order.Type.ToRuleSetName()}, {order.Status.ToRuleSetName()}, {order.Side.ToRuleSetName()}, {order.PositionSide.ToRuleSetName()}");
 
-        
+
         // Act
         var func = async () => await this.Mediator.Send(new UpdateOrderCommand
         {
             UpdatedOrder = updatedOrder
         });
 
-        
+
         // Assert
         (await func.Should().ThrowExactlyAsync<FluentValidation.ValidationException>())
             .And.Errors.Single().ErrorMessage.Should().Be("The FuturesPositionId can't be null when the updated order is a position opening order.");

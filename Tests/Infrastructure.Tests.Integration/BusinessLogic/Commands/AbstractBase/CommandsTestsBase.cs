@@ -37,7 +37,7 @@ public abstract class CommandsTestsBase : FuturesDataFakersClass, IAsyncLifetime
     private ServiceProvider BuildServiceProvider(string connectionString)
     {
         var services = new ServiceCollection();
-        
+
         var configuration = new ConfigurationManager();
         configuration.AddJsonFile("appsettings.test.json", optional: false);
         configuration["ConnectionStrings:TradingHistoryDB"] = connectionString;

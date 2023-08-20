@@ -16,12 +16,12 @@ public class JsonSignalnformationConverter : JsonConverter<SignalInfo>
 
 
     private readonly IDictionary<string, Type> SignalInfoTypes;
-    
+
     public JsonSignalnformationConverter(IDictionary<string, Type> signalInfoTypes)
     {
         this.SignalInfoTypes = signalInfoTypes;
     }
-    
+
 
     public override SignalInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -37,7 +37,7 @@ public class JsonSignalnformationConverter : JsonConverter<SignalInfo>
         {
             throw new JsonException("The provided JSON object does not contain the mandatory 'TypeIdentifier' property. Please ensure the object is in the correct format.");
         }
-        
+
         var typeIdentifier = typeIdentifierProperty.GetString()!;
         if (!this.SignalInfoTypes.TryGetValue(typeIdentifier, out var actualType))
         {
@@ -59,7 +59,7 @@ public class JsonSignalnformationConverter : JsonConverter<SignalInfo>
             throw new SignalTypeNotFoundException($"The type '{value.GetType().Name}' of the {typeof(SignalInfo).Name} object is not registered in the dictionary of valid types.", signalTypeNotFoundException);
         }
 
-        
+
         writer.WriteStartObject();
 
         foreach (var property in value.GetType().GetProperties())
