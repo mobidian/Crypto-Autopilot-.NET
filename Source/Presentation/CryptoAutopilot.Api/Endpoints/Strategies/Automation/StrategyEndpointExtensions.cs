@@ -7,7 +7,7 @@ using CryptoAutopilot.Api.Services.Interfaces;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+namespace CryptoAutopilot.Api.Endpoints.Strategies.Automation;
 
 /// <summary>
 /// Provides extension methods for <see cref="IServiceCollection"/> and <see cref="IApplicationBuilder"/> to register trading strategies and add endpoints for them

@@ -1,6 +1,5 @@
 ﻿using Application.DataAccess.Repositories;
 
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Contracts.Responses.Common;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Positions;
 
@@ -8,13 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
-public class FuturesPositionsEndpoints : IEndpoints
+public static class GetFuturesPositionsEndpoint
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
-    {
-    }
-
-    public static void MapEndpoints(IEndpointRouteBuilder app)
+    public static void MapGetFuturesPositionsEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet("Data/Trading/Positions", async ([FromQuery] string? contractName, IFuturesPositionsRepository positionsRepository) =>
         {

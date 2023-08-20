@@ -1,6 +1,5 @@
 using CryptoAutopilot.Api.Endpoints;
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.Strategies;
+using CryptoAutopilot.Api.Endpoints.Strategies.Automation;
 using CryptoAutopilot.Api.HealthChecks;
 
 using Infrastructure.Extensions;
@@ -15,7 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Configuration.AddAzureKeyVault();
 
 builder.Services.AddServices(builder.Configuration);
-builder.Services.AddServices<Program>(builder.Configuration);
 builder.Services.AddStrategies<Program>(builder.Configuration);
 
 builder.Services.AddHealthChecks(builder.Configuration);
@@ -33,8 +31,7 @@ app.UseHttpsRedirection();
 
 app.MapHealthChecks();
 
-app.MapEndpoints();
-app.MapEndpoints<Program>();
+app.MapApiEndpoints();
 app.MapStrategyEndpoints<Program>();
 
 app.Run();

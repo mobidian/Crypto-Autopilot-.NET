@@ -2,7 +2,6 @@
 
 using Bybit.Net.Enums;
 
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Contracts.Responses.Common;
 using CryptoAutopilot.Contracts.Responses.Data.Market;
 
@@ -10,13 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Data.Market;
 
-public class ContractHistoryEndpoints : IEndpoints
+public static class GetContractHistoryEndpoint
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
-    {
-    }
-
-    public static void MapEndpoints(IEndpointRouteBuilder app)
+    public static void MapGetContractHistoryEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet("Data/Market/ContractHistory", async ([FromQuery] string? name, [FromQuery] int? min, IBybitUsdFuturesMarketDataProvider marketDataProvider) =>
         {

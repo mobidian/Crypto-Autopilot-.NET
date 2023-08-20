@@ -1,20 +1,15 @@
 ﻿using Application.DataAccess.Repositories;
 
 using CryptoAutopilot.Api.Endpoints.Extensions;
-using CryptoAutopilot.Api.Endpoints.Internal.Automation.General;
 using CryptoAutopilot.Contracts.Responses.Data.Trading.Orders;
 
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoAutopilot.Api.Endpoints.Data.Trading;
 
-public class FuturesOrdersEndpoints : IEndpoints
+public static class GetFuturesOrdersEndpoint
 {
-    public static void AddServices(IServiceCollection services, IConfiguration configuration)
-    {
-    }
-
-    public static void MapEndpoints(IEndpointRouteBuilder app)
+    public static void MapGetFuturesOrdersEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet("Data/Trading/Orders", async ([FromQuery] string? contractName, IFuturesOrdersRepository ordersRepository) =>
         {
