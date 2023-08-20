@@ -34,6 +34,7 @@ app.MapHealthChecks();
 
 app.MapEndpoints();
 app.MapEndpoints<Program>();
+app.MapApiEndpoints();
 app.MapStrategyEndpoints<Program>();
 
 app.Run();
