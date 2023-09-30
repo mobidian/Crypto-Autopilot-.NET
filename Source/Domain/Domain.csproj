@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bybit.Net" Version="3.1.0" />
+    <PackageReference Include="Bybit.Net" Version="3.1.2" />
     <PackageReference Include="FluentValidation" Version="11.7.1" />
     <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Skender.Stock.Indicators" Version="2.4.10" />
+    <PackageReference Include="Skender.Stock.Indicators" Version="2.4.11" />
   </ItemGroup>
 
 </Project>
